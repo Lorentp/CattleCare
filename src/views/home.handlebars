@@ -1,0 +1,60 @@
+<h1>Bienvenido al Establecimiento: x</h1>
+<nav>
+    <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
+    <a href="/login/logout" class="link-button">Cerrar sesion</a>
+</nav>
+<div class="main-treatment-container">
+<h3>Terneros en tratamiento</h3>
+<div class="treatment-container">
+    <div>
+    <p class="calf">Caravana: D888</p>
+    </div>
+    <div>
+    <p class="treatment">        
+    Tratamiento:Diarrea leve
+    </p>
+    </div>
+    <div>
+    <p>Empieza tratamiento el dia: 17/11/2023</p>
+    </div>
+    <div>
+    <p>Dias totales de tratamiento: 3</p>
+    </div>
+    <div>
+    <p>Dias restantes de tratamiento: 2</p>
+    </div>
+    <div class="medicine">
+    <p>Susministrar:Gentamicina 5cc</p>
+    </div>
+    <div>
+    <p>Finaliza tratamiento el dia: 20/11/2023</p>
+    </div>
+</div>
+{{#each calves}}
+<div class="treatment-container">
+    <div>
+    <p class="calf">{{this.name}}</p>
+    </div>
+    <div>
+    <p class="treatment">        
+    {{this.treatment}}
+    </p>
+    </div>
+    <div>
+    <p>Empieza tratamiento el dia: {{this.startDate}}</p>
+    </div>
+    <div>
+    <p>Dias totales de tratamiento: {{this.treatment.duration}}</p>
+    </div>
+    <div>
+    <p>Dias restantes de tratamiento: {{this.treatment.duration - this.endDate}}</p>
+    </div>
+    <div class="medicine">
+    <p>Susministrar:{{this.treatment.medication}}</p>
+    </div>
+    <div>
+    <p>Finaliza tratamiento el dia: {{this.endDate}}</p>
+    </div>
+</div>
+{{#each}}
+</div>

@@ -1,0 +1,41 @@
+<div class="form-container">
+  <h1>Nuevo Ternero y Tratamiento</h1>
+  <form action="/calf/add" method="post">
+    <div>
+    <p >Nombre del Ternero:</p>
+    <input type="text" id="name" name="name" required />
+    </div>
+    
+    <div>
+    <p >Fecha de Inicio del Tratamiento:</p>
+    <input type="date" id="startDate" name="startDate" required />
+    </div>
+ 
+    <div>
+    <p >Tratamiento:</p>
+    <select id="treatment" name="treatment" required>
+      <option value="" disabled selected>Seleccionar Tratamiento</option>
+      {{#each treatments}}
+        <option
+
+          value="{{this._id}}"
+          data-duration="{{this.duration}}"
+        >{{this.title}}</option>
+      {{/each}}
+    </select>
+    </div>
+    
+    <input class="form-button" type="submit" value="Guardar Ternero y Tratamiento" />
+  </form>
+
+</div>
+
+<script>
+  document.getElementById('treatment').addEventListener('change', function() {
+  const duration =
+  this.options[this.selectedIndex].getAttribute('data-duration'); const
+  startDate = document.getElementById('startDate').value; const endDate = new
+  Date(startDate); endDate.setDate(new Date(startDate).getDate() +
+  parseInt(duration)); document.getElementById('endDate').value =
+  endDate.toISOString().split('T')[0]; });
+</script>
