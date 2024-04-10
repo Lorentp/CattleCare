@@ -1,0 +1,40 @@
+{{>headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
+
+</nav>
+
+<div class="main-treatment-container">
+<h3>Terneros en tratamiento</h3>
+
+{{#each calves}}
+    <div class="treated-container">
+    <div>
+    <p class="calf">Nombre del ternero: {{this.name}}</p>
+    </div>
+    <div>
+    <p class="treatment">        
+    Tratamiento: {{this.treatment}}
+    </p>
+    </div>
+    <div>
+    <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
+    </div>
+    <div>
+    <p>Dias totales de tratamiento: {{this.duration}}</p>
+    </div>
+    <div>
+    <p class="medication">        
+    Subministrar: {{this.medication}}
+    </p>
+    </div>
+    <div>
+    <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
+    </div>
+    {{#if this.finished}}
+    <p>Tratamiento finalizado</p>
+    {{/if}}
+</div>
+{{/each}}

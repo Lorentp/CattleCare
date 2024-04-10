@@ -1,7 +1,11 @@
 const mongoose = require("mongoose");
+const dotenv = require("dotenv")
+dotenv.config()
+const database_url = process.env.MONGO_URL
+
 mongoose
   .connect(
-    "mongodb+srv://lorentp:jalnlorenza@cluster0.yyvof4b.mongodb.net/calfcare?retryWrites=true&w=majority&appName=Cluster0"
+    database_url
   )
   .then(() => console.log("Conexion a la base de datos exitosa"))
   .catch((error) =>

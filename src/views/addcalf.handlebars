@@ -1,7 +1,62 @@
+{{>headerlogged}}
+
 <nav>
-<a href="/home" class="link-button">Volver al inicio</a>
-<a href="/login/logout" class="link-button">Cerrar sesion</a>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
+
 </nav>
 
-{{>calf-form}}
-{{>treatment-form}}
+<div class="add-page-buttons">
+    <button id="addCalfButton" class="add-page-button">Agregar ternero</button>
+    <button id="updateCalfButton" class="add-page-button">Actualizar ternero</button>
+    <button id="deleteCalfButton" class="add-page-button">Eliminar ternero</button>
+    <button id="addCorralButton" class="add-page-button">Agregar Corral</button>
+    <button id="deleteCorralButton" class="add-page-button">Eliminar Corral</button>
+</div>
+<div class="add-page-buttons">
+    <button id="addTreatmentButton" class="add-page-button">Agregar tratamiento</button>
+    <button id="updateTreatmentButton" class="add-page-button">Actualizar tratamiento</button>
+    <button id="deleteTreatmentButton" class="add-page-button">Eliminar tratamiento</button>
+</div>
+
+<div class="hidden" id="addCalfForm">
+    {{>calf-form}}
+</div>
+
+<div class="hidden" id="updateCalfForm">
+    {{>calf-update}}
+</div>
+
+<div class="hidden" id="deleteCalfForm">
+    {{>calf-delete}}
+</div>
+
+
+<div class="hidden" id="addTreatmentForm">
+    {{>treatment-form}}
+</div>
+
+<div class="hidden" id="updateTreatmentForm">
+    {{>treatment-update}}
+</div>
+<div class="hidden" id="deleteTreatmentForm">
+    {{>treatment-delete}}
+</div>
+
+<div class="hidden" id="addCorralForm">
+    {{>corral-form}}
+</div>
+
+<div class="hidden" id="deleteCorralForm">
+    {{>corral-delete}}
+</div>
+
+<script src="js/add.js"></script>
+<script src="js/buttonsAdd.js"></script>
+<script src="js/updateCalfForm.js"></script>
+<script src="js/updateCalf.js"></script>
+<script src="js/deleteCalf.js"></script>
+<script src="js/updateTreatmentForm.js"></script>
+<script src="js/updateTreatment.js"></script>
+<script src="js/deleteTreatment.js"></script>
+<script src="js/deleteCorral.js"></script>

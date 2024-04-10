@@ -1,13 +1,26 @@
+
+{{>header}}
+
 <div class="login-container">
   <form action="/login" method="POST">
     <div>
-      <input type="text" placeholder="Usuario" name="username" />
+    <span class="input-error">{{errors.email}}</span>
+      <input class="input" type="text" placeholder="Usuario" name="username" required/>
     </div>
+
     <div>
-      <input type="text" placeholder="Contrasena" name="password" />
+      <span class="input-error">{{errors.password}}</span>
+      <input class="input" autocomplete="off" id="passInput" type="password" placeholder="Contrasena" name="password" required/>
+      <div>
+      <input type="checkbox" id="showPass">Mostrar contraseña
+      </div>
     </div>
+
     <div>
-      <button type="submit">Ingresar</button>
+      <button type="submit">Ingresar</button>    
     </div>
   </form>
 </div>
+
+<script src="/js/login.js"></script>
+

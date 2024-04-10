@@ -1,0 +1,44 @@
+{{>headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
+    <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
+</nav>
+
+<div>
+    <h1>Usted esta en el corral: {{thisCorral.corral}}</h1>
+</div>
+{{#if calvesInCorral}}
+    {{#each calvesInCorral}}
+        <div class="treatment-container">
+        <div>
+        <p class="calf">Nombre del ternero: {{this.name}}</p>
+        </div>
+        <div>
+        <p>Corral: {{this.corral}}</p>
+        </div>
+        <div>
+        <p class="treatment">        
+        Tratamiento: {{this.treatment}}
+        </p>
+        </div>
+        <div>
+        <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
+        </div>
+        <div>
+        <p>Dias totales de tratamiento: {{this.duration}}</p>
+        </div>
+        <div>
+        <p class="medication">        
+        Suministrar por dia: {{this.medication}}
+        </p>
+        </div>
+        <div>
+        <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
+        </div>
+    </div>
+    {{/each}}
+{{else}}
+<h1>No se encontro ningun ternero en tratamiento en este corral</h1>
+{{/if}}

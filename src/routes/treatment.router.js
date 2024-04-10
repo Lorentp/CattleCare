@@ -18,4 +18,25 @@ router.post("/add", async (req, res) => {
   }
 });
 
+router.post("/update:cid", async (req,res) => {
+  try {
+    const newTreatment = await treatmentManager.updateTreatment(req.params.cid, req.body)
+    console.log(newTreatment)
+    res.redirect("/home")
+  } catch (error) {
+    res.json({message:"Error"})
+    console.log(error)
+  }
+})
+
+router.post("/delete:cid", async (req,res) => {
+  try {
+    const deletedTreatment = await treatmentManager.deleteTreatment(req.params.cid)
+    console.log(deletedTreatment)
+    res.redirect("/home")
+  } catch (error) {
+    console.log(error)
+  }
+})
+
 module.exports = router

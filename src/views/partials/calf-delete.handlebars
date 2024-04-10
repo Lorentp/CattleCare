@@ -1,0 +1,23 @@
+<div class="form-container">
+  <h1>Eliminar Ternero</h1>
+  <form id="deleteCalfFormSubmit">
+  <input type="hidden" id="deleteCalfFormMethod" name="_method" value="DELETE">
+   <div>
+    <p >Nombre del Ternero:</p>
+    <select id="nameDeleteCalf" name="name" required>
+      <option value="" disabled selected>Seleccionar Ternero</option>
+      {{#each calves}}
+        <option
+
+            value="{{this.name}}"
+            _id="{{this._id}}"
+     
+        >{{this.name}}</option>
+      {{/each}}
+    </select>
+    <input type="hidden" name="=_id" id="idInputDeleteCalf">
+    </div>
+
+    <input class="form-button" type="submit" value="Eliminar Ternero" />
+  </form>
+</div>

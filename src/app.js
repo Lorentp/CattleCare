@@ -1,12 +1,20 @@
 const express = require("express");
 
 const app = express();
-const PORT = 3000;
+
 require("./database.js");
+
+
+//ENV
+const dotenv = require("dotenv")
+dotenv.config()
+
+const port = process.env.PORT
+const mongo_url = process.env.MONGO_URL
 //Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(express.static("./src/public"));
+app.use(express.static("./src/public"))
 
 //Handlebars
 const expressHandlebars = require("express-handlebars");
@@ -15,6 +23,27 @@ const hbs = expressHandlebars.create({
     allowProtoPropertiesByDefault: true,
     allowProtoMethodsByDefault: true,
   },
+  helpers: {
+    formatDate: function(date) {
+      const formatOptions =  {weekday:"long", day:"numeric", month:"long", year: "numeric"}
+      const formatDate = new Date(date)
+      const correctDate = formatDate.setDate(formatDate.getDate() + 1)
+      const today = new Date()
+      const tomorrow = new Date()
+      tomorrow.setDate(today.getDate() + 1)
+
+      if(formatDate.toDateString() === today.toDateString()){
+        return "Hoy, " + new Date(correctDate).toLocaleDateString('es-AR', formatOptions);
+      }
+      else if (formatDate.toDateString() === tomorrow.toDateString()) {
+        return "Mañana, " + new Date(correctDate).toLocaleDateString('es-AR', formatOptions);
+      } else {
+        return formatDate.toLocaleDateString("es-AR", formatOptions)
+      }
+    },
+   
+    
+  }
 });
 app.engine("handlebars", hbs.engine);
 app.set("view engine", "handlebars");
@@ -30,7 +59,7 @@ app.use(
     saveUninitialized: true,
     store: MongoStore.create({
       mongoUrl:
-        "mongodb+srv://lorentp:jalnlorenza@cluster0.yyvof4b.mongodb.net/calfcare?retryWrites=true&w=majority&appName=Cluster0",
+          mongo_url,
       ttl: 9000,
     }),
   })
@@ -42,12 +71,16 @@ const userRouter = require("./routes/user.router.js");
 const sessionsRouter = require("./routes/sessions.router.js");
 const treatmentRouter = require("./routes/treatment.router.js")
 const calfRouter = require("./routes/calf.router.js")
+const corralRouter = require("./routes/corral.router.js")
 app.use("/", viewsRouter);
 app.use("/register", userRouter);
 app.use("/login", sessionsRouter);
 app.use("/calf", calfRouter)
 app.use("/treatment", treatmentRouter)
+app.use("/corral", corralRouter)
 
-const httpServer = app.listen(PORT, () => {
-  console.log(`Servidor testeando en el puerto ${PORT}`);
+const httpServer = app.listen(port, () => {
+  console.log(`Servidor testeando en el puerto ${port}`);
 });
+
+

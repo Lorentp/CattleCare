@@ -5,7 +5,16 @@ const calfSchema = new mongoose.Schema({
   name: { type: String, required: true },
   startDate: { type: Date, required: true },
   treatment: { type: String, required: true },
-  endDate: { type: Date, required:true },
+  medication: { type: String, required: true},
+  duration: { type: Number, required: true},
+  endDate: { type: Date, required: true },
+  corral: { type: String, required:true},
+  corralId: {type: String, required:true},
+  finished:{type:Boolean, default:false},
+  resetTreatment:{type:Boolean, default:false},
+  prevTreatment:{type:String },
+  prevEndDate:{type:Date},
+  
 });
 
 

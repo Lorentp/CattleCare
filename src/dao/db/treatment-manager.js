@@ -8,12 +8,6 @@ class TreatmentsManager {
         return;
       }
 
-      const treatmentExists = await TreatmentsModel.findOne({ title: title });
-      if (treatmentExists) {
-        console.log("El tratamiento ya existe");
-        return;
-      }
-
       const newTreatment = new TreatmentsModel({
         title,
         medication,
@@ -49,11 +43,12 @@ class TreatmentsManager {
     }
   }
 
-  async updateTreatment(id) {
+  async updateTreatment(id, updateTreatment) {
     try {
-      const updatedtreatment = await TreatmentsModel.findByIdAndUpdate(id);
+      const updatedtreatment = await TreatmentsModel.findByIdAndUpdate(id, updateTreatment);
       if (!updatedtreatment) {
         console.log("El tratamiento no existe");
+        return null
       }
 
       return updatedtreatment;

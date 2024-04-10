@@ -1,0 +1,3 @@
+QUE EN CASO DE QUE UN TERNERO YA HAYA SIDO TRATADO PREVIAMENTE, TIRE UNA ALARMA O ALERTA QUE EL MISMO YA FUE TRATADO
+//////
+Ternero que finaliza tratamiento, que este la opcion de dar de alta como que esta bien

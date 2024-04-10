@@ -1,0 +1,62 @@
+<div id="modifyCalfRealtime"></div>
+
+<div class="form-container update-and-delete">
+  <h1>Eliga el ternero que quiere actualizar</h1>
+  <form id="updateCalfFormData">
+    <input type="hidden" name="_method" value="PUT">
+    <div>
+    <p >Nombre del Ternero:</p>
+    <select id="nameUpdateCalf" name="name" required>
+      <option value="" disabled selected>Seleccionar Ternero</option>
+      {{#each calves}}
+        <option
+
+            value="{{this.name}}"
+            start-date="{{this.startDate}}"
+            treatment="{{this.treatment}}"
+            medication="{{this.medication}}"
+            duration="{{this.duration}}"
+            endDate="{{this.endDate}}"
+            _id="{{this._id}}"
+        
+        >{{this.name}}</option>
+      {{/each}}
+    </select>
+    </div>
+    <input type="hidden" name="_id" id="idInputCalf" readonly > 
+    <div>
+    <p >Fecha de Inicio del Tratamiento:</p>
+    <input type="date" id="startDateUpdateCalf" name="startDate" required />
+    </div>
+ 
+    <div>
+    <p >Tratamiento:</p>
+    
+    <select id="treatmentUpdateCalf" name="treatment" required>
+      <option value="" disabled selected>Seleccionar Tratamiento</option>
+      {{#each treatments}}
+        <option
+
+          value="{{this.title}}"
+          data-duration="{{this.duration}}"
+          medication="{{this.medication}}"
+        >{{this.title}}</option>
+      {{/each}}
+    </select>
+    </div>
+
+    <div id="infoTreatmentUpdateCalf">
+      <p>Tratar con:</p>
+      <input type="text" name="medication" id="medicationUpdateCalf" readonly required>
+      <p>Duración del tratamiento:</p>
+      <input type="number" name="duration" id="durationUpdateCalf" readonly required>
+      <p>Fecha de finalización del tratamiento:</p>
+      <input type="date" name="endDate" id="endDateUpdateCalf" readonly required>
+    </div>
+    
+    <input class="form-button" type="submit" value="Actualizar ternero"/>
+  </form>
+
+</div>
+
+
