@@ -7,7 +7,7 @@ const CalfManager = require("../dao/db/calf-manager.js");
 const calfManager = new CalfManager();
 const CorralManager = require("../dao/db/corral-manager.js");
 const corralManager = new CorralManager();
-
+const moment = require("moment-timezone")
 
 router.get("/", async (req, res) => {
   try {
@@ -24,15 +24,19 @@ router.get("/home", async (req, res) => {
       return
     }
     userId = req.session.user._id
-    const today = new Date()
-    today.setDate(today.getDate() - 1)
+    const now = moment.tz("America/Argentina/Buenos_Aires")
+    
+    const today = now.startOf("day")
     corrals = await corralManager.getCorrals(userId)
     calves = await calfManager.getActiveCalves(userId, today)
 
-    const yesterday = new Date()
-    yesterday.setDate(yesterday.getDate() - 2)
-    yesterdayCalves = await calfManager.getYesterdayCalves(userId, yesterday)
+    const yesterday = now.clone().subtract(1,"days")
+    
+
+    yesterdayCalves = await calfManager.getYesterdayCalves(userId, yesterday)  
+
     user = req.session.user 
+    
     res.render("home", {calves, user, corrals, yesterdayCalves});
   } catch (error) {
     console.log("Error de servidor", error);
@@ -47,9 +51,12 @@ router.get("/corral/:cid", async (req, res) => {
     }
     const userId = req.session.user._id
     const corral = req.params.cid
-    const today = new Date()
-    today.setDate(today.getDate() -1)
+
+    const now = moment.tz("America/Argentina/Buenos_Aires")
+    
+    const today = now.toDate()
     const calvesInCorral = await calfManager.getCalvesByCorral(userId, corral, today)
+
     const thisCorral = await corralManager.getCorralById(corral)
     res.render("corral", {calvesInCorral, thisCorral})
   } catch (error) {

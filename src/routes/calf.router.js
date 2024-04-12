@@ -1,20 +1,24 @@
 const express = require("express");
 const router = express.Router();
-
 const CalfManager = require("../dao/db/calf-manager.js");
 const calfManager = new CalfManager();
+const moment = require("moment-timezone")
 
 router.post("/add", async (req, res) => {
   try {
     const owner = req.session.user._id
     const {name, startDate, treatment, endDate, duration, medication, corral, corralId} = req.body      
+
+    const newStartDate = moment(startDate).add(0, 'hours').toDate();
+    const newEndDate = moment(endDate).add(0, 'hours').toDate();
+
     const newCalf = ({
       name: name,
-      startDate: startDate,
+      startDate: newStartDate,
       treatment: treatment,
       duration: duration,
       medication: medication,
-      endDate: endDate,
+      endDate: newEndDate,
       owner:owner,
       corral:corral,
       corralId: corralId,
@@ -54,10 +58,9 @@ router.post ("/resetTreatment", async (req,res) => {
   try {
     const {calfId} = req.body
     const calf = await calfManager.getCalfById(calfId)
-    const today = new Date()
-    today.setDate(today.getDate() - 1)
-    const endDate = new Date(today)
-    endDate.setDate(endDate.getDate() + calf.duration - 1)
+    const today = moment.tz("America/Argentina/Buenos_Aires");
+    const endDate = today.clone().add(calf.duration, "days");
+
     const newCalf = await calfManager.updateCalf(calfId, { startDate:today, endDate: endDate, resetTreatment: true})
     console.log(newCalf)
     res.redirect("/home")

@@ -1,5 +1,5 @@
 const express = require("express");
-
+const moment = require("moment-timezone")
 const app = express();
 
 require("./database.js");
@@ -25,24 +25,19 @@ const hbs = expressHandlebars.create({
   },
   helpers: {
     formatDate: function(date) {
-      const formatOptions =  {weekday:"long", day:"numeric", month:"long", year: "numeric"}
-      const formatDate = new Date(date)
-      const correctDate = formatDate.setDate(formatDate.getDate() + 1)
-      const today = new Date()
-      const tomorrow = new Date()
-      tomorrow.setDate(today.getDate() + 1)
-
-      if(formatDate.toDateString() === today.toDateString()){
-        return "Hoy, " + new Date(correctDate).toLocaleDateString('es-AR', formatOptions);
-      }
-      else if (formatDate.toDateString() === tomorrow.toDateString()) {
-        return "Mañana, " + new Date(correctDate).toLocaleDateString('es-AR', formatOptions);
+      
+      const today = moment().startOf('day');
+      const tomorrow = moment().startOf('day').add(1, 'day');
+      const formattedDate = moment(date).locale('es').format('LLLL');
+  
+      if(moment(date).isSame(today, 'day')) {
+        return "Hoy, " + moment(date).locale('es').format('dddd, D [de] MMMM [de] YYYY');
+      } else if (moment(date).isSame(tomorrow, 'day')) {
+        return "Mañana, " + moment(date).locale('es').format('dddd, D [de] MMMM [de] YYYY');
       } else {
-        return formatDate.toLocaleDateString("es-AR", formatOptions)
+        return moment(date).locale('es').format('dddd, D [de] MMMM [de] YYYY');
       }
-    },
-   
-    
+    }
   }
 });
 app.engine("handlebars", hbs.engine);

@@ -1,5 +1,5 @@
 const CalfModel = require("../models/calf.model.js");
-
+const moment = require("moment-timezone")
 
 class CalfManager {
   async addCalf({ name, treatment, startDate, owner, endDate, duration, medication, corral, corralId}) {
@@ -62,13 +62,16 @@ class CalfManager {
   }
 
   async getYesterdayCalves (userId, yesterday) {
-    try {
-      const startOfYesterday = new Date(yesterday)
-      startOfYesterday.setHours(0,0,0,0)
-      const endOfYesterday = new Date(yesterday)
-      endOfYesterday.setHours(23, 59,59, 999)
 
+    const startOfYesterday = new Date(yesterday)
+    startOfYesterday.setHours(0,0,0,0)
+    const endOfYesterday = new Date(yesterday)
+    endOfYesterday.setHours(23, 59,59, 999)
+    
+  
+    try {   
       const yesterdayCalves = await CalfModel.find({owner:userId, endDate:{ $gte: startOfYesterday, $lte:endOfYesterday}})
+      
       return yesterdayCalves
     } catch (error) {
       console.log(error)    
