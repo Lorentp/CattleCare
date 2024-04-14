@@ -224,7 +224,10 @@ class CalfManager {
   async markAsTreated(calfId) {
     try {
       const calf = await CalfModel.findById(calfId);
-      calf.lastDayTreated = moment.tz("America/Argentina/Buenos_Aires");
+      calf.lastDayTreated = moment.tz(
+        new Date(),
+        "America/Argentina/Buenos_Aires"
+      );
       const updatedCalf = await calf.save();
 
       return updatedCalf;

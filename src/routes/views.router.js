@@ -38,16 +38,19 @@ router.get("/terneros-en-tratamiento", async (req, res) => {
       res.redirect("/");
       return;
     }
-    userId = req.session.user._id;
+    const userId = req.session.user._id;
     const now = moment.tz("America/Argentina/Buenos_Aires");
 
     const today = now.toDate();
-    let corrals = await corralManager.getCorrals(userId);
-    let notTreatedcalves = await calfManager.getActiveCalvesNotTreated(
+    const corrals = await corralManager.getCorrals(userId);
+    const notTreatedcalves = await calfManager.getActiveCalvesNotTreated(
       userId,
       today
     );
-    let treatedCalves = await calfManager.getActiveCalvesTreated(userId, today);
+    const treatedCalves = await calfManager.getActiveCalvesTreated(
+      userId,
+      today
+    );
     let user = req.session.user;
     res.render("treating-calves", {
       treatedCalves,
