@@ -60,6 +60,7 @@
                 <p>Finalizo tratamiento el dia: {{{formatDate this.prevEndDate}}}</p>
             </div>
         {{/if}}
+        <h1>LastTreated: {{this.lastDayTreated}}</h1>
         <h2>Este ternero no fue tratado el dia de hoy ❌</h2>
         <form action="/calf/treated/{{this._id}}" method="POST">
             <button type="button" class="link-button mark-today-treated" data-id="{{this._id}}">Marcar como tratado hoy</button>
@@ -113,6 +114,7 @@
                 <p>Finalizo tratamiento el dia: {{{formatDate this.prevEndDate}}}</p>
             </div>
         {{/if}}
+        <h1>LastTreated: {{this.lastDayTreated}}</h1>
         <h2>Este ternero ya fue tratado el dia de hoy ✔</h2>
     </div>
 {{/each}}
