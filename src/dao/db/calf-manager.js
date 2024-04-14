@@ -2,7 +2,7 @@ const CalfModel = require("../models/calf.model.js");
 const moment = require("moment-timezone")
 
 class CalfManager {
-  async addCalf({ name, treatment, startDate, owner, endDate, duration, medication, corral, corralId}) {
+  async addCalf({ name, treatment, startDate, owner, endDate, duration, medication, corral, corralId, lastDayTreated}) {
     try {
       if (!name || !treatment || !startDate) {
         console.log("Todos los campos son obligatorios");
@@ -19,6 +19,7 @@ class CalfManager {
         calfExist.medication = medication;
         calfExist.corral = corral;
         calfExist.corralId = corralId;
+        calfExist.lastDayTreated = lastDayTreated
         await calfExist.save();
         console.log("Ternero actualizado:", calfExist);
       } else {
@@ -32,7 +33,8 @@ class CalfManager {
           medication,
           owner,
           corral,
-          corralId
+          corralId,
+          lastDayTreated
         });
         await newCalf.save();
         console.log("Nuevo ternero creado:", newCalf);
@@ -51,11 +53,37 @@ class CalfManager {
     }
   }
 
-  async getActiveCalves(userId, today) {
+  async getActiveCalvesNotTreated(userId, today) {
     try {
-      
+      const startOfToday = moment(today).startOf("day");
+
       const activeCalves = await CalfModel.find({owner:userId, endDate: {$gte:today}})
-      return activeCalves
+
+      const notTreatedToday = activeCalves.filter(calf => {
+        
+        return moment(calf.lastDayTreated).startOf("day").isBefore(startOfToday);
+    });
+
+      return notTreatedToday
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+
+  async getActiveCalvesTreated(userId, today) {
+    try {
+      const startOfToday = moment(today).startOf("day");
+
+      const activeCalves = await CalfModel.find({owner:userId, endDate: {$gte:today}})
+
+      const notTreatedToday = activeCalves.filter(calf => {
+        
+        return moment(calf.lastDayTreated).startOf("day").isSame(startOfToday);
+    });
+
+     
+    return notTreatedToday
     } catch (error) {
       console.log(error)
     }
@@ -87,6 +115,40 @@ class CalfManager {
     }
   }
 
+
+  async getCalvesByCorralNotTreated(userId, corral, today){
+    try {
+      const startOfToday = moment(today).startOf("day");
+
+      const activeCalves = await CalfModel.find({owner:userId, corralId: corral, endDate: {$gte:today}})
+
+      const calvesNotTreatedTodayInCorral = activeCalves.filter(calf => {
+        
+        return moment(calf.lastDayTreated).startOf("day").isBefore(startOfToday);
+    });
+
+      return calvesNotTreatedTodayInCorral
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  async getCalvesByCorralTreated(userId, corral, today){
+    try {
+      const startOfToday = moment(today).startOf("day");
+  
+        const activeCalves = await CalfModel.find({owner:userId, corralId: corral, endDate: {$gte:today}})
+  
+        const calvesTreatedTodayInCorral = activeCalves.filter(calf => {
+          
+        return moment(calf.lastDayTreated).startOf("day").isSame(startOfToday);
+      });
+  
+        return calvesTreatedTodayInCorral
+    } catch (error) {
+      console.log(error)
+    }
+  }
   async getCalfById(id) {
     try {
       const calf = await CalfModel.findById(id);
@@ -129,6 +191,19 @@ class CalfManager {
       return deletedCalf;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+
+  async markAsTreated(calfId) {
+    try {
+      const calf = await CalfModel.findById(calfId);
+      calf.lastDayTreated = moment();
+      const updatedCalf = await calf.save();
+
+    return updatedCalf;
+    } catch (error) {
+     console.log(error) 
     }
   }
 }

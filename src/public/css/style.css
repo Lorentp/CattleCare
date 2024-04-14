@@ -4,8 +4,21 @@ body {
 a {
     color: black;
 }
-h1{
+h1, h2, h3, h4, h5, h6{
     color: white;
+}
+
+.title {
+    background-color: gray;
+    padding: 0.5rem;
+    border-radius: 12px;
+    border: solid 2px ;
+    text-decoration: none;
+    margin-top: 2rem;
+    width: auto;
+}
+.title h2 {
+    color: black;
 }
 /*Login */
 
@@ -64,7 +77,10 @@ h1{
 nav{
     display: flex;
     justify-content: space-between;
+    flex-wrap: wrap;
 }
+
+
 /*Home*/
 
 .nav {
@@ -193,6 +209,7 @@ input, select{
 .active{
     background-color: red;
 }
+
 
 
 @media (min-width: 720px) {

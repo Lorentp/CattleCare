@@ -1,22 +1,26 @@
 {{>headerlogged}}
 
-<nav>
+<nav class="">
     <a href="/home" class="link-button">Volver al inicio</a>
     <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
     <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
-    <a href="/terneros-en-tratamiento"></a>
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
 </nav>
 
-<div>
-    <h1>Usted esta en el corral: {{thisCorral.corral}}</h1>
+<div class="main-treatment-container">
+    <div class="title"><h2>Ver animales por corral</h2></div>
+    <nav class="nav-corral">
+        {{#each corrals}}
+        <a href="/corral/{{this._id}}" class="link-button corral-button">{{this.corral}}</a>
+        {{/each}}
+    </nav>
 </div>
-{{#if calvesInCorral}}
-    {{#if calvesNotTreatedTodayInCorral}}
+
+{{#if notTreatedcalves}}
 <div class="title"> 
-<h2>Terneros en tratamiento que no fueron tratados hoy en este corral</h2>
+<h2>Terneros en tratamiento que no fueron tratados hoy</h2>
 </div>
-{{#each calvesNotTreatedTodayInCorral}}
+{{#each notTreatedcalves}}
     <div class="{{#if this.resetTreatment}}reset-treatment{{else}}treatment-container{{/if}}">
         <div>
             {{#if this.resetTreatment}}
@@ -58,7 +62,7 @@
         {{/if}}
         <h2>Este ternero no fue tratado el dia de hoy ❌</h2>
         <form action="/calf/treated/{{this._id}}" method="POST">
-            <button type="submit" class="link-button">Marcar como tratado hoy</button>
+            <button type="button" class="link-button mark-today-treated" data-id="{{this._id}}">Marcar como tratado hoy</button>
         </form>
     </div>
 {{/each}}
@@ -66,10 +70,10 @@
 {{/if}}
 
 <div class="title">
-<h2>Terneros en tratamiento que ya fueron tratados el dia de hoy en este corral</h2>
+<h2>Terneros en tratamiento que ya fueron tratados el dia de hoy</h2>
 </div>
 
-{{#each calvesTreatedTodayInCorral}}
+{{#each treatedCalves}}
     <div class="{{#if this.resetTreatment}}reset-treatment{{else}}treatment-container{{/if}}">
         <div>
             {{#if this.resetTreatment}}
@@ -112,6 +116,6 @@
         <h2>Este ternero ya fue tratado el dia de hoy ✔</h2>
     </div>
 {{/each}}
-{{else}}
-<h1>No se encontro ningun ternero en tratamiento en este corral</h1>
-{{/if}}
+
+   
+<script src="js/isTreatedForm.js"></script>

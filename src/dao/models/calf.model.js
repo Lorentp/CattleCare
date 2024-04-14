@@ -14,7 +14,7 @@ const calfSchema = new mongoose.Schema({
   resetTreatment:{type:Boolean, default:false},
   prevTreatment:{type:String },
   prevEndDate:{type:Date},
-  
+  lastDayTreated: { type: Date },
 });
 
 

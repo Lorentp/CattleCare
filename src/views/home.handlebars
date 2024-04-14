@@ -3,107 +3,10 @@
 <h1>Bienvenido al Establecimiento: {{this.user.farmname}}</h1>
 <nav class="">
     <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
+    <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
+    <a href="/terneros-en-tratamiento" class="link-button">Ver Terneros en tratamiento</a>
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
-    
 </nav>
-{{#if yesterdayCalves}}
-<h1>Terneros que su tratamiento finalizo ayer:</h1>
-{{#each yesterdayCalves}}
-    {{#unless this.finished}}
-    <div class="treatment-container">
-    <div>
-    <p class="calf">Nombre del ternero: {{this.name}}</p>
-    </div>
-    <div>
-    <p>Corral: {{this.corral}}</p>
-    </div>
-    <div>
-    <p class="treatment">        
-    Tratamiento: {{this.treatment}}
-    </p>
-    </div>
-    <div>
-    <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
-    </div>
-    <div>
-    <p>Dias totales de tratamiento: {{this.duration}}</p>
-    </div>
-    <div>
-    <p class="medication">        
-    Suministrar por dia: {{this.medication}}
-    </p>
-    </div>
-    <div>
-    <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
-    </div>
-    <div class="reset-button-container">
-      <form action="/calf/resetTreatment" method="POST">
-        <input type="hidden" name="calfId" value="{{this._id}}">
-        <input type="submit" class="reset-button" value="Reiniciar Tratamiento">
-      </form>
-      
-      <form action="/calf/finishTreatment" method="post">
-        <input type="hidden" name="calfId" value="{{this._id}}">
-        <input type="hidden" name="treatment" value="{{this.treatment}}">
-        <input type="hidden" name="endDate" value="{{this.endDate}}">
-        <input type="submit" class="reset-button" value="Finalizar Tratamiento">
-      </form>
-    </div>
-    
-</div>
-{{/unless}}
-{{/each}}
-{{/if}}
-<div class="main-treatment-container">
-    <div><h2>Ver por corral</h2></div>
-    <nav class="nav-corral">
-        {{#each corrals}}
-        <a href="/corral/{{this._id}}" class="link-button corral-button">{{this.corral}}</a>
-        {{/each}}
-    </nav>
 
-<h3>Terneros en tratamiento</h3>
-
-{{#each calves}}
-    <div class="{{#if this.resetTreatment}}reset-treatment{{else}}treatment-container{{/if}}">
-    <div>
-    {{#if this.resetTreatment}}
-    <h2>Atencion, este ternero no se recupero y esta repitiendo el tratamiento</h2>{{/if}}
-    <p class="calf">Nombre del ternero: {{this.name}}</p>
-    </div>
-    <div>
-    <p>Corral: {{this.corral}}</p>
-    </div>
-    <div>
-    <p class="treatment">        
-    Tratamiento: {{this.treatment}}
-    </p>
-    </div>
-    <div>
-    <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
-    </div>
-    <div>
-    <p>Dias totales de tratamiento: {{this.duration}}</p>
-    </div>
-    <div>
-    <p class="medication">        
-    Suministrar por dia: {{this.medication}}
-    </p>
-    </div>
-    <div>
-    <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
-    </div>
-
-    {{#if this.prevTreatment}}
-    <h2>ATENCIÓN!! Este ternero fue tratado previamente</h2>
-    <div>
-    <p>Fue tratado por: {{{this.prevTreatment}}}</p>
-    </div>
-    <div>
-    <p>Finalizo tratamiento el dia: {{{formatDate this.prevEndDate}}}</p>
-    </div>
-    {{/if}}
-</div>
-{{/each}}
 
 <script src="js/home.js"></script>
