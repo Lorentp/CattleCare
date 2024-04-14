@@ -1,7 +1,7 @@
 const express = require("express");
 const moment = require("moment-timezone");
 const app = express();
-
+const momentMiddleware = require("./middleware/moment.js");
 require("./database.js");
 
 //ENV
@@ -14,7 +14,7 @@ const mongo_url = process.env.MONGO_URL;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(express.static("./src/public"));
-
+app.use(momentMiddleware);
 //Handlebars
 const expressHandlebars = require("express-handlebars");
 const hbs = expressHandlebars.create({
