@@ -221,13 +221,10 @@ class CalfManager {
     }
   }
 
-  async markAsTreated(calfId) {
+  async markAsTreated(calfId, currentTime) {
     try {
       const calf = await CalfModel.findById(calfId);
-      calf.lastDayTreated = moment.tz(
-        new Date(),
-        "America/Argentina/Buenos_Aires"
-      );
+      calf.lastDayTreated = currentTime;
       const updatedCalf = await calf.save();
 
       return updatedCalf;

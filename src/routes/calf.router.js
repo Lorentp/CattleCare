@@ -106,7 +106,8 @@ router.post("/finishTreatment", async (req, res) => {
 router.post("/treated/:id", async (req, res) => {
   try {
     const calfId = req.params.id;
-    const treatedCalf = await calfManager.markAsTreated(calfId);
+    const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate();
+    const treatedCalf = await calfManager.markAsTreated(calfId, currentTime);
 
     const referer = req.headers.referer;
 
