@@ -23,17 +23,16 @@ router.get("/home", async (req, res) => {
       return;
     }
     userId = req.session.user._id;
-    
 
     user = req.session.user;
 
-    res.render("home", { user});
+    res.render("home", { user });
   } catch (error) {
     console.log("Error de servidor", error);
   }
 });
 
-router.get("/terneros-en-tratamiento", async(req,res) => {
+router.get("/terneros-en-tratamiento", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
@@ -41,18 +40,27 @@ router.get("/terneros-en-tratamiento", async(req,res) => {
     }
     userId = req.session.user._id;
     const now = moment.tz("America/Argentina/Buenos_Aires");
-    const today = now.startOf("day");
+
+    const today = now.toDate();
     let corrals = await corralManager.getCorrals(userId);
-    let notTreatedcalves = await calfManager.getActiveCalvesNotTreated(userId, today);   
+    let notTreatedcalves = await calfManager.getActiveCalvesNotTreated(
+      userId,
+      today
+    );
     let treatedCalves = await calfManager.getActiveCalvesTreated(userId, today);
     let user = req.session.user;
-    res.render("treating-calves", { treatedCalves, user, corrals, notTreatedcalves });
+    res.render("treating-calves", {
+      treatedCalves,
+      user,
+      corrals,
+      notTreatedcalves,
+    });
   } catch (error) {
     console.log("Error de servidor", error);
   }
-})
+});
 
-router.get("/terneros-por-terminar-tratamiento", async (req,res) => {
+router.get("/terneros-por-terminar-tratamiento", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
@@ -67,11 +75,11 @@ router.get("/terneros-por-terminar-tratamiento", async (req,res) => {
 
     user = req.session.user;
 
-    res.render("finishing-calves", { user,yesterdayCalves});
+    res.render("finishing-calves", { user, yesterdayCalves });
   } catch (error) {
     console.log("Error de servidor", error);
   }
-})
+});
 
 router.get("/corral/:cid", async (req, res) => {
   try {
@@ -90,19 +98,18 @@ router.get("/corral/:cid", async (req, res) => {
       corral,
       today
     );
-    const calvesNotTreatedTodayInCorral = await calfManager.getCalvesByCorralNotTreated(
-      userId,
-      corral,
-      today
-    );
-    const calvesTreatedTodayInCorral = await calfManager.getCalvesByCorralTreated(
-      userId,
-      corral,
-      today
-    );
+    const calvesNotTreatedTodayInCorral =
+      await calfManager.getCalvesByCorralNotTreated(userId, corral, today);
+    const calvesTreatedTodayInCorral =
+      await calfManager.getCalvesByCorralTreated(userId, corral, today);
 
     const thisCorral = await corralManager.getCorralById(corral);
-    res.render("corral", { calvesInCorral, thisCorral, calvesTreatedTodayInCorral, calvesNotTreatedTodayInCorral });
+    res.render("corral", {
+      calvesInCorral,
+      thisCorral,
+      calvesTreatedTodayInCorral,
+      calvesNotTreatedTodayInCorral,
+    });
   } catch (error) {
     console.log("Error de servidor", error);
   }
