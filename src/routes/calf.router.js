@@ -69,7 +69,7 @@ router.post("/resetTreatment", async (req, res) => {
     const calf = await calfManager.getCalfById(calfId);
     const today = moment.tz("America/Argentina/Buenos_Aires");
     const endDate = today.clone().add(calf.duration, "days");
-    const newEndDate = endDate.clone().substract(1, "days");
+    const newEndDate = endDate.clone().subtract(1, "days");
 
     const newCalf = await calfManager.updateCalf(calfId, {
       startDate: today,

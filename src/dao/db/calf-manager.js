@@ -70,7 +70,7 @@ class CalfManager {
 
       const activeCalves = await CalfModel.find({
         owner: userId,
-        endDate: { $gte: today },
+        endDate: { $gte: startOfToday },
       });
 
       const notTreatedToday = activeCalves.filter((calf) => {
@@ -91,7 +91,7 @@ class CalfManager {
 
       const activeCalves = await CalfModel.find({
         owner: userId,
-        endDate: { $gte: today },
+        endDate: { $gte: startOfToday },
       });
 
       const notTreatedToday = activeCalves.filter((calf) => {
@@ -124,10 +124,11 @@ class CalfManager {
 
   async getCalvesByCorral(userId, corral, today) {
     try {
+      const startOfToday = moment(today).startOf("day");
       const calvesInCorral = await CalfModel.find({
         owner: userId,
         corralId: corral,
-        endDate: { $gte: today },
+        endDate: { $gte: startOfToday },
       });
       return calvesInCorral;
     } catch (error) {
@@ -142,7 +143,7 @@ class CalfManager {
       const activeCalves = await CalfModel.find({
         owner: userId,
         corralId: corral,
-        endDate: { $gte: today },
+        endDate: { $gte: startOfToday },
       });
 
       const calvesNotTreatedTodayInCorral = activeCalves.filter((calf) => {
@@ -164,7 +165,7 @@ class CalfManager {
       const activeCalves = await CalfModel.find({
         owner: userId,
         corralId: corral,
-        endDate: { $gte: today },
+        endDate: { $gte: startOfToday },
       });
 
       const calvesTreatedTodayInCorral = activeCalves.filter((calf) => {
