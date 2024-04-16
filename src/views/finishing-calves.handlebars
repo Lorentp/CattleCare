@@ -6,39 +6,53 @@
     <a href="/terneros-en-tratamiento" class="link-button">Ver Terneros en tratamiento</a>
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
 </nav>
-{{#if yesterdayCalves}}
-<h1>Terneros que su tratamiento finalizo ayer:</h1>
-{{#each yesterdayCalves}}
+{{#if yesterdayCalvesWithContext}}
+<h1>Terneros que su tratamiento finalizó ayer:</h1>
+{{#each yesterdayCalvesWithContext}}
     {{#unless this.finished}}
     <div class="treatment-container">
     <div>
-    <p class="calf">Nombre del ternero: {{this.name}}</p>
+    <p class="calf">Nombre del ternero: {{this._doc.name}}</p>
     </div>
     <div>
-    <p>Corral: {{this.corral}}</p>
+    <p>Corral: {{this._doc.corral}}</p>
     </div>
     <div>
     <p class="treatment">        
-    Tratamiento: {{this.treatment}}
+    Tratamiento: {{this._doc.treatment}}
     </p>
     </div>
     <div>
-    <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
+    <p>Empieza tratamiento el día: {{formatDate this._doc.startDate}}</p>
     </div>
     <div>
-    <p>Dias totales de tratamiento: {{this.duration}}</p>
+    <p>Dias totales de tratamiento: {{this._doc.duration}}</p>
     </div>
     <div>
     <p class="medication">        
-    Suministrar por dia: {{this.medication}}
+    Suministrar por día: {{this._doc.medication}}
     </p>
     </div>
     <div>
-    <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
+    <p>Finaliza tratamiento el día: {{{formatDate this._doc.endDate}}}</p>
     </div>
     <div class="reset-button-container">
       <form action="/calf/resetTreatment" method="POST">
-        <input type="hidden" name="calfId" value="{{this._id}}">
+       <h3>EN CASO DE QUERER REINICIAR EL TRATAMIENTO, SELECCIONE CON CUAL QUIERE CONTINUAR</h3>
+        <select id="resetTreatmentCalf" name="newTreatment" required>
+        <option value="" disabled selected>Tratamientos</option>
+        {{#each treatments}}
+          <option
+            value="{{this.title}}"
+            medication="{{this.medication}}"
+            data-duration="{{this.duration}}"
+          >{{this.title}}</option>
+        {{/each}}
+        </select>
+        <input type="hidden" id="newMedicationInput" name="newMedication" value="">
+        <input type="hidden" id="newDurationInput" name="newDuration" value="">
+      
+        <input type="hidden" name="calfId" value="{{this._doc._id}}">
         <button type="button" class="link-button reset-button">Reiniciar tratamiento</button>
       </form>
       
@@ -60,3 +74,4 @@
 
 
 <script src="/js/finishingCalves.js"></script>
+<script src="/js/resetTreatment.js"></script>

@@ -2,14 +2,14 @@
 
 <nav>
     <a href="/home" class="link-button">Volver al inicio</a>
-    <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
+    <a href="/agregar" class="link-button">Agregar ternero a tratamiento</a>
     <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
-    <a href="/terneros-en-tratamiento"></a>
+    <a href="/terneros-en-tratamiento">Ver terneros en tratamiento</a>
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
 </nav>
 
 <div>
-    <h1>Usted esta en el corral: {{thisCorral.corral}}</h1>
+    <h1>Usted está en el corral: {{thisCorral.corral}}</h1>
 </div>
 {{#if calvesInCorral}}
     {{#if calvesNotTreatedTodayInCorral}}
@@ -20,7 +20,7 @@
     <div class="{{#if this.resetTreatment}}reset-treatment{{else}}treatment-container{{/if}}">
         <div>
             {{#if this.resetTreatment}}
-                <h2>Atencion, este ternero no se recupero y esta repitiendo el tratamiento</h2>
+                <h2>Atención, este ternero no se recuperó y está repitiendo el tratamiento</h2>
             {{/if}}
             <p class="calf">Nombre del ternero: {{this.name}}</p>
         </div>
@@ -33,18 +33,18 @@
             </p>
         </div>
         <div>
-            <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
+            <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
         </div>
         <div>
-            <p>Dias totales de tratamiento: {{this.duration}}</p>
+            <p>Días totales de tratamiento: {{this.duration}}</p>
         </div>
         <div>
             <p class="medication">        
-                Suministrar por dia: {{this.medication}}
+                Suministrar por día: {{this.medication}}
             </p>
         </div>
         <div>
-            <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
+            <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
         </div>
 
         {{#if this.prevTreatment}}
@@ -53,10 +53,10 @@
                 <p>Fue tratado por: {{{this.prevTreatment}}}</p>
             </div>
             <div>
-                <p>Finalizo tratamiento el dia: {{{formatDate this.prevEndDate}}}</p>
+                <p>Finalizó tratamiento el día: {{{formatDate this.prevEndDate}}}</p>
             </div>
         {{/if}}
-        <h2>Este ternero no fue tratado el dia de hoy ❌</h2>
+        <h2>Este ternero no fue tratado el día de hoy ❌</h2>
         <form action="/calf/treated/{{this._id}}" method="POST">
             <button type="button" class="link-button mark-today-treated" data-id="{{this._id}}">Marcar como tratado hoy</button>
         </form>
@@ -66,14 +66,14 @@
 {{/if}}
 
 <div class="title">
-<h2>Terneros en tratamiento que ya fueron tratados el dia de hoy en este corral</h2>
+<h2>Terneros en tratamiento que ya fueron tratados el día de hoy en este corral</h2>
 </div>
 
 {{#each calvesTreatedTodayInCorral}}
     <div class="{{#if this.resetTreatment}}reset-treatment{{else}}treatment-container{{/if}}">
         <div>
             {{#if this.resetTreatment}}
-                <h2>Atencion, este ternero no se recupero y esta repitiendo el tratamiento</h2>
+                <h2>Atención, este ternero no se recuperó y está repitiendo el tratamiento</h2>
             {{/if}}
             <p class="calf">Nombre del ternero: {{this.name}}</p>
         </div>
@@ -86,18 +86,18 @@
             </p>
         </div>
         <div>
-            <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
+            <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
         </div>
         <div>
-            <p>Dias totales de tratamiento: {{this.duration}}</p>
+            <p>Días totales de tratamiento: {{this.duration}}</p>
         </div>
         <div>
             <p class="medication">        
-                Suministrar por dia: {{this.medication}}
+                Suministrar por día: {{this.medication}}
             </p>
         </div>
         <div>
-            <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
+            <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
         </div>
 
         {{#if this.prevTreatment}}
@@ -106,14 +106,14 @@
                 <p>Fue tratado por: {{{this.prevTreatment}}}</p>
             </div>
             <div>
-                <p>Finalizo tratamiento el dia: {{{formatDate this.prevEndDate}}}</p>
+                <p>Finalizó tratamiento el día: {{{formatDate this.prevEndDate}}}</p>
             </div>
         {{/if}}
-        <h2>Este ternero ya fue tratado el dia de hoy ✔</h2>
+        <h2>Este ternero ya fue tratado el día de hoy ✔</h2>
     </div>
 {{/each}}
 {{else}}
-<h1>No se encontro ningun ternero en tratamiento en este corral</h1>
+<h1>No se encontró ningún ternero en tratamiento en este corral</h1>
 {{/if}}
 
 <script src="../js/isTreatedForm.js"></script>

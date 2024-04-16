@@ -1,23 +1,26 @@
 <div class="form-container">
-  <h1>Eliminar Tratamiento</h1>
+  <h1>Eliminar tratamiento</h1>
   <form id="deleteTreatmentFormSubmit">
-  <input type="hidden" id="deleteTreatmentFormMethod" name="_method" value="DELETE">
-   <div>
-    <p >Nombre del Tratamiento:</p>
-    <select id="nameDeleteTreatment" name="title" required>
-      <option value="" disabled selected>Seleccionar Tratamiento</option>
-      {{#each treatments}}
-        <option
-
+    <input
+      type="hidden"
+      id="deleteTreatmentFormMethod"
+      name="_method"
+      value="DELETE"
+    />
+    <div>
+      <p>Nombre del tratamiento:</p>
+      <select id="nameDeleteTreatment" name="title" required>
+        <option value="" disabled selected>Seleccionar tratamiento</option>
+        {{#each treatments}}
+          <option
             value="{{this.title}}"
             _id="{{this._id}}"
-     
-        >{{this.title}}</option>
-      {{/each}}
-    </select>
-    <input type="hidden" name="=_id" id="idInputDeleteTreatment">
+          >{{this.title}}</option>
+        {{/each}}
+      </select>
+      <input type="hidden" name="=_id" id="idInputDeleteTreatment" />
     </div>
 
-    <input class="form-button" type="submit" value="Eliminar Tratamiento" />
+    <input class="form-button" type="submit" value="Eliminar tratamiento" />
   </form>
 </div>

@@ -2,56 +2,57 @@
   <h1>Nuevo Ternero y Tratamiento</h1>
   <form action="/calf/add" method="post">
     <div>
-    <p >Nombre del Ternero:</p>
-    <input type="text" id="name" name="name" required/>
+      <p>Nombre del ternero:</p>
+      <input type="text" id="name" name="name" placeholder="Ej: A011" />
     </div>
 
     <div>
-        <p>Corral:</p>
+      <p>Corral:</p>
       <select name="corral" id="corral" required>
         <option value="" disabled selected>Elegir corral</option>
         {{#each corrals}}
-        <option value="{{this.corral}}" corralId="{{this._id}}">
-          {{this.corral}}
-        </option>
+          <option value="{{this.corral}}" corralId="{{this._id}}">
+            {{this.corral}}
+          </option>
         {{/each}}
       </select>
-      <input type="hidden" name="corralId" id="corralIdInput">
+      <input type="hidden" name="corralId" id="corralIdInput" />
     </div>
-    
-    
-    <div>
-    <p >Fecha de Inicio del Tratamiento:</p>
-    <input type="date" id="startDate" name="startDate" required />
-    </div>
- 
-    <div>
-    <p >Tratamiento:</p>
-    
-    <select id="treatment" name="treatment" required>
-      <option value="" disabled selected>Seleccionar Tratamiento</option>
-      {{#each treatments}}
-        <option
 
-          value="{{this.title}}"
-          data-duration="{{this.duration}}"
-          medication="{{this.medication}}"
-        >{{this.title}}</option>
-      {{/each}}
-    </select>
+    <div>
+      <p>Fecha de inicio del tratamiento:</p>
+      <input type="date" id="startDate" name="startDate" required />
+    </div>
+
+    <div>
+      <p>Tratamiento:</p>
+
+      <select id="treatment" name="treatment" required>
+        <option value="" disabled selected>Seleccionar Tratamiento</option>
+        {{#each treatments}}
+          <option
+            value="{{this.title}}"
+            data-duration="{{this.duration}}"
+            medication="{{this.medication}}"
+          >{{this.title}}</option>
+        {{/each}}
+      </select>
     </div>
 
     <div id="infoTreatment">
       <p>Tratar con:</p>
-      <input type="text" name="medication" id="medication" readonly>
+      <input type="text" name="medication" id="medication" readonly />
       <p>Duración del tratamiento:</p>
-      <input type="number" name="duration" id="duration" readonly>
+      <input type="number" name="duration" id="duration" readonly />
       <p>Fecha de finalización del tratamiento:</p>
-      <input type="date" name="endDate" id="endDate" readonly>
+      <input type="date" name="endDate" id="endDate" readonly />
     </div>
-    
-    <input class="form-button" type="submit" value="Guardar tratamiento y ternero" />
+
+    <input
+      class="form-button"
+      type="submit"
+      value="Guardar tratamiento y ternero"
+    />
   </form>
 
 </div>
-

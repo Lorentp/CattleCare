@@ -73,12 +73,16 @@ router.get("/terneros-por-terminar-tratamiento", async (req, res) => {
     const now = moment.tz("America/Argentina/Buenos_Aires");
 
     const yesterday = now.clone().subtract(1, "days");
-
-    yesterdayCalves = await calfManager.getYesterdayCalves(userId, yesterday);
-
+    const treatments = await treatmentManager.getTreatments(userId);
+    const yesterdayCalves = await calfManager.getYesterdayCalves(userId, yesterday);
+    const yesterdayCalvesWithContext = yesterdayCalves.map(calve => ({
+      ...calve,
+      treatments: treatments
+    }));
+    
     user = req.session.user;
-
-    res.render("finishing-calves", { user, yesterdayCalves });
+    
+    res.render("finishing-calves", { user, yesterdayCalvesWithContext });
   } catch (error) {
     console.log("Error de servidor", error);
   }

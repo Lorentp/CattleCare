@@ -1,3 +1,10 @@
-QUE EN CASO DE QUE UN TERNERO YA HAYA SIDO TRATADO PREVIAMENTE, TIRE UNA ALARMA O ALERTA QUE EL MISMO YA FUE TRATADO
-//////
-Ternero que finaliza tratamiento, que este la opcion de dar de alta como que esta bien
+QUE EN CASO DE QUE UN TERNERO YA HAYA SIDO TRATADO PREVIAMENTE, TIRE UNA ALARMA O ALERTA QUE EL MISMO YA FUE TRATADO✅
+Ternero que finaliza tratamiento, que este la opcion de dar de alta como que esta bien ✅
+
+
+Agregar seccion de tareas semanales con protocolos sobre que hacer cada dia de la semana 
+
+
+Agregar seccion donde se cargan todos los terneros y se les maneja el desleche en la misma
+En esta seccion se carga el ternero a nacimiento y se le pone el peso del mismo, el desleche es un select de verano o invierno
+Y al largar terneros que se eliga la fecha de largado y se le coloque el peso neuvo del mismo

@@ -23,7 +23,7 @@ router.post("/delete:cid", async (req,res) => {
   try {
     const deletedCorral = await corralManager.deleteCorral(req.params.cid)
     console.log(deletedCorral)
-    res.redirect("/home")
+    res.redirect("/agregar")
   } catch (error) {
     console.log(error)
   }

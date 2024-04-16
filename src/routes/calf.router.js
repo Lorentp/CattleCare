@@ -35,7 +35,7 @@ router.post("/add", async (req, res) => {
     };
 
     await calfManager.addCalf(newCalf);
-    res.redirect("/home");
+    res.redirect("/terneros-en-tratamiento");
   } catch (error) {
     res.json({ message: "Error, intentelo nuevamente" });
     console.log(error);
@@ -46,7 +46,7 @@ router.post("/update:cid", async (req, res) => {
   try {
     const newCalf = await calfManager.updateCalf(req.params.cid, req.body);
     console.log(newCalf);
-    res.redirect("/home");
+    res.redirect("/terneros-en-tratamiento");
   } catch (error) {
     res.json({ message: "Error" });
     console.log(error);
@@ -57,7 +57,7 @@ router.post("/delete:cid", async (req, res) => {
   try {
     const deletedCalf = await calfManager.deleteCalf(req.params.cid);
     console.log(deletedCalf);
-    res.redirect("/home");
+    res.redirect("/agregar");
   } catch (error) {
     console.log(error);
   }
@@ -65,19 +65,22 @@ router.post("/delete:cid", async (req, res) => {
 
 router.post("/resetTreatment", async (req, res) => {
   try {
-    const { calfId } = req.body;
+    const { calfId, newTreatment, newMedication, newDuration } = req.body;
     const calf = await calfManager.getCalfById(calfId);
     const today = moment.tz("America/Argentina/Buenos_Aires");
-    const endDate = today.clone().add(calf.duration, "days");
+    const endDate = today.clone().add(newDuration, "days");
     const newEndDate = endDate.clone().subtract(1, "days");
 
     const newCalf = await calfManager.updateCalf(calfId, {
       startDate: today,
       endDate: newEndDate,
       resetTreatment: true,
+      medication: newMedication,
+      duration: newDuration,
+      treatment: newTreatment
     });
     console.log(newCalf);
-    res.redirect("/terneros-en-tratamiento");
+    res.redirect("/terneros-por-terminar-tratamiento");
   } catch (error) {
     console.log(error);
   }
@@ -98,7 +101,7 @@ router.post("/finishTreatment", async (req, res) => {
       { new: true }
     );
     console.log(updatedCalf);
-    res.redirect("/home");
+    res.redirect("/terneros-por-terminar-tratamiento");
   } catch (error) {
     console.log(error);
   }

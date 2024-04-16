@@ -2,8 +2,9 @@
 
 <nav>
     <a href="/home" class="link-button">Volver al inicio</a>
-    <a href="/agregar" class="link-button">Agregar Ternero a tratamiento</a>
-
+    <a href="/agregar" class="link-button">Agregar ternero a tratamiento</a>
+    <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
+    <a href="/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
 </nav>
 
 <div class="main-treatment-container">
@@ -22,10 +23,10 @@
     </p>
     </div>
     <div>
-    <p>Empieza tratamiento el dia: {{formatDate this.startDate}}</p>
+    <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
     </div>
     <div>
-    <p>Dias totales de tratamiento: {{this.duration}}</p>
+    <p>Días totales de tratamiento: {{this.duration}}</p>
     </div>
     <div>
     <p class="medication">        
@@ -33,7 +34,7 @@
     </p>
     </div>
     <div>
-    <p>Finaliza tratamiento el dia: {{{formatDate this.endDate}}}</p>
+    <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
     </div>
     {{#if this.finished}}
     <p>Tratamiento finalizado</p>
