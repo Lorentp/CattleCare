@@ -114,6 +114,7 @@ class CalfManager {
       const yesterdayCalves = await CalfModel.find({
         owner: userId,
         endDate: { $gte: startOfYesterday, $lte: endOfYesterday },
+        finished: false,
       });
 
       return yesterdayCalves;

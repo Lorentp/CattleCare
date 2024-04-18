@@ -57,9 +57,9 @@
       </form>
       
       <form action="/calf/finishTreatment" method="post">
-        <input type="hidden" name="calfId" value="{{this._id}}">
-        <input type="hidden" name="treatment" value="{{this.treatment}}">
-        <input type="hidden" name="endDate" value="{{this.endDate}}">
+        <input type="hidden" name="calfId" value="{{this._doc._id}}">
+        <input type="hidden" name="treatment" value="{{this._doc.treatment}}">
+        <input type="hidden" name="endDate" value="{{this._doc.endDate}}">
         <button type="button" class="link-button finish-button">Finalizar tratamiento</button> 
       </form>
     </div>
