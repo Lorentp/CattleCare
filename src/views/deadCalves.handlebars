@@ -1,0 +1,29 @@
+{{>headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/agregar" class="link-button">Agregar ternero a tratamiento</a>
+    <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
+    <a href="/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
+    <a href="/terneros" class="link-button">Todos los terneros</a>
+</nav>
+
+<div class="title">
+<h2>Todos los ternenos que han muerto o han sido dados de baja:</h2>
+</div>
+    
+<div>
+{{#each deadCalves}}
+    <div class="treated-container mark-dead-calf">
+        <div>
+            <p class="calf">Nombre del ternero: {{this.name}}</p>
+        </div>
+        <div>
+            <p class="treatment">        
+            Tratamiento: {{this.treatment}}
+            </p>   
+            <p>Este ternero murio el día: {{{formatDate this.timeDate}}}</p>
+        </div>
+    </div>
+{{/each}}
+</div>

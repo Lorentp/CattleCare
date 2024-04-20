@@ -57,7 +57,7 @@ class CalfManager {
 
   async getCalves(userId) {
     try {
-      const calves = await CalfModel.find({ owner: userId });
+      const calves = await CalfModel.find({ owner: userId, isDead: { $in: [false, undefined] }});
       return calves;
     } catch (error) {
       console.log(error);
@@ -71,6 +71,7 @@ class CalfManager {
       const activeCalves = await CalfModel.find({
         owner: userId,
         endDate: { $gte: startOfToday },
+        isDead: { $in: [false, undefined] }
       });
 
       const notTreatedToday = activeCalves.filter((calf) => {
@@ -92,6 +93,7 @@ class CalfManager {
       const activeCalves = await CalfModel.find({
         owner: userId,
         endDate: { $gte: startOfToday },
+        isDead: { $in: [false, undefined] }
       });
 
       const notTreatedToday = activeCalves.filter((calf) => {
@@ -115,6 +117,7 @@ class CalfManager {
         owner: userId,
         endDate: { $gte: startOfYesterday, $lte: endOfYesterday },
         finished: false,
+        isDead: { $in: [false, undefined] }
       });
 
       return yesterdayCalves;
@@ -130,6 +133,7 @@ class CalfManager {
         owner: userId,
         corralId: corral,
         endDate: { $gte: startOfToday },
+        isDead: { $in: [false, undefined] }
       });
       return calvesInCorral;
     } catch (error) {
@@ -145,6 +149,7 @@ class CalfManager {
         owner: userId,
         corralId: corral,
         endDate: { $gte: startOfToday },
+        isDead: { $in: [false, undefined] }
       });
 
       const calvesNotTreatedTodayInCorral = activeCalves.filter((calf) => {
@@ -167,6 +172,7 @@ class CalfManager {
         owner: userId,
         corralId: corral,
         endDate: { $gte: startOfToday },
+        isDead: { $in: [false, undefined] }
       });
 
       const calvesTreatedTodayInCorral = activeCalves.filter((calf) => {
@@ -174,6 +180,15 @@ class CalfManager {
       });
 
       return calvesTreatedTodayInCorral;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getDeadCalf(userId){
+    try {
+      const calves = await CalfModel.find({ owner: userId, isDead: true });
+      return calves;
     } catch (error) {
       console.log(error);
     }
@@ -232,6 +247,18 @@ class CalfManager {
       return updatedCalf;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async calfDie(calfId, currentTime) { 
+    try {
+      const calf = await CalfModel.findById(calfId)
+      calf.isDead = true
+      calf.timeDead = currentTime
+      const deadCalf = await calf.save()
+      return deadCalf
+    } catch (error) {
+      console.log(error)
     }
   }
 }

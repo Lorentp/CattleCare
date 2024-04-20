@@ -10,7 +10,9 @@ const moment = require("moment-timezone");
 
 router.get("/", async (req, res) => {
   try {
-    res.render("login");
+    const errors = req.session.errors || {}
+    delete req.session.errors
+    res.render("login", {errors});
   } catch (error) {
     console.log("Error del servidor", error);
   }
@@ -132,6 +134,21 @@ router.get("/terneros", async (req, res) => {
     let calves = await calfManager.getCalves(userId);
 
     res.render("calves", { calves });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/terneros-muertos", async (req, res) => {
+  try {
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+    userId = req.session.user._id;
+    let deadCalves = await calfManager.getDeadCalf(userId);
+
+    res.render("deadCalves", { deadCalves });
   } catch (error) {
     console.log(error);
   }

@@ -62,6 +62,10 @@
         <input type="hidden" name="endDate" value="{{this._doc.endDate}}">
         <button type="button" class="link-button finish-button">Finalizar tratamiento</button> 
       </form>
+
+      <form action="/calf/dead/{{this._doc._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._doc._id}}">Dar ternero de baja</button>
+        </form>
     </div>
     
 </div>
@@ -75,3 +79,4 @@
 
 <script src="/js/finishingCalves.js"></script>
 <script src="/js/resetTreatment.js"></script>
+<script src="/js/markAsDead.js"></script>

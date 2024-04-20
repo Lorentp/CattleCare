@@ -9,24 +9,15 @@ router.post("/", async (req, res) => {
   const { username, password } = req.body;
   try {
 
-    if(!username && !password){
-      req.session.errors = {username:"Por favor ingrese un usuario", password:"Por favor ingrese una contraseña"} 
-      return res.redirect("/")
-    }
-    if(!username){
-      req.session.error = {username:"Por favor ingrese un usuario"}
-    }
-
-    if(!password){
-      req.session.error = {password:"Por favor ingrese un usuario"}
-      return res.redirect("/")
-    }
-
     const user = await UserModel.findOne({ username: username });
     
-    if(user.username !== username || user.password !== password){
-      req.session.errors = { username: "El usuario o la contraseña son incorrectos", password:"El usuario o la contraseña son incorrectos"}
-    return res.redirect("/")
+    if(!user){
+      req.session.errors = { username: "Error, el usuario no existe"}
+      return res.redirect("/")
+    }
+    if(user.password !== password){
+      req.session.errors = {password:"Error, contraseña incorrecta"}
+      return res.redirect("/")
     }
     
 

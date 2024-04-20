@@ -48,6 +48,12 @@ h1, h2, h3, h4, h5, h6{
     background-color: orange;
 }
 
+.input-error{
+    margin-top: 10px;
+    color: red;
+    font-size: 24px;
+}
+
 
 /*Header*/
 .header-div {
@@ -139,6 +145,10 @@ nav{
     font-size: 20px;
 }
 
+.mark-dead-calf {
+    background-color: rgb(255, 78, 78);
+}
+
 .reset-button {
     margin-top: 2rem;
     margin-bottom: 2rem;
@@ -210,6 +220,13 @@ input, select{
     background-color: red;
 }
 
+.title-calves{
+    display: flex;
+    justify-content: space-between;
+}
+.dead-calves-link{
+    background-color: rgb(252, 82, 82);
+}
 
 
 @media (min-width: 720px) {

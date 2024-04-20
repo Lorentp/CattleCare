@@ -4,7 +4,7 @@
     <a href="/home" class="link-button">Volver al inicio</a>
     <a href="/agregar" class="link-button">Agregar ternero a tratamiento</a>
     <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
-    <a href="/terneros-en-tratamiento">Ver terneros en tratamiento</a>
+    <a href="/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
 </nav>
 
@@ -60,6 +60,9 @@
         <form action="/calf/treated/{{this._id}}" method="POST">
             <button type="button" class="link-button mark-today-treated" data-id="{{this._id}}">Marcar como tratado hoy</button>
         </form>
+        <form action="/calf/dead/{{this._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+        </form>
     </div>
 {{/each}}
 
@@ -110,6 +113,9 @@
             </div>
         {{/if}}
         <h2>Este ternero ya fue tratado el día de hoy ✔</h2>
+        <form action="/calf/dead/{{this._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+        </form>
     </div>
 {{/each}}
 {{else}}
@@ -117,3 +123,4 @@
 {{/if}}
 
 <script src="../js/isTreatedForm.js"></script>
+<script src="../js/markAsDead.js"></script>

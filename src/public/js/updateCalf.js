@@ -6,6 +6,8 @@ updateCalfFormData.addEventListener("submit", function(e) {
     let formData = {
     _id: document.getElementById("idInputCalf").value, 
     name: document.getElementById("nameUpdateCalf").value,
+    corral:document.getElementById("corralUpdateCalf").value,
+    corralId: document.getElementById("idInputCorralCalf").value,
     startDate: document.getElementById("startDateUpdateCalf").value,
     treatment: document.getElementById("treatmentUpdateCalf").value,
     medication: document.getElementById("medicationUpdateCalf").value,

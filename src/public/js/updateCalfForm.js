@@ -8,6 +8,8 @@ const durationInputUpdateCalf = document.getElementById("durationUpdateCalf")
 const endDateInputUpdateCalf = document.getElementById("endDateUpdateCalf")
 const medicationInputUpdateCalf = document.getElementById("medicationUpdateCalf")
 const idInputCalf = document.getElementById("idInputCalf")
+const corralUpdateCalf = document.getElementById("corralUpdateCalf")
+const idInputCorralCalf = document.getElementById("idInputCorralCalf")
 
 
 
@@ -23,13 +25,24 @@ function updateFormInfo() {
     const startDate = selectedOption.getAttribute("start-date")
     const treatment = selectedOption.getAttribute("treatment")
     const _id = selectedOption.getAttribute("_id")
+    const corral = selectedOption.getAttribute("corral")
+    const corralId = selectedOption.getAttribute("corralId")
     const startDateFormatted =  new Date(startDate)
 
     startDateInputUpdateCalf.value = startDateFormatted.toISOString().slice(0, 10)
     treatmentUpdateCalf.value = treatment
     idInputCalf.value = _id
+    corralUpdateCalf.value = corral
+    idInputCorralCalf.value = corralId
     
     updateTreatmentInfoUpdate();
+}
+
+function updateCorralInfoUpdate(){
+    const selectedOption = corralUpdateCalf[corralUpdateCalf.selectedIndex]
+    const corralId = selectedOption.getAttribute("corralId")
+    console.log(corralId)
+    idInputCorralCalf.value = corralId
 }
 
 function updateTreatmentInfoUpdate() {
@@ -57,3 +70,4 @@ function updateTreatmentInfoUpdate() {
 nameInputUpdateCalf.addEventListener("change", updateFormInfo)
 treatmentUpdateCalf.addEventListener("change", updateTreatmentInfoUpdate);
 startDateInputUpdateCalf.addEventListener("change", updateTreatmentInfoUpdate);
+corralUpdateCalf.addEventListener("change", updateCorralInfoUpdate)

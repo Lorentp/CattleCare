@@ -1,10 +1,13 @@
 QUE EN CASO DE QUE UN TERNERO YA HAYA SIDO TRATADO PREVIAMENTE, TIRE UNA ALARMA O ALERTA QUE EL MISMO YA FUE TRATADO✅
 Ternero que finaliza tratamiento, que este la opcion de dar de alta como que esta bien ✅
+Agregar opcion de modificar el corral en el que esta un animal cuando lo actualizas ✅
+Agregar botones para dar de baja ternero en caso de que se muera ✅
+Arreglar el boton de ver terneros en los corrales ✅
+
+
 
 
 Agregar seccion de tareas semanales con protocolos sobre que hacer cada dia de la semana 
-
-
 Agregar seccion donde se cargan todos los terneros y se les maneja el desleche en la misma
 En esta seccion se carga el ternero a nacimiento y se le pone el peso del mismo, el desleche es un select de verano o invierno
 Y al largar terneros que se eliga la fecha de largado y se le coloque el peso neuvo del mismo

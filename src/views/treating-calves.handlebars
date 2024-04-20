@@ -65,6 +65,10 @@
         <form action="/calf/treated/{{this._id}}" method="POST">
             <button type="button" class="link-button mark-today-treated" data-id="{{this._id}}">Marcar como tratado hoy</button>
         </form>
+
+        <form action="/calf/dead/{{this._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+        </form>
     </div>
 {{/each}}
 
@@ -116,8 +120,12 @@
         {{/if}}
         
         <h2>Este ternero ya fue tratado el día de hoy ✔</h2>
+        <form action="/calf/dead/{{this._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+        </form>
     </div>
 {{/each}}
 
    
 <script src="js/isTreatedForm.js"></script>
+<script src="js/markAsDead.js"></script>

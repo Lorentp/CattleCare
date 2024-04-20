@@ -128,4 +128,28 @@ router.post("/treated/:id", async (req, res) => {
     console.log(error);
   }
 });
+
+router.post("/dead/:id", async (req,res) => {
+  try {
+    const calfId =  req.params.id;
+    const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate()
+    
+    const deadCalf = await calfManager.calfDie(calfId, currentTime)
+    const referer = req.headers.referer;
+
+    if (referer && referer.includes("/terneros-en-tratamiento")) {
+      res.redirect("/terneros-en-tratamiento");
+    } else if (referer && referer.includes("/corral/")) {
+      const dynamicRouteId = referer.split("/").pop();
+      res.redirect(`/corral/${dynamicRouteId}`);
+    } else if(referer && referer.includes("/terneros-por-terminar-tratamiento")) {
+      res.redirect("/terneros-por-terminar-tratamiento");
+    } else {
+      res.redirect("/home");
+    }
+    return deadCalf;
+  } catch (error) {
+    console.log(error);
+  }
+})
 module.exports = router;

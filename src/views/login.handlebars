@@ -4,13 +4,13 @@
 <div class="login-container">
   <form action="/login" method="POST">
     <div>
-    <span class="input-error">{{errors.email}}</span>
       <input class="input" type="text" placeholder="Usuario" name="username" required/>
+      <span class="input-error">{{#if errors.username}}{{errors.username}}{{/if}}</span>
     </div>
 
     <div>
-      <span class="input-error">{{errors.password}}</span>
       <input class="input" autocomplete="off" id="passInput" type="password" placeholder="Contraseña" name="password" required/>
+      <span class="input-error">{{#if errors.password}}{{errors.password}}{{/if}}</span>
       <div>
       <input type="checkbox" id="showPass">Mostrar contraseña
       </div>
@@ -19,6 +19,7 @@
     <div>
       <button type="submit">Ingresar</button>    
     </div>
+    
   </form>
 </div>
 
