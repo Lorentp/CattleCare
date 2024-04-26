@@ -48,7 +48,6 @@ router.post("/update:cid", async (req, res) => {
     console.log(newCalf);
     res.redirect("/terneros-en-tratamiento");
   } catch (error) {
-    res.json({ message: "Error" });
     console.log(error);
   }
 });
@@ -77,7 +76,7 @@ router.post("/resetTreatment", async (req, res) => {
       resetTreatment: true,
       medication: newMedication,
       duration: newDuration,
-      treatment: newTreatment
+      treatment: newTreatment,
     });
     console.log(newCalf);
     res.redirect("/terneros-por-terminar-tratamiento");
@@ -129,12 +128,12 @@ router.post("/treated/:id", async (req, res) => {
   }
 });
 
-router.post("/dead/:id", async (req,res) => {
+router.post("/dead/:id", async (req, res) => {
   try {
-    const calfId =  req.params.id;
-    const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate()
-    
-    const deadCalf = await calfManager.calfDie(calfId, currentTime)
+    const calfId = req.params.id;
+    const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate();
+    const comment = req.body.comment;
+    const deadCalf = await calfManager.calfDie(calfId, currentTime, comment);
     const referer = req.headers.referer;
 
     if (referer && referer.includes("/terneros-en-tratamiento")) {
@@ -142,7 +141,10 @@ router.post("/dead/:id", async (req,res) => {
     } else if (referer && referer.includes("/corral/")) {
       const dynamicRouteId = referer.split("/").pop();
       res.redirect(`/corral/${dynamicRouteId}`);
-    } else if(referer && referer.includes("/terneros-por-terminar-tratamiento")) {
+    } else if (
+      referer &&
+      referer.includes("/terneros-por-terminar-tratamiento")
+    ) {
       res.redirect("/terneros-por-terminar-tratamiento");
     } else {
       res.redirect("/home");
@@ -151,5 +153,5 @@ router.post("/dead/:id", async (req,res) => {
   } catch (error) {
     console.log(error);
   }
-})
+});
 module.exports = router;

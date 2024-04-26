@@ -130,10 +130,14 @@ router.get("/terneros", async (req, res) => {
       res.redirect("/");
       return;
     }
-    userId = req.session.user._id;
-    let calves = await calfManager.getCalves(userId);
+    const userId = req.session.user._id;
+    const search = req.query.search || ""
+    const sortOrder = req.query.sort || "asc"
+    
+    
+    const calves = await calfManager.getCalves(userId, search, sortOrder)
 
-    res.render("calves", { calves });
+    res.render("calves", { calves }); 
   } catch (error) {
     console.log(error);
   }
@@ -145,8 +149,13 @@ router.get("/terneros-muertos", async (req, res) => {
       res.redirect("/");
       return;
     }
-    userId = req.session.user._id;
-    let deadCalves = await calfManager.getDeadCalf(userId);
+    const userId = req.session.user._id;
+    const search = req.query.search || ""
+    const sortOrder = req.query.sort || "asc"
+    const fromDate = req.query.fromDate || null;
+    const toDate = req.query.toDate || null;
+    
+    const deadCalves = await calfManager.getDeadCalf(userId, search, sortOrder, fromDate, toDate);
 
     res.render("deadCalves", { deadCalves });
   } catch (error) {

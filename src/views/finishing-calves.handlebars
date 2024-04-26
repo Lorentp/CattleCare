@@ -7,7 +7,7 @@
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
 </nav>
 {{#if yesterdayCalvesWithContext}}
-<h1>Terneros que su tratamiento finalizó ayer:</h1>
+<h1>Terneros que su tratamiento finalizó:</h1>
 {{#each yesterdayCalvesWithContext}}
     {{#unless this.finished}}
     <div class="treatment-container">
@@ -65,7 +65,7 @@
 
       <form action="/calf/dead/{{this._doc._id}}" method="POST">
             <button type="button" class="link-button mark-dead-calf" data-id="{{this._doc._id}}">Dar ternero de baja</button>
-        </form>
+      </form>
     </div>
     
 </div>

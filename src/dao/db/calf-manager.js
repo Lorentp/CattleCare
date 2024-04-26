@@ -55,9 +55,26 @@ class CalfManager {
     }
   }
 
-  async getCalves(userId) {
+  async getCalves(userId, search, sortOrder, fromDate, toDate) {
     try {
-      const calves = await CalfModel.find({ owner: userId, isDead: { $in: [false, undefined] }});
+      let query = { owner: userId, isDead: { $in: [false, undefined] } }
+      if (search) {
+        query.name = { $regex: search };
+      }
+
+      if (fromDate && toDate) {
+        query.endDate = { $gte: new Date(fromDate), $lte: new Date(toDate) };
+      }
+      let sortOption = {};
+       if (sortOrder === 'asc') {
+          sortOption = { name: 1 }; 
+      } else {
+          sortOption = { name: -1 }; 
+      }
+
+
+      const calves = await CalfModel.find(query).sort(sortOption);
+      
       return calves;
     } catch (error) {
       console.log(error);
@@ -107,15 +124,13 @@ class CalfManager {
   }
 
   async getYesterdayCalves(userId, yesterday) {
-    const startOfYesterday = new Date(yesterday);
-    startOfYesterday.setHours(0, 0, 0, 0);
-    const endOfYesterday = new Date(yesterday);
-    endOfYesterday.setHours(23, 59, 59, 999);
+    const today = moment().tz("America/Argentina/Buenos_Aires");
+    const endOfYesterday = today.clone().subtract(1, "days").endOf("day");
 
     try {
       const yesterdayCalves = await CalfModel.find({
         owner: userId,
-        endDate: { $gte: startOfYesterday, $lte: endOfYesterday },
+        endDate: { $lte: endOfYesterday.toDate()},
         finished: false,
         isDead: { $in: [false, undefined] }
       });
@@ -185,9 +200,23 @@ class CalfManager {
     }
   }
 
-  async getDeadCalf(userId){
+  async getDeadCalf(userId, search, sortOrder, fromDate, toDate){
     try {
-      const calves = await CalfModel.find({ owner: userId, isDead: true });
+      let query = { owner: userId, isDead: true };
+      if (search) {
+        query.name = { $regex: search };
+      }
+      if (fromDate && toDate) {
+        query.timeDead = { $gte: new Date(fromDate), $lte: new Date(toDate) };
+      }
+      
+      let sortOption = {};
+      if (sortOrder === 'asc') {
+        sortOption = { name: 1 }; 
+      } else {
+        sortOption = { name: -1 }; 
+     }
+      const calves = await CalfModel.find(query).sort(sortOption);
       return calves;
     } catch (error) {
       console.log(error);
@@ -250,11 +279,14 @@ class CalfManager {
     }
   }
 
-  async calfDie(calfId, currentTime) { 
+  async calfDie(calfId, currentTime, comment) { 
     try {
+
+      
       const calf = await CalfModel.findById(calfId)
       calf.isDead = true
       calf.timeDead = currentTime
+      calf.comment = comment
       const deadCalf = await calf.save()
       return deadCalf
     } catch (error) {

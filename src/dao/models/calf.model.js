@@ -16,7 +16,8 @@ const calfSchema = new mongoose.Schema({
   prevEndDate:{type:Date},
   lastDayTreated: { type: Date },
   isDead: {type: Boolean, default: false},
-  timeDead: {type: Date}
+  timeDead: {type: Date},
+  comment: {type: String}
 });
 
 

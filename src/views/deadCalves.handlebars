@@ -11,6 +11,25 @@
 <div class="title">
 <h2>Todos los ternenos que han muerto o han sido dados de baja:</h2>
 </div>
+
+<div class="title">
+        <form action="/terneros-muertos" method="GET">
+        <input type="text" name="search" placeholder="Buscar terneros...">
+        <h2>Ordernar de manera:</h2>
+        <select id="sortOrder" name="sort" >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+        </select>
+
+        <h2>Elegir fecha de inicio de busqueda</h2>
+        <input type="date" id="fromDate" name="fromDate">
+        
+        <h2>Elegir fecha de fin de busqueda</h2>
+        <input type="date" id="toDate" name="toDate">
+        <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        </form>
+    </div>
+
     
 <div>
 {{#each deadCalves}}
@@ -24,6 +43,12 @@
             </p>   
             <p>Este ternero murio el día: {{{formatDate this.timeDate}}}</p>
         </div>
+        {{#if this.comment}}
+        <div>
+            <p>Comentario: {{this.comment}}</p>
+        </div>
+        {{/if}}
+        
     </div>
 {{/each}}
-</div>
+</div>  

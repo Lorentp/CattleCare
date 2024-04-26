@@ -10,10 +10,26 @@
 
 
 <div class="main-treatment-container">
-<div class="title title-calves">
-<h2>Todos los ternenos</h2>
-<a href="/terneros-muertos" class="link-button dead-calves-link">Terneros muertos</a>
-</div>
+    <div class="title title-calves">
+        <h2>Todos los ternenos</h2>
+        <a href="/terneros-muertos" class="link-button dead-calves-link">Terneros muertos</a>
+    </div>
+
+    <div class="title">
+        <form action="/terneros" method="GET">
+        <input type="text" name="search" placeholder="Buscar terneros...">
+        <h2>Ordernar de manera:</h2>
+        <select id="sortOrder" name="sort" >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+        </select>
+
+        
+        <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        </form>
+    </div>
+
+
 
 {{#each calves}}
     <div class="treated-container">
@@ -42,6 +58,13 @@
     {{#if this.finished}}
     <p>Tratamiento finalizado</p>
     {{/if}}
+
+    <form action="/calf/dead/{{this._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+    </form>
 </div>
 {{/each}}
 </div>
+
+
+<script src="/js/markAsDead.js"></script>
