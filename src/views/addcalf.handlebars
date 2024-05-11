@@ -9,16 +9,23 @@
 
 <div class="add-page-buttons">
     <button id="addCalfButton" class="add-page-button">Agregar ternero</button>
-    <button id="updateCalfButton" class="add-page-button">Actualizar ternero</button>
+    <button id="updateCalfButton" class="add-page-button">Modificar ternero</button>
     <button id="deleteCalfButton" class="add-page-button">Eliminar ternero</button>
     <button id="addCorralButton" class="add-page-button">Agregar corral</button>
     <button id="deleteCorralButton" class="add-page-button">Eliminar corral</button>
 </div>
 <div class="add-page-buttons">
     <button id="addTreatmentButton" class="add-page-button">Agregar tratamiento</button>
-    <button id="updateTreatmentButton" class="add-page-button">Actualizar tratamiento</button>
+    <button id="updateTreatmentButton" class="add-page-button">Modificar tratamiento</button>
     <button id="deleteTreatmentButton" class="add-page-button">Eliminar tratamiento</button>
 </div>
+
+<div class="add-page-buttons">
+    <button id="addTaskButton" class="add-page-button">Agregar tarea</button>
+    <button id="updateTaskButton" class="add-page-button">Modificar tarea</button>
+    <button id="deleteTaskButton" class="add-page-button">Eliminar tarea</button>
+</div>
+
 
 <div class="hidden" id="addCalfForm">
     {{>calf-form}}
@@ -52,6 +59,17 @@
     {{>corral-delete}}
 </div>
 
+
+<div class="hidden" id="addTaskForm">
+    {{>task-form}}
+</div>
+<div class="hidden" id="updateTaskForm">
+    {{>task-update}}
+</div>
+<div class="hidden" id="deleteTaskForm">
+    {{>task-delete}}
+</div>
+
 <script src="js/add.js"></script>
 <script src="js/buttonsAdd.js"></script>
 <script src="js/updateCalfForm.js"></script>
@@ -61,3 +79,5 @@
 <script src="js/updateTreatment.js"></script>
 <script src="js/deleteTreatment.js"></script>
 <script src="js/deleteCorral.js"></script>
+<script src="js/updateTask.js"></script>
+<script src="js/deleteTask.js"></script>

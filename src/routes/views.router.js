@@ -6,6 +6,8 @@ const CalfManager = require("../dao/db/calf-manager.js");
 const calfManager = new CalfManager();
 const CorralManager = require("../dao/db/corral-manager.js");
 const corralManager = new CorralManager();
+const ScheduleManager = require("../dao/db/schedule-manager.js")
+const scheduleManager = new ScheduleManager()
 const moment = require("moment-timezone");
 
 router.get("/", async (req, res) => {
@@ -27,8 +29,8 @@ router.get("/home", async (req, res) => {
     userId = req.session.user._id;
 
     user = req.session.user;
-
-    res.render("home", { user });
+    const tasks = await scheduleManager.getSchedules(userId)
+    res.render("home", { user , tasks});
   } catch (error) {
     console.log("Error de servidor", error);
   }
@@ -172,8 +174,13 @@ router.get("/agregar", async (req, res) => {
     userId = req.session.user._id;
     treatments = await treatmentManager.getTreatments(userId);
     calves = await calfManager.getCalves(userId);
-    corrals = await corralManager.getCorrals(userId);
-    res.render("addcalf", { treatments, calves, corrals });
+    corrals = await corralManager.getCorrals(userId)
+    
+    const tasks = await scheduleManager.getSchedules(userId)
+    const existingTitles = tasks.map(task => task.title);
+
+    const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+    res.render("addcalf", { treatments, calves, corrals,tasks,  existingTitles: JSON.stringify(existingTitles), days });
   } catch (error) {
     console.log("Se ha producido un error", error);
   }

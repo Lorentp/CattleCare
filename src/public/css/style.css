@@ -114,6 +114,14 @@ nav{
     padding: 1rem;
     font-size: 20px;
 }
+.task-container{
+    background-color: #ffc32c;
+    margin:0.5rem;
+    border-radius: 12px;
+    border: solid 2px ;
+    padding: 1rem;
+    font-size: 20px;
+}
 
 .reset-treatment{
     background-color: #ff792c;

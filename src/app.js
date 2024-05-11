@@ -23,6 +23,10 @@ const hbs = expressHandlebars.create({
     allowProtoMethodsByDefault: true,
   },
   helpers: {
+    contains: function(arrayString, item) {
+      const array = JSON.parse(arrayString);
+      return array.includes(item);
+    },
     formatDate: function (date) {
       const today = moment()
         .tz("America/Argentina/Buenos_Aires")
@@ -93,12 +97,14 @@ const sessionsRouter = require("./routes/sessions.router.js");
 const treatmentRouter = require("./routes/treatment.router.js");
 const calfRouter = require("./routes/calf.router.js");
 const corralRouter = require("./routes/corral.router.js");
+const scheduleRouter = require("./routes/schedule.router.js");
 app.use("/", viewsRouter);
 app.use("/register", userRouter);
 app.use("/login", sessionsRouter);
 app.use("/calf", calfRouter);
 app.use("/treatment", treatmentRouter);
 app.use("/corral", corralRouter);
+app.use("/schedule", scheduleRouter);
 
 const httpServer = app.listen(port, () => {
   console.log(`Servidor testeando en el puerto ${port}`);

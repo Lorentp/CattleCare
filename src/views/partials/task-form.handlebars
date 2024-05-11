@@ -1,0 +1,43 @@
+<div class="form-container">
+  <h1>Nueva tarea</h1>
+  <form action="/schedule/add" method="post">
+     <select id="nameDeleteTreatment" name="title" required>
+        {{#each days}}
+            {{#if (contains ../existingTitles this)}}
+            <option value="{{this}}" disabled>{{this}}</option>
+            {{else}}
+            <option value="{{this}}">{{this}}</option>
+            {{/if}}
+        {{/each}}
+      </select>
+
+    <label for="taskOne">Tarea:</label>
+    <input type="text" id="taskOne" name="taskOne" required />
+
+    <label for="taskTwo">Tarea:</label>
+    <input type="text" id="taskTwo" name="taskTwo"/>
+
+    <label for="taskThree">Tarea:</label>
+    <input type="text" id="taskThree" name="taskThree"/>
+
+    <label for="taskFour">Tarea:</label>
+    <input type="text" id="taskFour" name="taskFour"/>
+
+    <label for="taskFive">Tarea:</label>
+    <input type="text" id="taskFive" name="taskFive"/>
+
+    <label for="taskSix">Tarea:</label>
+    <input type="text" id="taskSix" name="taskSix"/>
+
+    <label for="taskSeven">Tarea:</label>
+    <input type="text" id="taskSeven" name="taskSeven"/>
+
+    <label for="taskEight">Tarea:</label>
+    <input type="text" id="taskEight" name="taskEight"/>
+
+
+    <input class="form-button" type="submit" value="Guardar tarea" />
+  </form>
+</div>
+
+

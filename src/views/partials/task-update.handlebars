@@ -1,0 +1,50 @@
+<div class="form-container">
+  <h1>Modificar tarea</h1>
+  <form id="updateScheduleFormData">
+    <select id="nametInputUpdateSchedule" name="title" required>
+      <option value="" disabled selected>Seleccionar tarea</option>
+        {{#each tasks}}
+            <option
+                value="{{this.title}}"
+                _id="{{this._id}}"
+                taskOne="{{this.taskOne}}"
+                taskTwo="{{this.taskTwo}}"
+                taskThree="{{this.taskThree}}"
+                taskFour="{{this.taskFour}}"
+                taskFive="{{this.taskFive}}"
+                taskSix="{{this.taskSix}}"
+                taskSeven="{{this.taskSeven}}"
+                taskEight="{{this.taskEight}}"
+            >{{this.title}}</option>
+        {{/each}}
+      </select>
+      <input type="hidden" id="updateTaksIdInput" name="_id">
+      <label for="taskOneUpdate">Tarea:</label>
+      <input type="text" id="taskOneUpdateInput" name="taskOne" required />
+
+      <label for="taskTwoUpdate">Tarea:</label>
+      <input type="text" id="taskTwoUpdateInput" name="taskTwo"/>
+
+      <label for="taskThreeUpdate">Tarea:</label>
+      <input type="text" id="taskThreeUpdateInput" name="taskThree"/>
+
+      <label for="taskFourUpdate">Tarea:</label>
+      <input type="text" id="taskFourUpdateInput" name="taskFour"/>
+
+      <label for="taskFiveUpdate">Tarea:</label>
+      <input type="text" id="taskFiveUpdateInput" name="taskFive"/>
+
+      <label for="taskSixUpdate">Tarea:</label>
+      <input type="text" id="taskSixUpdateInput" name="taskSix"/>
+
+      <label for="taskSevenUpdate">Tarea:</label>
+      <input type="text" id="taskSevenUpdateInput" name="taskSeven"/>
+
+      <label for="taskEightUpdate">Tarea:</label>
+      <input type="text" id="taskEightUpdateInput" name="taskEight"/>
+
+    <input class="form-button" type="submit" value="Guardar tarea" />
+  </form>
+</div>
+
+

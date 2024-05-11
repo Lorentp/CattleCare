@@ -2,11 +2,62 @@
 
 <h1>Bienvenido al establecimiento: {{this.user.farmname}}</h1>
 <nav class="">
-    <a href="/agregar" class="link-button">Agregar ternero a tratamiento</a>
+    <a href="/agregar" class="link-button">Cargar ternero o información</a>
     <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
     <a href="/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
     <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
 </nav>
+
+<div>
+    {{#if tasks}}
+    <div class="title title-calves">
+        <h2>Tareas a realizar cada dia de la semana</h2>
+    </div>
+    {{/if}}
+    {{#each tasks}}
+    <div class="task-container">
+        <h2>Tareas a realizar el día: {{this.title}}</h2>
+        <ul>
+            <li>{{this.taskOne}}</li>
+            
+            {{#if this.taskTwo}}
+            <br>
+                <li>{{this.taskTwo}}</li>
+            {{/if}}
+            
+            {{#if this.taskThree}}
+            <br>
+                <li>{{this.taskThree}}</li>
+            {{/if}}
+            
+            {{#if this.taskFour}}
+            <br>
+                <li>{{this.taskFour}}</li>
+            {{/if}}
+           
+            {{#if this.taskFive}}
+            <br>
+                <li>{{this.taskFive}}</li>
+            {{/if}}
+           
+            {{#if this.taskSix}}
+                <li>{{this.taskSix}}</li>
+            {{/if}}
+            
+            {{#if this.taskSeven}}
+            <br>
+                <li>{{this.taskSeven}}</li>
+            {{/if}}
+
+            {{#if this.taskEight}}
+            <br>
+                <li>{{this.taskEight}}</li>
+            {{/if}}
+        </ul>
+              
+    </div>
+    {{/each}}
+</div>
 
 
 <script src="js/home.js"></script>

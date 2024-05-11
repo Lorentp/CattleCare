@@ -23,6 +23,7 @@
     "moment-timezone": "^0.5.45",
     "mongodb": "^6.5.0",
     "mongoose": "^8.1.2",
+    "multer": "^1.4.5-lts.1",
     "socket.io": "^4.7.5",
     "sweetalert2": "^11.10.7",
     "vercel": "^33.6.3"

@@ -4,7 +4,7 @@ const idInputDeleteCorral = document.getElementById("idInputDeleteCorral")
 function updateDeleteFormInfo() {
     const selectedOption = nameInputDeleteCorral[nameInputDeleteCorral.selectedIndex]
     const _id = selectedOption.getAttribute("_id")
-    console.log("hola")
+    
     idInputDeleteCorral.value = _id
 }
 

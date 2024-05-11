@@ -1,0 +1,26 @@
+<div class="form-container">
+  <h1>Eliminar tarea</h1>
+  <form id="deleteTaskFormSubmit">
+    <input
+      type="hidden"
+      id="deleteTaskFormMethod"
+      name="_method"
+      value="DELETE"
+    />
+    <div>
+      <p>Nombre del tarea:</p>
+      <select id="nameDeleteTask" name="corral" required>
+        <option value="" disabled selected>Seleccionar tarea</option>
+        {{#each tasks}}
+          <option
+            value="{{this.title}}"
+            _id="{{this._id}}"
+          >{{this.title}}</option>
+        {{/each}}
+      </select>
+      <input type="hidden" name="_id" id="idInputDeleteTask" />
+    </div>
+
+    <input class="form-button" type="submit" value="Eliminar corral" />
+  </form>
+</div>
