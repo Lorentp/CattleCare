@@ -1,70 +1,38 @@
-{{>headerlogged}}
+{{>global/headerlogged}}
 
 <nav>
     <a href="/home" class="link-button">Volver al inicio</a>
-    <a href="/agregar" class="link-button">Cargar ternero o información</a>
-    <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
-    <a href="/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
+    <a href="/enfermeria" class="link-button">Ir a enfermería</a>
+    <a href="/terneros-guachera" class="link-button">Ver todos los terneros</a>
+    <a href="/terneros-recria" class="link-button">Ver terneros largados</a>
+    <a href="/terneros-muertos" class="link-button">Ver los terneros muertos</a>
 </nav>
 
-
-
-<div class="main-treatment-container">
-    <div class="title title-calves">
-        <h2>Todos los ternenos</h2>
-        <a href="/terneros-muertos" class="link-button dead-calves-link">Terneros muertos</a>
-    </div>
-
-    <div class="title">
-        <form action="/terneros" method="GET">
-        <input type="text" name="search" placeholder="Buscar terneros...">
-        <h2>Ordernar de manera:</h2>
-        <select id="sortOrder" name="sort" >
-            <option value="asc">Ascendente</option>
-            <option value="desc">Descendente</option>
-        </select>
-
-        
-        <button type="submit" class="link-button dead-calves-link">Buscar</button>
-        </form>
-    </div>
-
-
-
-{{#each calves}}
-    <div class="treated-container">
-    <div>
-    <p class="calf">Nombre del ternero: {{this.name}}</p>
-    </div>
-    <div>
-    <p class="treatment">        
-    Tratamiento: {{this.treatment}}
-    </p>
-    </div>
-    <div>
-    <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
-    </div>
-    <div>
-    <p>Días totales de tratamiento: {{this.duration}}</p>
-    </div>
-    <div>
-    <p class="medication">        
-    Subministrar: {{this.medication}}
-    </p>
-    </div>
-    <div>
-    <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
-    </div>
-    {{#if this.finished}}
-    <p>Tratamiento finalizado</p>
-    {{/if}}
-
-    <form action="/calf/dead/{{this._id}}" method="POST">
-            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
-    </form>
+<div class="add-page-buttons">
+    <button id="newCalfButton" class="add-page-button">Agregar ternero</button>
 </div>
-{{/each}}
+
+<div class="add-page-buttons">
+    <button id="newTaskButton" class="add-page-button">Agregar tarea</button>
+    <button id="newUpdateTaskButton" class="add-page-button">Modificar tarea</button>
+    <button id="newDeleteTaskButton" class="add-page-button">Eliminar tarea</button>
 </div>
 
 
-<script src="/js/markAsDead.js"></script>
+
+<div class="hidden" id="newCalfForm">
+    {{>calves/calf-form}}
+</div>
+
+<div class="hidden" id="newTaskForm">
+    {{>calves/task-form}}
+</div>
+<div class="hidden" id="newUpdateTaskForm">
+    {{>calves/task-update}}
+</div>
+<div class="hidden" id="newDeleteTaskForm">
+    {{>calves/task-delete}}
+</div>
+
+<script src="/js/calves/toggleButtons.js"></script>
+<script src="/js/calves/tasksForms.js"></script>

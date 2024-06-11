@@ -1,0 +1,26 @@
+<div class="form-container">
+  <h1>Eliminar corral</h1>
+  <form id="deleteCorralFormSubmit">
+    <input
+      type="hidden"
+      id="deleteCorralFormMethod"
+      name="_method"
+      value="DELETE"
+    />
+    <div>
+      <p>Nombre del corral:</p>
+      <select id="nameDeleteCorral" name="corral" required>
+        <option value="" disabled selected>Seleccionar corral</option>
+        {{#each corrals}}
+          <option
+            value="{{this.corral}}"
+            _id="{{this._id}}"
+          >{{this.corral}}</option>
+        {{/each}}
+      </select>
+      <input type="hidden" name="_id" id="idInputDeleteCorral" />
+    </div>
+
+    <input class="form-button" type="submit" value="Eliminar corral" />
+  </form>
+</div>

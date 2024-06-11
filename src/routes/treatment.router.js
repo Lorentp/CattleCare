@@ -11,7 +11,7 @@ router.post("/add", async (req, res) => {
     newTreatment.owner = owner
     await treatmentManager.addTreatment(newTreatment);
     console.log(newTreatment)
-    res.redirect("/agregar");
+    res.redirect("/enfermeria");
   } catch (error) {
     res.json({ message: "Error, intentelo nuevamente" });
     console.log(error);
@@ -22,9 +22,8 @@ router.post("/update:cid", async (req,res) => {
   try {
     const newTreatment = await treatmentManager.updateTreatment(req.params.cid, req.body)
     console.log(newTreatment)
-    res.redirect("/agregar")
+    res.redirect("/enfermeria")
   } catch (error) {
-    res.json({message:"Error"})
     console.log(error)
   }
 })
@@ -33,7 +32,7 @@ router.post("/delete:cid", async (req,res) => {
   try {
     const deletedTreatment = await treatmentManager.deleteTreatment(req.params.cid)
     console.log(deletedTreatment)
-    res.redirect("/agregar")
+    res.redirect("/enfermeria")
   } catch (error) {
     console.log(error)
   }

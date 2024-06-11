@@ -1,0 +1,67 @@
+{{>global/headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/enfermeria/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
+    <a href="/enfermeria/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
+    <a href="/enfermeria/terneros" class="link-button">Ver todos los terneros tratados</a>
+</nav>
+
+<div class="add-page-buttons">
+    <button id="addCalfButton" class="add-page-button">Agregar ternero</button>
+    <button id="updateCalfButton" class="add-page-button">Modificar ternero</button>
+    <button id="deleteCalfButton" class="add-page-button">Eliminar ternero</button>
+    <button id="addCorralButton" class="add-page-button">Agregar corral</button>
+    <button id="deleteCorralButton" class="add-page-button">Eliminar corral</button>
+</div>
+<div class="add-page-buttons">
+    <button id="addTreatmentButton" class="add-page-button">Agregar tratamiento</button>
+    <button id="updateTreatmentButton" class="add-page-button">Modificar tratamiento</button>
+    <button id="deleteTreatmentButton" class="add-page-button">Eliminar tratamiento</button>
+</div>
+
+
+
+<div class="hidden" id="addCalfForm">
+    {{>enfermery/calf-form}}
+</div>
+
+<div class="hidden" id="updateCalfForm">
+    {{>enfermery/calf-update}}
+</div>
+
+<div class="hidden" id="deleteCalfForm">
+    {{>enfermery/calf-delete}}
+</div>
+
+
+<div class="hidden" id="addTreatmentForm">
+    {{>enfermery/treatment-form}}
+</div>
+
+<div class="hidden" id="updateTreatmentForm">
+    {{>enfermery/treatment-update}}
+</div>
+<div class="hidden" id="deleteTreatmentForm">
+    {{>enfermery/treatment-delete}}
+</div>
+
+<div class="hidden" id="addCorralForm">
+    {{>global/corral-form}}
+</div>
+
+<div class="hidden" id="deleteCorralForm">
+    {{>global/corral-delete}}
+</div>
+
+
+
+<script src="js/enfermery/buttonsAdd.js"></script>
+<script src="js/enfermery/calf/addCalf.js"></script>
+<script src="js/enfermery/calf/updateCalfForm.js"></script>
+<script src="js/enfermery/calf/updateCalf.js"></script>
+<script src="js/enfermery/calf/deleteCalf.js"></script>
+<script src="js/enfermery/treatment/updateTreatmentForm.js"></script>
+<script src="js/enfermery/treatment/updateTreatment.js"></script>
+<script src="js/enfermery/treatment/deleteTreatment.js"></script>
+<script src="js/enfermery/corral/deleteCorral.js"></script>

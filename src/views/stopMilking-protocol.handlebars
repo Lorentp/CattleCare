@@ -1,0 +1,41 @@
+{{>global/headerlogged}}
+
+<nav> 
+    <a href="/home" class="link-button">Volver a inicio</a>
+</nav>
+
+
+{{#unless protocol}}
+    <div class="form-container">
+      <h1>Nuevo Protocolo de desleche</h1>
+      <form action="/stopMilking/protocol" method="post">
+        <input type="number" name="calfAgeToStart" placeholder="Por favor escriba en días (número) a que edad desea que se arranque con el desleche" required>
+        <label for="stopMilkingProtocolDuration">Duración del protocolo en días</label>
+          <select name="stopMilkingProtocolDuration" id="stopMilkingProtocolDuration" required>
+            <option value="">Seleccione la duración</option>
+            <option value="1">1 día</option>
+            <option value="2">2 días</option>
+            <option value="3">3 días</option>
+            <option value="4">4 días</option>
+            <option value="5">5 días</option>
+            <option value="6">6 días</option>
+            <option value="7">7 días</option>
+          </select>
+
+          <div id="daysInputContainer"></div>
+
+        <input class="form-button" type="submit" value="Guardar protocolo" />
+      </form>
+    </div>
+  {{else}}
+  <div class="form-container">
+    <h1>Usted ya tiene un protocolo de desleche cargado, si desea cargar uno nuevo por favor elimine el anterior</h1>
+    
+    <form action="/stopMilking/delete/{{protocol._id}}" method="post" id="stopMilikingDelete">
+      <button type="button" class="link-button" id="deleteProtocolButton" data-id="{{protocol._id}}">Eliminar Protocolo</button>
+    </form>
+  </div>  
+{{/unless}}
+
+
+<script src="/js/stopMilking/stopMilking.js"></script>

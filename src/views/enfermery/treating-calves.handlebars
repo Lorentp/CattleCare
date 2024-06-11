@@ -1,10 +1,10 @@
-{{>headerlogged}}
+{{>global/headerlogged}}
 
 <nav class="">
-    <a href="/home" class="link-button">Volver al inicio</a>
-    <a href="/agregar" class="link-button">Cargar ternero o información</a>
-    <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
-    <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
+    <a href="/home" class="link-button">Ir al inicio</a>
+    <a href="/enfermeria" class="link-button">Ir a enfermeria</a>
+    <a href="/enfermeria/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
+    <a href="/enfermeria/terneros-enfermeria" class="link-button">Ver todos los terneros tratados</a>
 </nav>
 
 <div class="main-treatment-container">
@@ -31,6 +31,13 @@
         <div>
             <p>Corral: {{this.corral}}</p>
         </div>
+        {{#if this.calfCalostro}}
+        <div>
+            <p class="calostro">        
+                Calostrado: {{this.calfCalostro}}
+            </p>
+        </div>
+        {{/if}}
         <div>
             <p class="treatment">        
                 Tratamiento: {{this.treatment}}
@@ -94,6 +101,13 @@
                 Tratamiento: {{this.treatment}}
             </p>
         </div>
+         {{#if this.calfCalostro}}
+        <div>
+            <p class="calostro">        
+                Calostrado: {{this.calfCalostro}}
+            </p>
+        </div>
+        {{/if}}
         <div>
             <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
         </div>
@@ -127,5 +141,5 @@
 {{/each}}
 
    
-<script src="js/isTreatedForm.js"></script>
-<script src="js/markAsDead.js"></script>
+<script src="/js/enfermery/isTreatedForm.js"></script>
+<script src="/js/enfermery/markAsDead.js"></script>

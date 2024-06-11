@@ -35,7 +35,7 @@ router.post("/add", async (req,res) => {
 
 
         await scheduleManager.addSchedule(newSchedule)
-        res.redirect("/agregar")
+        res.redirect("/terneros")
     } catch (error) {
         console.log(error)
     }
@@ -46,7 +46,7 @@ router.post("/update:cid", async (req,res) => {
     try {
         const newSchedule = await scheduleManager.updateSchedule(req.params.cid, req.body)
         console.log(newSchedule)
-        res.redirect("/agregar")
+        res.redirect("/terneros")
     } catch (error) {
         console.log(error)
     }
@@ -57,7 +57,7 @@ router.post("/delete:cid", async(req,res)=> {
     try {
         const deletedSchedule = await scheduleManager.deleteSchedule(req.params.cid)
         console.log(deletedSchedule)
-        res.redirect("/agregar")
+        res.redirect("/home")
     } catch (error) {
         console.log(error)
     }

@@ -6,15 +6,27 @@ const CalfManager = require("../dao/db/calf-manager.js");
 const calfManager = new CalfManager();
 const CorralManager = require("../dao/db/corral-manager.js");
 const corralManager = new CorralManager();
-const ScheduleManager = require("../dao/db/schedule-manager.js")
-const scheduleManager = new ScheduleManager()
+const ScheduleManager = require("../dao/db/schedule-manager.js");
+const scheduleManager = new ScheduleManager();
+const StopMilkingManager = require("../dao/db/calfStopMilking-manager.js");
+const stopMilkingManager = new StopMilkingManager();
 const moment = require("moment-timezone");
+
+//HOME
+
+router.get("/registrar", async (req, res) => {
+  try {
+    res.render("register");
+  } catch (error) {
+    console.log("Se ha producido un error", error);
+  }
+});
 
 router.get("/", async (req, res) => {
   try {
-    const errors = req.session.errors || {}
-    delete req.session.errors
-    res.render("login", {errors});
+    const errors = req.session.errors || {};
+    delete req.session.errors;
+    res.render("login", { errors });
   } catch (error) {
     console.log("Error del servidor", error);
   }
@@ -29,68 +41,167 @@ router.get("/home", async (req, res) => {
     userId = req.session.user._id;
 
     user = req.session.user;
-    const tasks = await scheduleManager.getSchedules(userId)
-    res.render("home", { user , tasks});
+    const tasks = await scheduleManager.getSchedules(userId);
+    res.render("home", { user, tasks });
   } catch (error) {
     console.log("Error de servidor", error);
   }
 });
 
-router.get("/terneros-en-tratamiento", async (req, res) => {
+//CALVES
+router.get("/terneros", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
       return;
     }
     const userId = req.session.user._id;
-    const now = moment.tz("America/Argentina/Buenos_Aires");
 
-    const today = now.toDate();
-    const corrals = await corralManager.getCorrals(userId);
-    const notTreatedcalves = await calfManager.getActiveCalvesNotTreated(
-      userId,
-      today
-    );
-    const treatedCalves = await calfManager.getActiveCalvesTreated(
-      userId,
-      today
-    );
-    let user = req.session.user;
-    res.render("treating-calves", {
-      treatedCalves,
-      user,
-      corrals,
-      notTreatedcalves,
+    const tasks = await scheduleManager.getSchedules(userId);
+    const existingTitles = tasks.map((task) => task.title);
+
+    const days = [
+      "Lunes",
+      "Martes",
+      "Miércoles",
+      "Jueves",
+      "Viernes",
+      "Sábado",
+      "Domingo",
+    ];
+
+    res.render("calves", {
+      tasks,
+      existingTitles: JSON.stringify(existingTitles),
+      days,
     });
   } catch (error) {
-    console.log("Error de servidor", error);
+    console.log(error);
   }
 });
 
-router.get("/terneros-por-terminar-tratamiento", async (req, res) => {
+router.get("/terneros-guachera", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
       return;
     }
-    userId = req.session.user._id;
-    const now = moment.tz("America/Argentina/Buenos_Aires");
+    const userId = req.session.user._id;
+    const search = req.query.search || "";
+    const sortOrder = req.query.sort || "asc";
 
-    const yesterday = now.clone().subtract(1, "days");
-    const treatments = await treatmentManager.getTreatments(userId);
-    const yesterdayCalves = await calfManager.getYesterdayCalves(userId, yesterday);
-    const yesterdayCalvesWithContext = yesterdayCalves.map(calve => ({
-      ...calve,
-      treatments: treatments
-    }));
-    
-    user = req.session.user;
-    
-    res.render("finishing-calves", { user, yesterdayCalvesWithContext });
+    const corrals = await corralManager.getCorrals(userId);
+    const calves = await calfManager.getCalves(userId, search, sortOrder);
+
+    res.render("allCalves", { calves, corrals });
   } catch (error) {
-    console.log("Error de servidor", error);
+    console.log(error);
   }
 });
+router.get("/terneros-recria", async (req, res) => {
+  try {
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+    const userId = req.session.user._id;
+    const search = req.query.search || "";
+    const sortOrder = req.query.sort || "asc";
+    const fromDate = req.query.fromDate || null;
+    const toDate = req.query.toDate || null;
+
+    const corrals = await corralManager.getCorrals(userId);
+    const calvesReleased = await calfManager.getReleasedCalves(
+      userId,
+      search,
+      sortOrder,
+      fromDate,
+      toDate
+    );
+
+    res.render("allReleasedCalves", { calvesReleased, corrals });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+router.get("/terneros-muertos", async (req, res) => {
+  try {
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+    const userId = req.session.user._id;
+    const search = req.query.search || "";
+    const sortOrder = req.query.sort || "asc";
+    const fromDate = req.query.fromDate || null;
+    const toDate = req.query.toDate || null;
+
+    const deadCalves = await calfManager.getDeadCalf(
+      userId,
+      search,
+      sortOrder,
+      fromDate,
+      toDate
+    );
+
+    res.render("deadCalves", { deadCalves });
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+//ENFERMERY
+router.get("/enfermeria", async (req, res) => {
+  try {
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+    const userId = req.session.user._id;
+    const treatments = await treatmentManager.getTreatments(userId);
+    const calves = await calfManager.getCalves(userId);
+    const corrals = await corralManager.getCorrals(userId);
+
+    res.render("enfermery/enfermery", { treatments, calves, corrals });
+  } catch (error) {
+    console.log("Se ha producido un error", error);
+  }
+});
+
+router.get(
+  "/enfermeria/terneros-por-terminar-tratamiento",
+  async (req, res) => {
+    try {
+      if (!req.session.login) {
+        res.redirect("/");
+        return;
+      }
+      userId = req.session.user._id;
+      const now = moment.tz("America/Argentina/Buenos_Aires");
+
+      const yesterday = now.clone().subtract(1, "days");
+      const treatments = await treatmentManager.getTreatments(userId);
+      const yesterdayCalves = await calfManager.getYesterdayCalves(
+        userId,
+        yesterday
+      );
+      const yesterdayCalvesWithContext = yesterdayCalves.map((calve) => ({
+        ...calve,
+        treatments: treatments,
+      }));
+
+      user = req.session.user;
+
+      res.render("enfermery/finishing-calves", {
+        user,
+        yesterdayCalvesWithContext,
+      });
+    } catch (error) {
+      console.log("Error de servidor", error);
+    }
+  }
+);
 
 router.get("/corral/:cid", async (req, res) => {
   try {
@@ -126,71 +237,90 @@ router.get("/corral/:cid", async (req, res) => {
   }
 });
 
-router.get("/terneros", async (req, res) => {
+router.get("/enfermeria/terneros-en-tratamiento", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
       return;
     }
     const userId = req.session.user._id;
-    const search = req.query.search || ""
-    const sortOrder = req.query.sort || "asc"
-    
-    
-    const calves = await calfManager.getCalves(userId, search, sortOrder)
+    const now = moment.tz("America/Argentina/Buenos_Aires");
 
-    res.render("calves", { calves }); 
+    const today = now.toDate();
+    const corrals = await corralManager.getCorrals(userId);
+    const notTreatedcalves = await calfManager.getActiveCalvesNotTreated(
+      userId,
+      today
+    );
+    const treatedCalves = await calfManager.getActiveCalvesTreated(
+      userId,
+      today
+    );
+    let user = req.session.user;
+    res.render("enfermery/treating-calves", {
+      treatedCalves,
+      user,
+      corrals,
+      notTreatedcalves,
+    });
   } catch (error) {
-    console.log(error);
+    console.log("Error de servidor", error);
   }
 });
 
-router.get("/terneros-muertos", async (req, res) => {
+router.get("/enfermeria/terneros-enfermeria", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
       return;
     }
     const userId = req.session.user._id;
-    const search = req.query.search || ""
-    const sortOrder = req.query.sort || "asc"
-    const fromDate = req.query.fromDate || null;
-    const toDate = req.query.toDate || null;
-    
-    const deadCalves = await calfManager.getDeadCalf(userId, search, sortOrder, fromDate, toDate);
+    const search = req.query.search || "";
+    const sortOrder = req.query.sort || "asc";
 
-    res.render("deadCalves", { deadCalves });
+    const calves = await calfManager.getTreatedCalves(
+      userId,
+      search,
+      sortOrder
+    );
+
+    res.render("enfermery/calvesEnfermery", { calves });
   } catch (error) {
     console.log(error);
   }
 });
 
-router.get("/agregar", async (req, res) => {
+//STOPMILKING
+
+router.get("/desleche", async (req, res) => {
   try {
     if (!req.session.login) {
       res.redirect("/");
       return;
     }
-    userId = req.session.user._id;
-    treatments = await treatmentManager.getTreatments(userId);
-    calves = await calfManager.getCalves(userId);
-    corrals = await corralManager.getCorrals(userId)
-    
-    const tasks = await scheduleManager.getSchedules(userId)
-    const existingTitles = tasks.map(task => task.title);
+    const owner = req.session.user._id;
+    const protocol = await stopMilkingManager.getStopMilkingProtocol(owner);
+    const stopMilkingCalves = await stopMilkingManager.getStopMilkingCalves(
+      owner
+    );
 
-    const days = ["Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-    res.render("addcalf", { treatments, calves, corrals,tasks,  existingTitles: JSON.stringify(existingTitles), days });
+    res.render("stopMilking", { protocol, stopMilkingCalves });
   } catch (error) {
-    console.log("Se ha producido un error", error);
+    console.log(error);
   }
 });
-
-router.get("/registrar", async (req, res) => {
+router.get("/desleche-cargar", async (req, res) => {
   try {
-    res.render("register");
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+    const owner = req.session.user._id;
+    const protocol = await stopMilkingManager.getStopMilkingProtocol(owner);
+    res.render("stopMilking-protocol", { protocol });
   } catch (error) {
-    console.log("Se ha producido un error", error);
+    console.log(error);
   }
 });
+
 module.exports = router;

@@ -1,0 +1,43 @@
+<div class="form-container">
+  <h1>Nuevo Ternero</h1>
+  <form action="/calf/add" method="post">
+    <div>
+      <p>Nombre del ternero:</p>
+      <input type="text" id="name" name="name" placeholder="Ej: A011" />
+    </div>
+
+    <div>
+      <p>Fecha de nacimiento:</p>
+      <input type="date" id="birthDate" name="birthDate" required />
+    </div>
+    <div>
+      <p>Eliga el sexo</p>
+      <select name="gender" id="" required>
+        <option value="" disabled selected>Género</option>
+        <option value="Masculino">Masculino</option>
+        <option value="Femenino">Femenino</option>
+      </select>
+    </div>
+    <div>
+      <p>Peso del ternero:</p>
+      <input
+        type="text"
+        id="calfWeight"
+        name="calfWeight"
+        placeholder="No es necesario llenar este apartado, puede hacerlo luego"
+      />
+    </div>
+    <div>
+      <p>Calostro:</p>
+      <input
+        type="text"
+        id="calfCalostro"
+        name="calfCalostro"
+        placeholder="No es necesario llenar este apartado, puede hacerlo luego"
+      />
+    </div>
+
+    <input class="form-button" type="submit" value="Guardar ternero" />
+  </form>
+
+</div>

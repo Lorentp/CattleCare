@@ -69,6 +69,12 @@ const hbs = expressHandlebars.create({
           .format("dddd, D [de] MMMM [de] YYYY");
       }
     },
+
+    formatDateBirth: function (date) {     
+      return moment(date).tz("America/Argentina/Buenos_Aires").format("DD/MM/YYYY");
+    }
+    
+ 
   },
 });
 app.engine("handlebars", hbs.engine);
@@ -98,6 +104,7 @@ const treatmentRouter = require("./routes/treatment.router.js");
 const calfRouter = require("./routes/calf.router.js");
 const corralRouter = require("./routes/corral.router.js");
 const scheduleRouter = require("./routes/schedule.router.js");
+const stopMilkingRouter = require("./routes/stopMilking.router.js")
 app.use("/", viewsRouter);
 app.use("/register", userRouter);
 app.use("/login", sessionsRouter);
@@ -105,6 +112,7 @@ app.use("/calf", calfRouter);
 app.use("/treatment", treatmentRouter);
 app.use("/corral", corralRouter);
 app.use("/schedule", scheduleRouter);
+app.use("/stopMilking", stopMilkingRouter);
 
 const httpServer = app.listen(port, () => {
   console.log(`Servidor testeando en el puerto ${port}`);

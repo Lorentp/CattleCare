@@ -1,0 +1,70 @@
+{{>global/headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/enfermeria" class="link-button">Ir a enfermeria</a>
+    <a href="/enfermeria/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
+    <a href="/enfermeria/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
+</nav>
+
+
+
+<div class="main-treatment-container">
+    <div class="title title-calves">
+        <h2>Todos los ternenos tratados</h2>
+        <a href="/terneros-muertos" class="link-button dead-calves-link">Terneros muertos</a>
+    </div>
+
+    <div class="title">
+        <form action="/terneros" method="GET">
+        <input type="text" name="search" placeholder="Buscar terneros...">
+        <h2>Ordernar de manera:</h2>
+        <select id="sortOrder" name="sort" >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+        </select>
+
+        
+        <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        </form>
+    </div>
+
+
+
+{{#each calves}}
+    <div class="treated-container">
+    <div>
+    <p class="calf">Nombre del ternero: {{this.name}}</p>
+    </div>
+    <div>
+    <p class="treatment">        
+    Tratamiento: {{this.treatment}}
+    </p>
+    </div>
+    <div>
+    <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
+    </div>
+    <div>
+    <p>Días totales de tratamiento: {{this.duration}}</p>
+    </div>
+    <div>
+    <p class="medication">        
+    Subministrar: {{this.medication}}
+    </p>
+    </div>
+    <div>
+    <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
+    </div>
+    {{#if this.finished}}
+    <p>Tratamiento finalizado</p>
+    {{/if}}
+
+    <form action="/calf/dead/{{this._id}}" method="POST">
+            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+    </form>
+</div>
+{{/each}}
+</div>
+
+
+<script src="/js/enfermery/markAsDead.js"></script>

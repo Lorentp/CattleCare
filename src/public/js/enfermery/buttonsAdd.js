@@ -6,9 +6,7 @@ const updateTreatmentButton = document.getElementById("updateTreatmentButton");
 const deleteTreatmentButton = document.getElementById("deleteTreatmentButton");
 const addCorralButton = document.getElementById("addCorralButton")
 const deleteCorralButton = document.getElementById("deleteCorralButton")
-const addTaskButton = document.getElementById("addTaskButton");
-const updateTaskButton = document.getElementById("updateTaskButton")
-const deleteTaskButton = document.getElementById("deleteTaskButton")
+
 
 const addCalfForm = document.getElementById("addCalfForm");
 const updateCalfForm = document.getElementById("updateCalfForm");
@@ -18,9 +16,6 @@ const updateTreatmentForm = document.getElementById("updateTreatmentForm");
 const deleteTreatmentForm = document.getElementById("deleteTreatmentForm");
 const addCorralForm = document.getElementById("addCorralForm")
 const deleteCorralForm = document.getElementById("deleteCorralForm")
-const addTaskForm = document.getElementById("addTaskForm");
-const updateTaskForm = document.getElementById("updateTaskForm")
-const deleteTaskForm = document.getElementById("deleteTaskForm")
 
 
 function showOrHideElement(e) {
@@ -80,15 +75,3 @@ deleteCorralButton.addEventListener("click", function() {
 });
 
 
-addTaskButton.addEventListener("click", function() {
-    showOrHideElement(addTaskForm);
-    activeButton(this)
-});
-updateTaskButton.addEventListener("click", function() {
-    showOrHideElement(updateTaskForm);
-    activeButton(this)
-});
-deleteTaskButton.addEventListener("click", function() {
-    showOrHideElement(deleteTaskForm);
-    activeButton(this)
-});

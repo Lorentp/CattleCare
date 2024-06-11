@@ -1,0 +1,79 @@
+{{>global/headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/terneros" class="link-button">Cargar terneros</a>
+    <a href="/terneros-guachera" class="link-button">Ver todos los terneros</a>
+    <a href="/terneros-muertos" class="link-button">Ver los terneros muertos</a>
+</nav>
+
+<div class="main-treatment-container">
+    <div class="title title-calves">
+        <h2>Todos los terneros largados</h2>
+    </div>
+
+    <div class="title">
+        <form action="/terneros-recria" method="GET">
+        <input type="text" name="search" placeholder="Buscar terneros...">
+        <h2>Ordernar de manera:</h2>
+        <select id="sortOrder" name="sort" >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+        </select>
+         <h2>Elegir fecha de inicio de búsqueda</h2>
+        <input type="date" id="fromDate" name="fromDate">
+        
+        <h2>Elegir fecha de fin de búsqueda</h2>
+        <input type="date" id="toDate" name="toDate">
+        
+        <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        </form>
+    </div>
+
+
+
+{{#each calvesReleased}}
+    <div class="treated-container">
+    <div>
+    <p class="calf">Nombre del ternero: {{this.name}}</p>
+    </div>
+    <div>
+    <p class="gender">Sexo: {{this.gender}}</p>
+    </div>
+    <div>
+    <p class="birthDate">        
+    Fecha de nacimiento: {{formatDate this.birthDate}}
+    </p>
+    </div>
+    <div>
+    <p class="releasedDate">        
+    Fue largado el día: {{formatDate this.whenReleased}}
+    </p>
+    <p>Estuvo {{this.daysInGuachera}} días en guachera</p>
+    </div>
+    {{#if this.calfWeight}}
+    <div>
+    <p>Peso al nacimiento: {{this.calfWeight}} kilos</p>
+    </div>
+    {{/if}}
+    
+    {{#if this.releasedWeight}}
+    <div>
+        <p>Peso al ser largado: {{this.releasedWeight}} kilos</p>
+    </div>
+    {{/if}}
+    
+    {{#if this.weightGainPerDay}}
+        <div>
+        <p>Aumento por día: {{this.weightGainPerDay}} kilos</p>
+        </div>
+    {{/if}}
+
+    {{#if this.treatment}}
+     <p>Este ternero fue tratado por {{this.treatment}}
+     </p>
+    {{/if}}
+    
+</div>
+{{/each}}
+</div>

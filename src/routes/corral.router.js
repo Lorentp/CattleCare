@@ -11,7 +11,7 @@ router.post("/add", async (req, res) => {
     newCorral.owner = owner
     await corralManager.addCorral(newCorral);
     console.log(newCorral)
-    res.redirect("/agregar");
+    res.redirect("/enfermeria");
   } catch (error) {
     res.json({ message: "Error, intentelo nuevamente" });
     console.log(error);
@@ -23,7 +23,7 @@ router.post("/delete:cid", async (req,res) => {
   try {
     const deletedCorral = await corralManager.deleteCorral(req.params.cid)
     console.log(deletedCorral)
-    res.redirect("/agregar")
+    res.redirect("/enfermeria")
   } catch (error) {
     console.log(error)
   }

@@ -1,11 +1,8 @@
-{{>headerlogged}}
+{{>global/headerlogged}}
 
 <nav>
     <a href="/home" class="link-button">Volver al inicio</a>
-    <a href="/agregar" class="link-button">Cargar ternero o información</a>
-    <a href="/terneros-por-terminar-tratamiento" class="link-button">Ver terneros a finalizar tratamiento</a>
-    <a href="/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
-    <a href="/terneros" class="link-button">Todos los terneros</a>
+    <a href="/terneros-guachera" class="link-button">Todos los terneros</a>
 </nav>
 
 <div class="title">
@@ -21,10 +18,10 @@
             <option value="desc">Descendente</option>
         </select>
 
-        <h2>Elegir fecha de inicio de busqueda</h2>
+        <h2>Elegir fecha de inicio de búsqueda</h2>
         <input type="date" id="fromDate" name="fromDate">
         
-        <h2>Elegir fecha de fin de busqueda</h2>
+        <h2>Elegir fecha de fin de búsqueda</h2>
         <input type="date" id="toDate" name="toDate">
         <button type="submit" class="link-button dead-calves-link">Buscar</button>
         </form>
@@ -41,7 +38,7 @@
             <p class="treatment">        
             Tratamiento: {{this.treatment}}
             </p>   
-            <p>Este ternero murio el día: {{{formatDate this.timeDead}}}</p>
+            <p>Este ternero murió el día: {{{formatDate this.timeDead}}}</p>
         </div>
         {{#if this.comment}}
         <div>

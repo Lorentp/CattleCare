@@ -2,8 +2,38 @@ const CalfModel = require("../models/calf.model.js");
 const moment = require("moment-timezone");
 
 class CalfManager {
-  async addCalf({
+  async addCalf({ name, birthDate, gender, calfWeight, calfCalostro, owner }) {
+    try {
+      let calfExist = await CalfModel.findOne({ owner: owner, name: name });
+
+      if (calfExist) {
+        calfExist.gender;
+        calfExist.birthDate;
+        calfExist.calfWeight;
+        calfExist.calfCalostro;
+        await calfExist.save();
+        console.log("Ternero actualizado:", calfExist);
+      } else {
+        // Si no existe, crear un nuevo ternero
+        const newCalf = new CalfModel({
+          name,
+          birthDate,
+          calfWeight,
+          calfCalostro,
+          gender,
+          owner,
+        });
+        await newCalf.save();
+        console.log("Nuevo ternero creado:", newCalf);
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async addCalfToTreatment({
     name,
+
     treatment,
     startDate,
     owner,
@@ -15,11 +45,6 @@ class CalfManager {
     lastDayTreated,
   }) {
     try {
-      if (!name || !treatment || !startDate) {
-        console.log("Todos los campos son obligatorios");
-        return;
-      }
-
       let calfExist = await CalfModel.findOne({ owner: owner, name: name });
 
       if (calfExist) {
@@ -57,7 +82,11 @@ class CalfManager {
 
   async getCalves(userId, search, sortOrder, fromDate, toDate) {
     try {
-      let query = { owner: userId, isDead: { $in: [false, undefined] } }
+      let query = {
+        owner: userId,
+        isDead: { $in: [false, undefined] },
+        isReleased: { $in: [false, undefined] },
+      };
       if (search) {
         query.name = { $regex: search };
       }
@@ -66,15 +95,75 @@ class CalfManager {
         query.endDate = { $gte: new Date(fromDate), $lte: new Date(toDate) };
       }
       let sortOption = {};
-       if (sortOrder === 'asc') {
-          sortOption = { name: 1 }; 
+      if (sortOrder === "asc") {
+        sortOption = { name: 1 };
       } else {
-          sortOption = { name: -1 }; 
+        sortOption = { name: -1 };
       }
 
+      const calves = await CalfModel.find(query).sort(sortOption);
+
+      return calves;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getTreatedCalves(userId, search, sortOrder, fromDate, toDate) {
+    try {
+      let query = {
+        owner: userId,
+        isDead: { $in: [false, undefined] },
+        treatment: { $exists: true, $ne: null },
+      };
+      if (search) {
+        query.name = { $regex: search };
+      }
+
+      if (fromDate && toDate) {
+        query.endDate = { $gte: new Date(fromDate), $lte: new Date(toDate) };
+      }
+      let sortOption = {};
+      if (sortOrder === "asc") {
+        sortOption = { name: 1 };
+      } else {
+        sortOption = { name: -1 };
+      }
 
       const calves = await CalfModel.find(query).sort(sortOption);
-      
+
+      return calves;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async getReleasedCalves(userId, search, sortOrder, fromDate, toDate) {
+    try {
+      let query = {
+        owner: userId,
+        isDead: { $in: [false, undefined] },
+        isReleased: true,
+      };
+      if (search) {
+        query.name = { $regex: search };
+      }
+
+      if (fromDate && toDate) {
+        query.whenReleased = {
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate),
+        };
+      }
+      let sortOption = {};
+      if (sortOrder === "asc") {
+        sortOption = { name: 1 };
+      } else {
+        sortOption = { name: -1 };
+      }
+
+      const calves = await CalfModel.find(query).sort(sortOption);
+
       return calves;
     } catch (error) {
       console.log(error);
@@ -88,7 +177,7 @@ class CalfManager {
       const activeCalves = await CalfModel.find({
         owner: userId,
         endDate: { $gte: startOfToday },
-        isDead: { $in: [false, undefined] }
+        isDead: { $in: [false, undefined] },
       });
 
       const notTreatedToday = activeCalves.filter((calf) => {
@@ -110,7 +199,7 @@ class CalfManager {
       const activeCalves = await CalfModel.find({
         owner: userId,
         endDate: { $gte: startOfToday },
-        isDead: { $in: [false, undefined] }
+        isDead: { $in: [false, undefined] },
       });
 
       const notTreatedToday = activeCalves.filter((calf) => {
@@ -130,9 +219,9 @@ class CalfManager {
     try {
       const yesterdayCalves = await CalfModel.find({
         owner: userId,
-        endDate: { $lte: endOfYesterday.toDate()},
+        endDate: { $lte: endOfYesterday.toDate() },
         finished: false,
-        isDead: { $in: [false, undefined] }
+        isDead: { $in: [false, undefined] },
       });
 
       return yesterdayCalves;
@@ -148,7 +237,7 @@ class CalfManager {
         owner: userId,
         corralId: corral,
         endDate: { $gte: startOfToday },
-        isDead: { $in: [false, undefined] }
+        isDead: { $in: [false, undefined] },
       });
       return calvesInCorral;
     } catch (error) {
@@ -164,7 +253,7 @@ class CalfManager {
         owner: userId,
         corralId: corral,
         endDate: { $gte: startOfToday },
-        isDead: { $in: [false, undefined] }
+        isDead: { $in: [false, undefined] },
       });
 
       const calvesNotTreatedTodayInCorral = activeCalves.filter((calf) => {
@@ -187,7 +276,7 @@ class CalfManager {
         owner: userId,
         corralId: corral,
         endDate: { $gte: startOfToday },
-        isDead: { $in: [false, undefined] }
+        isDead: { $in: [false, undefined] },
       });
 
       const calvesTreatedTodayInCorral = activeCalves.filter((calf) => {
@@ -200,7 +289,7 @@ class CalfManager {
     }
   }
 
-  async getDeadCalf(userId, search, sortOrder, fromDate, toDate){
+  async getDeadCalf(userId, search, sortOrder, fromDate, toDate) {
     try {
       let query = { owner: userId, isDead: true };
       if (search) {
@@ -209,13 +298,13 @@ class CalfManager {
       if (fromDate && toDate) {
         query.timeDead = { $gte: new Date(fromDate), $lte: new Date(toDate) };
       }
-      
+
       let sortOption = {};
-      if (sortOrder === 'asc') {
-        sortOption = { name: 1 }; 
+      if (sortOrder === "asc") {
+        sortOption = { name: 1 };
       } else {
-        sortOption = { name: -1 }; 
-     }
+        sortOption = { name: -1 };
+      }
       const calves = await CalfModel.find(query).sort(sortOption);
       return calves;
     } catch (error) {
@@ -279,18 +368,93 @@ class CalfManager {
     }
   }
 
-  async calfDie(calfId, currentTime, comment) { 
+  async updateWeight(calfId, weightInput) {
     try {
-
-      
-      const calf = await CalfModel.findById(calfId)
-      calf.isDead = true
-      calf.timeDead = currentTime
-      calf.comment = comment
-      const deadCalf = await calf.save()
-      return deadCalf
+      const calf = await CalfModel.findById(calfId);
+      calf.calfWeight = weightInput;
+      const updatedCalf = await calf.save();
+      console.log(updatedCalf);
+      return updatedCalf;
     } catch (error) {
-      console.log(error)
+      console.log(error);
+    }
+  }
+  async updateBirthDate(calfId, dateInput) {
+    try {
+      const calf = await CalfModel.findById(calfId);
+      const newBirthDate = moment(dateInput).toDate();
+      calf.birthDate = newBirthDate;
+      const updatedCalf = await calf.save();
+      console.log(updatedCalf);
+      return updatedCalf;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async updateColostrum(calfId, colostrumInput) {
+    try {
+      const calf = await CalfModel.findById(calfId);
+      calf.calfCalostro = colostrumInput;
+      const updatedCalf = await calf.save();
+      console.log(updatedCalf);
+      return updatedCalf;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async releaseCalf(calfId, weightReleasedInput) {
+    try {
+      const calf = await CalfModel.findById(calfId);
+
+      const birthDate = moment(calf.birthDate);
+      const whenReleased = moment();
+      const daysInGuachera = whenReleased.diff(birthDate, "days");
+
+      if (calf.calfWeight) {
+        const currentWeight = parseFloat(weightReleasedInput);
+        const birthWeight = parseFloat(calf.calfWeight);
+        const weightDiference = currentWeight - birthWeight;
+        const weightGainPerDay = weightDiference / daysInGuachera;
+        const formattedWeightGainPerDay = parseFloat(
+          weightGainPerDay.toFixed(3)
+        );
+        calf.releasedWeight = weightReleasedInput;
+        calf.weightDiference = weightDiference;
+        calf.weightGainPerDay = formattedWeightGainPerDay;
+
+        calf.isReleased = true;
+        calf.whenReleased = whenReleased;
+        calf.daysInGuachera = daysInGuachera;
+
+        const releasedCalf = await calf.save();
+        console.log(releasedCalf);
+        return releasedCalf;
+      } else {
+        calf.isReleased = true;
+        calf.whenReleased = whenReleased;
+        calf.daysInGuachera = daysInGuachera;
+        calf.releasedWeight = weightReleasedInput;
+        const releasedCalf = await calf.save();
+        console.log(releasedCalf);
+        return releasedCalf;
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  }
+
+  async calfDie(calfId, currentTime, comment) {
+    try {
+      const calf = await CalfModel.findById(calfId);
+      calf.isDead = true;
+      calf.timeDead = currentTime;
+      calf.comment = comment;
+      const deadCalf = await calf.save();
+      return deadCalf;
+    } catch (error) {
+      console.log(error);
     }
   }
 }

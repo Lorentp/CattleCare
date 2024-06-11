@@ -1,10 +1,10 @@
-{{>headerlogged}}
+{{>global/headerlogged}}
 
 <nav class="nav-bar">
-    <a href="/home" class="link-button">Volver al inicio</a>
-    <a href="/agregar" class="link-button">Cargar ternero o información</a>
-    <a href="/terneros-en-tratamiento" class="link-button">Ver Terneros en tratamiento</a>
-    <a href="/terneros" class="link-button">Ver todos los terneros tratados</a>
+    <a href="/home" class="link-button">Ir al inicio</a>
+    <a href="/enfermeria" class="link-button">Ir a enfermeria</a>
+    <a href="/enfermeria/terneros-en-tratamiento" class="link-button">Ver terneros en tratamiento</a>
+    <a href="/enfermeria/terneros-enfermeria" class="link-button">Ver todos los terneros tratados</a>
 </nav>
 {{#if yesterdayCalvesWithContext}}
 <h1>Terneros que su tratamiento finalizó:</h1>
@@ -21,6 +21,13 @@
     <p class="treatment">        
     Tratamiento: {{this._doc.treatment}}
     </p>
+    {{#if this.calfCalostro}}
+        <div>
+            <p class="calostro">        
+                Calostrado: {{this.calfCalostro}}
+            </p>
+        </div>
+    {{/if}}
     </div>
     <div>
     <p>Empieza tratamiento el día: {{formatDate this._doc.startDate}}</p>
@@ -77,6 +84,6 @@
 {{/if}}
 
 
-<script src="/js/finishingCalves.js"></script>
-<script src="/js/resetTreatment.js"></script>
-<script src="/js/markAsDead.js"></script>
+<script src="/js/enfermery/finishingCalves.js"></script>
+<script src="/js/enfermery/resetTreatment.js"></script>
+<script src="/js/enfermery/markAsDead.js"></script>

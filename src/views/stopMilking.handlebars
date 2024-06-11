@@ -1,0 +1,27 @@
+{{>global/headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/enfermeria" class="link-button">Ir a enfermería</a>
+    <a href="/terneros" class="link-button">Ir a terneros</a>
+    <a href="/desleche-cargar" class="link-button">Cargar protocolo de desleche</a>
+</nav>
+
+{{#if protocol}}
+    <div class="treatment-container">       
+        <h2>El protocolo de desleche es el siguiente:</h2>
+            <ul>
+                {{#each protocol.stopMilkingDays}}
+                    <li>{{this}}</li>
+                    <br>
+                {{/each}}
+            </ul>
+        {{#if stopMilkingCalves}}
+            <h2>Estos son los terneros que estan en desleche ahora mismo:</h2>  
+            {{#each stopMilkingCalves}}
+                <li>Ternero: {{this.name}}</li>
+            {{/each}}
+            {{else}}
+            <h2>Actualmente no hay terneros en desleche</h2>
+        {{/if}}
+{{/if}}
