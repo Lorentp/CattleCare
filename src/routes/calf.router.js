@@ -231,9 +231,9 @@ router.post("/treated/:id", async (req, res) => {
 
     if (referer && referer.includes("/enfermeria/terneros-en-tratamiento")) {
       res.redirect("/enfermeria/terneros-en-tratamiento");
-    } else if (referer && referer.includes("/enfermeria/corral/")) {
+    } else if (referer && referer.includes("/corral/")) {
       const dynamicRouteId = referer.split("/").pop();
-      res.redirect(`/enfermeria/corral/${dynamicRouteId}`);
+      res.redirect(`/corral/${dynamicRouteId}`);
     } else {
       res.redirect("/home");
     }
