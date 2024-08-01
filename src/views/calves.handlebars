@@ -10,6 +10,7 @@
 
 <div class="add-page-buttons">
     <button id="newCalfButton" class="add-page-button">Agregar ternero</button>
+    <button id="updateCalfButton" class="add-page-button">Modificar ternero</button>
 </div>
 
 <div class="add-page-buttons">
@@ -22,6 +23,9 @@
 
 <div class="hidden" id="newCalfForm">
     {{>calves/calf-form}}
+</div>
+<div class="hidden" id="updateCalfForm">
+    {{>calves/calf-update}}
 </div>
 
 <div class="hidden" id="newTaskForm">
@@ -36,3 +40,4 @@
 
 <script src="/js/calves/toggleButtons.js"></script>
 <script src="/js/calves/tasksForms.js"></script>
+<script src="/js/calves/updateCalf.js"></script>

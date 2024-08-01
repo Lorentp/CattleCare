@@ -73,6 +73,17 @@ router.post("/update:cid", async (req, res) => {
     console.log(error);
   }
 });
+router.post("/updatename/:cid", async (req, res) => {
+  try {
+    const { cid } = req.params;
+    const newCalfData = req.body;
+    const newCalf = await calfManager.updateCalf(cid, newCalfData);
+    console.log(newCalf);
+    res.redirect("/terneros");
+  } catch (error) {
+    console.log(error);
+  }
+});
 
 router.post("/delete:cid", async (req, res) => {
   try {

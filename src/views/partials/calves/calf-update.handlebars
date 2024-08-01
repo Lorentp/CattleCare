@@ -1,0 +1,29 @@
+<div id="modifyCalfRealtime"></div>
+
+<div class="form-container update-and-delete">
+  <h1>Eliga el ternero que quiere modificar</h1>
+  <form id="updateCalfNameFormData">
+    <input type="hidden" name="_method" value="PUT" />
+    <div>
+      <p>Nombre del ternero:</p>
+      <select id="nameUpdateCalfName" required>
+        <option value="" disabled selected>Seleccionar ternero</option>
+        {{#each calves}}
+          <option
+            value="{{this.name}}"
+            _id="{{this._id}}"
+            name="{{this.name}}"
+          >{{this.name}}</option>
+        {{/each}}
+      </select>
+    </div>
+    <input type="hidden" name="_id" id="idInputCalfName" readonly />
+
+    <div>
+      <p>Nuevo nombre para el ternero</p>
+      <input type="text" id="newName" name="name" required />
+    </div>
+    <input class="form-button" type="submit" value="Actualizar ternero" />
+  </form>
+
+</div>

@@ -29,7 +29,7 @@ deleteCalfFormSubmit.addEventListener("submit", function (e) {
             throw new Error("Error al eliminar el ternero");
         }
        
-        window.location.href = "/home"; 
+        window.location.href = "/enfermeria"; 
     })
     .catch(error => {
         console.error("Error:", error);

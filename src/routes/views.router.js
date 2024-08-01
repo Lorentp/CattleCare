@@ -56,7 +56,7 @@ router.get("/terneros", async (req, res) => {
       return;
     }
     const userId = req.session.user._id;
-
+    const calves = await calfManager.getCalves(userId);
     const tasks = await scheduleManager.getSchedules(userId);
     const existingTitles = tasks.map((task) => task.title);
 
@@ -74,6 +74,7 @@ router.get("/terneros", async (req, res) => {
       tasks,
       existingTitles: JSON.stringify(existingTitles),
       days,
+      calves,
     });
   } catch (error) {
     console.log(error);

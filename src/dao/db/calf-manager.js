@@ -98,7 +98,7 @@ class CalfManager {
       if (sortOrder === "asc") {
         sortOption = { name: 1 };
       } else {
-        sortOption = { name: -1 };
+        sortOption = { name: 1 };
       }
 
       const calves = await CalfModel.find(query).sort(sortOption);
@@ -346,10 +346,6 @@ class CalfManager {
   async deleteCalf(id) {
     try {
       const deletedCalf = await CalfModel.findByIdAndDelete(id);
-      if (!deletedCalf) {
-        console.log("El ternero no existe");
-      }
-
       return deletedCalf;
     } catch (error) {
       console.log(error);
