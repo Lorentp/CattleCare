@@ -92,7 +92,7 @@ class CalfManager {
       }
 
       if (fromDate && toDate) {
-        query.endDate = { $gte: new Date(fromDate), $lte: new Date(toDate) };
+        query.birthDate = { $gte: new Date(fromDate), $lte: new Date(toDate) };
       }
       let sortOption = {};
       if (sortOrder === "asc") {

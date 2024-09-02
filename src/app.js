@@ -11,8 +11,8 @@ dotenv.config();
 const port = process.env.PORT;
 const mongo_url = process.env.MONGO_URL;
 //Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(express.static("./src/public"));
 app.use(momentMiddleware);
 //Handlebars
@@ -23,7 +23,7 @@ const hbs = expressHandlebars.create({
     allowProtoMethodsByDefault: true,
   },
   helpers: {
-    contains: function(arrayString, item) {
+    contains: function (arrayString, item) {
       const array = JSON.parse(arrayString);
       return array.includes(item);
     },
@@ -70,11 +70,14 @@ const hbs = expressHandlebars.create({
       }
     },
 
-    formatDateBirth: function (date) {     
-      return moment(date).tz("America/Argentina/Buenos_Aires").format("DD/MM/YYYY");
-    }
-    
- 
+    formatDateBirth: function (date) {
+      return moment(date)
+        .tz("America/Argentina/Buenos_Aires")
+        .format("DD/MM/YYYY");
+    },
+    json: function (context) {
+      return JSON.stringify(context);
+    },
   },
 });
 app.engine("handlebars", hbs.engine);
@@ -104,7 +107,8 @@ const treatmentRouter = require("./routes/treatment.router.js");
 const calfRouter = require("./routes/calf.router.js");
 const corralRouter = require("./routes/corral.router.js");
 const scheduleRouter = require("./routes/schedule.router.js");
-const stopMilkingRouter = require("./routes/stopMilking.router.js")
+const stopMilkingRouter = require("./routes/stopMilking.router.js");
+const excelRouter = require("./routes/xlsx.router.js");
 app.use("/", viewsRouter);
 app.use("/register", userRouter);
 app.use("/login", sessionsRouter);
@@ -113,6 +117,7 @@ app.use("/treatment", treatmentRouter);
 app.use("/corral", corralRouter);
 app.use("/schedule", scheduleRouter);
 app.use("/stopMilking", stopMilkingRouter);
+app.use("/xlsx", excelRouter);
 
 const httpServer = app.listen(port, () => {
   console.log(`Servidor testeando en el puerto ${port}`);

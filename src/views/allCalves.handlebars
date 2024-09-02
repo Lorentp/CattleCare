@@ -20,11 +20,26 @@
             <option value="asc">Ascendente</option>
             <option value="desc">Descendente</option>
         </select>
-
+        <h2>Elegir fecha de inicio de búsqueda</h2>
+        <input type="date" id="fromDate" name="fromDate">
         
-        <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        <h2>Elegir fecha de fin de búsqueda</h2>
+         <input type="date" id="toDate" name="toDate">    
+         <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        </form>
+        
+        <form action="/xlsx/create" method="POST">
+            <div class="">
+
+            <input type="hidden" name="calves" value='{{{json calves}}}'>
+            <button type="submit" class="excel-button mobile-hidden">Descargar Excel
+
+            </button>
+            </div>
         </form>
     </div>
+
+
 
 
 

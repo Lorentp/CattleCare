@@ -7,6 +7,8 @@
     <a href="/terneros-muertos" class="link-button">Ver los terneros muertos</a>
 </nav>
 
+    
+
 <div class="main-treatment-container">
     <div class="title title-calves">
         <h2>Todos los terneros largados</h2>
@@ -27,6 +29,10 @@
         <input type="date" id="toDate" name="toDate">
         
         <button type="submit" class="link-button dead-calves-link">Buscar</button>
+        </form>
+        <form action="/xlsx/createReleased" method="POST">
+        <input type="hidden" name="calvesReleased" value='{{{json calvesReleased}}}'>
+            <button type="submit" class="excel-button mobile-hidden">Descargar Excel</button>
         </form>
     </div>
 

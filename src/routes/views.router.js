@@ -90,9 +90,11 @@ router.get("/terneros-guachera", async (req, res) => {
     const userId = req.session.user._id;
     const search = req.query.search || "";
     const sortOrder = req.query.sort || "asc";
+    const fromDate = req.query.fromDate || null;
+    const toDate = req.query.toDate || null;
 
     const corrals = await corralManager.getCorrals(userId);
-    const calves = await calfManager.getCalves(userId, search, sortOrder);
+    const calves = await calfManager.getCalves(userId, search, sortOrder, fromDate, toDate);
 
     res.render("allCalves", { calves, corrals });
   } catch (error) {
