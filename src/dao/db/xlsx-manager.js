@@ -46,19 +46,21 @@ class ExcelManager {
 
         sheet.cell(`B${row}`).value(calf.name || "");
         sheet.cell(`C${row}`).value(calf.gender || "");
-        const formattedBirthDate = calf.birthDate
-          ? moment(calf.birthDate)
-              .format("DD/MM/YYYY")
-          : "";
-        sheet.cell(`D${row}`).value(formattedBirthDate || "");
+        
+        const birthDate = calf.birthDate 
+              ? moment(calf.birthDate, "YYYY-MM-DD").toDate() 
+              : null;
+            sheet.cell(`D${row}`).value(birthDate);
+            sheet.cell(`D${row}`).style("numberFormat", "dd/mm/yyyy");
+
         sheet.cell(`E${row}`).value(calf.calfWeight || "");
         sheet.cell(`F${row}`).value(calf.calfCalostro || "");
-        const formattedStartDate = calf.startDate
-          ? moment(calf.startDate)
-            .format("DD/MM/YYYY")
-          :"";
+        const startDate = calf.startDate 
+              ? moment(calf.startDate, "YYYY-MM-DD").toDate() 
+              : null;
+            sheet.cell(`H${row}`).value(startDate);
+            sheet.cell(`H${row}`).style("numberFormat", "dd/mm/yyyy")
         sheet.cell(`G${row}`).value(calf.treatment || "");
-        sheet.cell(`H${row}`).value(formattedStartDate || "");
         sheet.cell(`I${row}`).value(calf.medication || "");
         sheet.range(`B${row}:I${row}`).style({
           border: {
@@ -130,17 +132,18 @@ class ExcelManager {
         sheet.cell(`B${row}`).value(calf.name || "");
         sheet.cell(`C${row}`).value(calf.gender || "");
 
-        const formattedBirthDate = calf.birthDate
-          ? moment(calf.birthDate)
-              .format("DD/MM/YYYY")
-          : "";
-        const formattedReleaseDate = calf.whenReleased
-          ? moment(calf.whenReleased)   
-              .format("DD/MM/YYYY")
-          : "";
+        const birthDate = calf.birthDate
+                ? moment(calf.birthDate, "YYYY-MM-DD").toDate()
+                : null;
+            sheet.cell(`D${row}`).value(birthDate);
+            sheet.cell(`D${row}`).style("numberFormat", "dd/mm/yyyy");
 
-        sheet.cell(`D${row}`).value(formattedBirthDate);
-        sheet.cell(`E${row}`).value(formattedReleaseDate);
+        const releaseDate = calf.whenReleased
+            ? moment(calf.whenReleased, "YYYY-MM-DD").toDate()
+            : null;
+            sheet.cell(`E${row}`).value(releaseDate);
+            sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");
+
         sheet.cell(`F${row}`).value(calf.daysInGuachera || "");
         sheet.cell(`G${row}`).value(calf.calfWeight || "35");
         sheet.cell(`H${row}`).value(calf.releasedWeight || "");
@@ -160,11 +163,12 @@ class ExcelManager {
 
         sheet.cell(`K${row}`).value(calf.treatment || "");
 
-        const formattedStartDate = calf.startDate
-          ? moment(calf.startDate)
-            .format("DD/MM/YYYY")
-          :"";
-        sheet.cell(`L${row}`).value(formattedStartDate || "");
+        const startDate = calf.startDate
+                ? moment(calf.startDate, "YYYY-MM-DD").toDate()
+                : null;
+            sheet.cell(`L${row}`).value(startDate);
+            sheet.cell(`L${row}`).style("numberFormat", "dd/mm/yyyy");
+
 
         sheet.range(`B${row}:L${row}`).style({
           border: {
@@ -234,33 +238,35 @@ class ExcelManager {
         sheet.cell(`B${row}`).value(calf.name);
         sheet.cell(`C${row}`).value(calf.gender);
 
-        const formattedBirthDate = calf.birthDate
-          ? moment(calf.birthDate)
-              .format("DD/MM/YYYY")
-          : "";
-        const formattedDeadDate = calf.timeDead
-          ? moment(calf.timeDead)
-              .format("DD/MM/YYYY")
-          : "";
-        sheet.cell(`D${row}`).value(formattedBirthDate);
-        sheet.cell(`E${row}`).value(formattedDeadDate);
+        const birthDate = calf.birthDate
+                ? moment(calf.birthDate, "YYYY-MM-DD").toDate()
+                : null;
+            sheet.cell(`D${row}`).value(birthDate);
+            sheet.cell(`D${row}`).style("numberFormat", "dd/mm/yyyy");
+
+        const deadDate = calf.timeDead
+            ? moment(calf.timeDead, "YYYY-MM-DD").toDate()
+            : null;
+             sheet.cell(`E${row}`).value(deadDate);
+            sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");    
         sheet.cell(`F${row}`).value(calf.calostro || "");
         sheet.cell(`G${row}`).value(calf.treatment || "N/A");
-        const formattedStartDate = calf.startDate
-          ? moment(calf.startDate)
-              .format("DD/MM/YYYY")
-          : "";
-        sheet.cell(`H${row}`).value(formattedStartDate || "");
+        const startDate = calf.startDate
+            ? moment(calf.startDate, "YYYY-MM-DD").toDate()
+            : null;
+            sheet.cell(`H${row}`).value(startDate);
+            sheet.cell(`H${row}`).style("numberFormat", "dd/mm/yyyy");
+
         sheet.cell(`I${row}`).value(calf.comment || "");
 
         sheet.cell(`J${row}`).value(calf.resetTreatment ? "SI" : "NO");
         sheet.cell(`K${row}`).value(calf.prevTreatment || "");
 
-        const formattedPrevDate = calf.prevEndDate
-          ? moment(calf.prevEndDate)
-              .format("DD/MM/YYYY")   
-          : "";
-        sheet.cell(`L${row}`).value(formattedPrevDate || "");
+        const prevEndDate = calf.prevEndDate
+            ? moment(calf.prevEndDate, "YYYY-MM-DD").toDate()
+            : null;
+            sheet.cell(`L${row}`).value(prevEndDate);
+            sheet.cell(`L${row}`).style("numberFormat", "dd/mm/yyyy");
 
         sheet.range(`B${row}:L${row}`).style({
           border: {
