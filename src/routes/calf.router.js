@@ -20,10 +20,14 @@ router.post("/add", async (req, res) => {
     };
 
     await calfManager.addCalf(newCalf);
-    res.redirect("/terneros");
+    res
+      .status(200)
+      .json({ success: true, message: "¡Ternero agregado exitosamente!" });
   } catch (error) {
-    res.json({ message: "Error, intentelo nuevamente" });
-    console.log(error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error, inténtelo nuevamente." });
+    console.error(error);
   }
 });
 router.post("/addtoTreatment", async (req, res) => {
@@ -218,17 +222,20 @@ router.post("/released/:id", async (req, res) => {
     );
     const referer = req.headers.referer;
 
-    if (referer && referer.includes("/terneros-guachera")) {
-      res.redirect("/terneros-guachera");
-    } else if (referer && referer.includes("/corral/")) {
-      const dynamicRouteId = referer.split("/").pop();
-      res.redirect(`/corral/${dynamicRouteId}`);
-    } else {
-      res.redirect("/home");
-    }
-    return releasedCalf;
+    res
+      .status(200)
+      .json({
+        success: true,
+        message: "El ternero ha sido liberado exitosamente.",
+      });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res
+      .status(500)
+      .json({
+        success: false,
+        message: "Hubo un problema al procesar la solicitud.",
+      });
   }
 });
 

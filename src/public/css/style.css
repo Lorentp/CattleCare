@@ -1,5 +1,40 @@
+/*Fuentes*/
+
+@font-face {
+  font-family: "Futura Heavy";
+  src: url("/src/public/fonts/futura-std-heavy.otf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "Futura Medium";
+  src: url("/src/public/fonts/futura-std-medium.otf");
+  font-weight: normal;
+  font-style: normal;
+}
+
+/*Colores*/
+:root {
+  --Azul: #379393;
+  --Naranja: #f7b801;
+  --Lila: #873582;
+  --Verde: #aed952;
+  --VerdeOscuro: #15231f;
+  --verdePasto: #2c4125;
+  --LilaOscuro: #53255b;
+}
+
+.enfermery-button {
+  background-color: var(--Lila);
+  padding: 1rem;
+  border-radius: 12px;
+  border: solid 2px;
+  text-decoration: none;
+}
+
 body {
-  background-color: black;
+  background-color: var(--verdePasto);
 }
 a {
   color: black;
@@ -11,10 +46,18 @@ h4,
 h5,
 h6 {
   color: white;
+  font-family: "Futura Heavy", sans-serif;
+}
+
+p,
+li,
+ul,
+a {
+  font-family: "Futura Medium", sans-serif;
 }
 
 .title {
-  background-color: gray;
+  background-color: var(--VerdeOscuro);
   padding: 0.5rem;
   border-radius: 12px;
   border: solid 2px;
@@ -23,7 +66,7 @@ h6 {
   width: auto;
 }
 .title h2 {
-  color: black;
+  color: rgb(255, 255, 255);
 }
 /*Login */
 
@@ -38,7 +81,7 @@ h6 {
 
 .login-container div {
   padding: 2rem;
-  background-color: #ffc32c;
+  background-color: var(--Verde);
 }
 
 .login-container div input {
@@ -48,7 +91,8 @@ h6 {
 
 .login-container div button {
   font-size: 1.5rem;
-  background-color: orange;
+  background-color: var(--verdePasto);
+  color: white;
 }
 
 .input-error {
@@ -62,13 +106,13 @@ h6 {
   padding: 1rem;
   display: flex;
   justify-content: space-between;
-  background-color: #303030;
+  background-color: var(--VerdeOscuro);
   margin-bottom: 2rem;
 }
 
 .headerlogged-div {
   display: flex;
-  background-color: #303030;
+  background-color: var(--VerdeOscuro);
 }
 
 .headerlogged-div h1 {
@@ -112,7 +156,7 @@ nav {
   font-size: 20px;
 }
 .task-container {
-  background-color: #ffc32c;
+  background-color: var(--Naranja);
   margin: 0.5rem;
   border-radius: 12px;
   border: solid 2px;
@@ -130,7 +174,7 @@ nav {
 }
 
 .link-button {
-  background-color: gray;
+  background-color: var(--Verde);
   padding: 1rem;
   border-radius: 12px;
   border: solid 2px;
@@ -142,7 +186,7 @@ nav {
 }
 
 .treated-container {
-  background-color: #98fcff;
+  background-color: var(--Naranja);
   margin: 0.5rem;
   border-radius: 12px;
   border: solid 2px;
@@ -254,7 +298,7 @@ select {
   .headerlogged-div h1 {
     display: flex;
   }
-  .mobile-hidden{
+  .mobile-hidden {
     display: block;
   }
 }
