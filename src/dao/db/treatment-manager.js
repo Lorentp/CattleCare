@@ -1,20 +1,19 @@
 const TreatmentsModel = require("../models/treatment.model.js");
 
 class TreatmentsManager {
-  async addTreatment({ title, medication, duration, owner }) {
-    try {
-      if (!title || !medication || !duration) {
-        console.log("Todos los campos son obligatorios");
-        return;
-      }
-
+  async addTreatment({ title, day1, day2, day3, day4, day5, day6, day7, day8, day9, day10, duration, owner }) {
+    try { 
+      
+      const medication = [day1, day2, day3, day4, day5, day6, day7, day8, day9, day10];
+      const filteredMedication = medication.filter(day => day);
       const newTreatment = new TreatmentsModel({
         title,
-        medication,
         duration,
         owner,
+        medication: filteredMedication
       });
-      console.log(newTreatment)
+      
+      
       await newTreatment.save();
     } catch (error) {
       console.log(error);

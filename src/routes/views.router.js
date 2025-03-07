@@ -48,7 +48,24 @@ router.get("/home", async (req, res) => {
   }
 });
 
-//CALVES
+router.get("/buscar-ternero", async(req,res) => {
+  try {
+    if(!req.session.login){
+      res.redirect("/")
+      return
+    }
+    const userId = req.session.user._id;
+    const search = req.query.search || "";
+    const sortOrder = req.query.sort || "asc";
+
+    const calves = await calfManager.getCalves(userId, search, sortOrder);
+    res.render("searchCalves", {calves})
+  } catch (error) {
+    console.log("Error de servidor", error)
+  }
+})
+
+
 router.get("/terneros", async (req, res) => {
   try {
     if (!req.session.login) {

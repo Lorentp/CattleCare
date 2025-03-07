@@ -7,12 +7,13 @@ const moment = require("moment-timezone");
 router.post("/add", async (req, res) => {
   try {
     const owner = req.session.user._id;
-    const { name, birthDate, calfWeight, calfCalostro, gender } = req.body;
+    const { name, birthDate, calfWeight, calfCalostro, gender, birthType } = req.body;
 
     const newBirthDate = moment(birthDate).add(12, "hours").toDate();
     const newCalf = {
       name: name,
       birthDate: newBirthDate,
+      birthType: birthType,
       calfWeight: calfWeight,
       calfCalostro: calfCalostro,
       gender: gender,
@@ -36,28 +37,28 @@ router.post("/addtoTreatment", async (req, res) => {
     const {
       name,
       startDate,
-      treatment,
+      //treatment,
       endDate,
       duration,
-      medication,
+      treatmentId,
       corral,
       corralId,
     } = req.body;
-
+    console.log(treatmentId)
     const newStartDate = moment(startDate).add(0, "hours").toDate();
     const newEndDate = moment(endDate).add(0, "hours").toDate();
     const yesterday = moment(startDate).subtract(1, "day").toDate();
     const newCalf = {
       name: name,
       startDate: newStartDate,
-      treatment: treatment,
+      //treatment: treatment,
       duration: duration,
-      medication: medication,
       endDate: newEndDate,
       owner: owner,
       corral: corral,
       corralId: corralId,
       lastDayTreated: yesterday,
+      treatmentId: treatmentId
     };
 
     await calfManager.addCalfToTreatment(newCalf);
@@ -81,6 +82,9 @@ router.post("/updatename/:cid", async (req, res) => {
   try {
     const { cid } = req.params;
     const newCalfData = req.body;
+    if (newCalfData.birthDate) {
+      newCalfData.birthDate = moment.tz(newCalfData.birthDate, "America/Argentina/Buenos_Aires").startOf('day').toDate();
+    }
     const newCalf = await calfManager.updateCalf(cid, newCalfData);
     console.log(newCalf);
     res.redirect("/terneros");
@@ -93,52 +97,83 @@ router.post("/delete:cid", async (req, res) => {
   try {
     const deletedCalf = await calfManager.deleteCalf(req.params.cid);
     console.log(deletedCalf);
-    res.redirect("/enfermeria");
+    res.redirect("/terneros");
   } catch (error) {
     console.log(error);
   }
 });
 
-router.post("/resetTreatment", async (req, res) => {
+
+router.post('/resetTreatment', async (req, res) => {
   try {
-    const { calfId, newTreatment, newMedication, newDuration } = req.body;
+    const { calfId, newTreatment, newTitle, newMedication, newDuration } = req.body;
+
+    if (!calfId || !newTreatment || !newMedication || !newDuration) {
+      throw new Error('Faltan datos requeridos');
+    }
+
+    const medicationArray = JSON.parse(newMedication);
+
     const today = moment.tz("America/Argentina/Buenos_Aires");
-    const endDate = today.clone().add(newDuration, "days");
+    const endDate = today.clone().add(parseInt(newDuration, 10), "days");
     const newEndDate = endDate.clone().subtract(1, "days");
 
+    const newTreatmentData = [{
+      _id: newTreatment, 
+      title: newTitle,   
+      duration: parseInt(newDuration, 10),
+      medication: medicationArray 
+    }];
+
     const newCalf = await calfManager.updateCalf(calfId, {
-      startDate: today,
-      endDate: newEndDate,
-      resetTreatment: true,
-      medication: newMedication,
-      duration: newDuration,
-      treatment: newTreatment,
+      treatment: newTreatmentData,
+      startDate: today.toDate(),
+      endDate: newEndDate.toDate(),
+      resetTreatment: true
     });
-    console.log(newCalf);
-    res.redirect("/enfermeria/terneros-por-terminar-tratamiento");
+
+    if (!newCalf) {
+      throw new Error('Ternero no encontrado o no actualizado');
+    }
+
+    console.log('Ternero actualizado:', newCalf);
+    res.redirect('/enfermeria/terneros-por-terminar-tratamiento');
   } catch (error) {
-    console.log(error);
+    console.error('Error al reiniciar tratamiento:', error);
+    res.status(500).send('Error al reiniciar el tratamiento');
   }
 });
+
+module.exports = router;
 
 router.post("/finishTreatment", async (req, res) => {
   try {
-    const { calfId, treatment, endDate } = req.body;
+    const { calfId, treatmentTitle, endDate } = req.body;
+
+    if (!calfId || !treatmentTitle || !endDate) {
+      throw new Error("Faltan datos requeridos");
+    }
 
     const updatedCalf = await calfManager.updateCalf(
       calfId,
       {
         finished: true,
-        prevTreatment: treatment,
+        prevTreatment: treatmentTitle, 
         prevEndDate: endDate,
         resetTreatment: false,
       },
       { new: true }
     );
-    console.log(updatedCalf);
+
+    if (!updatedCalf) {
+      throw new Error("Ternero no encontrado o no actualizado");
+    }
+
+    console.log("Ternero actualizado:", updatedCalf);
     res.redirect("/enfermeria/terneros-por-terminar-tratamiento");
   } catch (error) {
-    console.log(error);
+    console.error("Error al finalizar tratamiento:", error);
+    res.status(500).send("Error al finalizar el tratamiento");
   }
 });
 
@@ -214,6 +249,8 @@ router.post("/released/:id", async (req, res) => {
   try {
     const calfId = req.params.id;
     const weight = req.body.releasedWeight;
+    console.log("Router - ID del ternero:", calfId, "Peso recibido:", weight); // Depuración
+    if (!weight) throw new Error("No se recibió peso del ternero");
     const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate();
     const releasedCalf = await calfManager.releaseCalf(
       calfId,

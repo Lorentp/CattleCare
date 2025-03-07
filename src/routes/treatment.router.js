@@ -18,7 +18,7 @@ router.post("/add", async (req, res) => {
   }
 });
 
-router.post("/update:cid", async (req,res) => {
+router.post("/update/:cid", async (req,res) => {
   try {
     const newTreatment = await treatmentManager.updateTreatment(req.params.cid, req.body)
     console.log(newTreatment)

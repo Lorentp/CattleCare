@@ -1,0 +1,55 @@
+{{>global/headerlogged}}
+
+<nav class="">
+    <a href="/home" class="link-button">Volver al inicio</a>
+</nav>
+
+<div class="main-treatment-container">
+    <div class="title title-calves">
+        <h2>Todos los ternenos</h2>
+    </div>
+
+    <div class="title">
+        <form action="/buscar-ternero" method="GET">
+        <input type="text" name="search" placeholder="Buscar terneros...">
+        <h2>Ordernar de manera:</h2>
+        <select id="sortOrder" name="sort" >
+            <option value="asc">Ascendente</option>
+            <option value="desc">Descendente</option>
+        </select>        
+    </div>
+
+    {{#each calves}}
+    <div class="treated-container">
+    <div>
+    <p class="calf">Nombre del ternero: {{this.name}}</p>
+    </div>
+    <div>
+    <p class="gender">Sexo: {{this.gender}}</p>
+    </div>
+    <div>
+    {{#if this.birthDate}}
+    <p class="birthDate">        
+    Fecha de nacimiento: {{formatDate this.birthDate}}
+    </p>
+    {{/if}}
+    </div>
+    {{#if this.calfWeight}}
+    <div>
+    <p>Peso al nacimiento: {{this.calfWeight}} kilos</p>
+    </div>
+    {{/if}}
+    {{#if this.calfCalostro}}
+    <div>
+    <p>Resultado de calostrado: {{this.calfCalostro}}</p>
+    </div>
+    {{/if}}
+
+    {{#if this.treatment}}
+    <p class="treatment">        
+        Tratado por {{getTreatment this.treatment}} el dia {{formatDate this.startDate}}
+    </p>  
+    {{/if}}
+</div>
+{{/each}}
+</div>

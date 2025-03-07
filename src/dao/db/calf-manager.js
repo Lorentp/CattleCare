@@ -1,8 +1,9 @@
 const CalfModel = require("../models/calf.model.js");
+const TreatmentModel = require("../models/treatment.model.js");
 const moment = require("moment-timezone");
 
 class CalfManager {
-  async addCalf({ name, birthDate, gender, calfWeight, calfCalostro, owner }) {
+  async addCalf({ name, birthDate, gender, birthType , calfWeight, calfCalostro, owner }) {
     try {
       let calfExist = await CalfModel.findOne({ owner: owner, name: name });
 
@@ -11,6 +12,7 @@ class CalfManager {
         calfExist.birthDate;
         calfExist.calfWeight;
         calfExist.calfCalostro;
+        calfExist.calfBirthType;
         await calfExist.save();
         console.log("Ternero actualizado:", calfExist);
       } else {
@@ -21,6 +23,7 @@ class CalfManager {
           calfWeight,
           calfCalostro,
           gender,
+          birthType,
           owner,
         });
         await newCalf.save();
@@ -33,45 +36,41 @@ class CalfManager {
 
   async addCalfToTreatment({
     name,
-
-    treatment,
+    treatmentId,
     startDate,
     owner,
     endDate,
-    duration,
-    medication,
     corral,
     corralId,
     lastDayTreated,
   }) {
     try {
-      let calfExist = await CalfModel.findOne({ owner: owner, name: name });
 
+      const treatment = await TreatmentModel.findById(treatmentId)
+      let calfExist = await CalfModel.findOne({ owner: owner, name: name });
       if (calfExist) {
-        calfExist.treatment = treatment;
+        calfExist.treatment = treatment; // Asignamos el array completo
         calfExist.startDate = startDate;
         calfExist.endDate = endDate;
-        calfExist.duration = duration;
-        calfExist.medication = medication;
         calfExist.corral = corral;
         calfExist.corralId = corralId;
         calfExist.lastDayTreated = lastDayTreated;
+        calfExist.resetTreatment = false; // Reseteamos si había un reset
         await calfExist.save();
         console.log("Ternero actualizado:", calfExist);
       } else {
         // Si no existe, crear un nuevo ternero
         const newCalf = new CalfModel({
           name,
-          treatment,
+          treatment: treatment,
           startDate,
           endDate,
-          duration,
-          medication,
           owner,
           corral,
           corralId,
           lastDayTreated,
         });
+        
         await newCalf.save();
         console.log("Nuevo ternero creado:", newCalf);
       }

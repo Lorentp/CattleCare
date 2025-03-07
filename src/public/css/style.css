@@ -2,14 +2,14 @@
 
 @font-face {
   font-family: "Futura Heavy";
-  src: url("/src/public/fonts/futura-std-heavy.otf");
+  src: url("../fonts/futura-std-heavy.otf");
   font-weight: normal;
   font-style: normal;
 }
 
 @font-face {
   font-family: "Futura Medium";
-  src: url("/src/public/fonts/futura-std-medium.otf");
+  src: url("../fonts/futura-std-medium.otf");
   font-weight: normal;
   font-style: normal;
 }
@@ -124,6 +124,11 @@ a {
 }
 
 /*Nav*/
+.welcome-button {
+  display: flex;
+  justify-content: space-between;
+}
+
 nav {
   display: flex;
   justify-content: space-between;
@@ -179,6 +184,9 @@ nav {
   border-radius: 12px;
   border: solid 2px;
   text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 .corral-button {
   width: 10%;

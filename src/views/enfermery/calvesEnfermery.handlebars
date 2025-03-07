@@ -38,19 +38,16 @@
     </div>
     <div>
     <p class="treatment">        
-    Tratamiento: {{this.treatment}}
+    Tratamiento: {{this.treatment.[0].title}}
     </p>
     </div>
     <div>
     <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
     </div>
     <div>
-    <p>Días totales de tratamiento: {{this.duration}}</p>
+    <p>Días totales de tratamiento: {{this.treatment.[0].duration}}</p>
     </div>
     <div>
-    <p class="medication">        
-    Subministrar: {{this.medication}}
-    </p>
     </div>
     <div>
     <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>

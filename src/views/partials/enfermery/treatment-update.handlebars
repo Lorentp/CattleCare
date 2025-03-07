@@ -1,38 +1,39 @@
-<div id="modifyTreatmentRealTime" class=""></div>
 <div class="form-container">
   <h1>Modificar tratamiento</h1>
   <form id="updateTreatmentFormData">
+    <label for="nameInputUpdateTreatment">Seleccionar tratamiento:</label>
     <select id="nameInputUpdateTreatment" name="treatment" required>
       <option value="" disabled selected>Seleccionar tratamiento</option>
       {{#each treatments}}
         <option
-          value="{{this.title}}"
+          value="{{this._id}}"
+          data-title="{{this.title}}"
           data-duration="{{this.duration}}"
-          medication="{{this.medication}}"
-          _id="{{this._id}}"
+          data-medication='{{json this.medication}}'
         >{{this.title}}</option>
       {{/each}}
     </select>
 
     <div>
-      <input type="hidden" id="idInputUpdateTreatment" />
-      Medicamentos:
-      <input
-        type="text"
-        id="medicationUpdateTreatment"
-        name="medication"
-        required
-      />
+      <input type="hidden" id="idInputUpdateTreatment" name="treatmentId" />
     </div>
-    <div>
-      Duración (días en números):
-      <input
-        type="Number"
-        id="durationUpdateTreatment"
-        name="duration"
-        required
-      />
-    </div>
+
+    <label for="durationUpdateSelect">Duración (días):</label>
+    <select id="durationUpdateSelect" name="duration" required>
+      <option value="" disabled selected>Seleccione...</option>
+      <option value="1">1</option>
+      <option value="2">2</option>
+      <option value="3">3</option>
+      <option value="4">4</option>
+      <option value="5">5</option>
+      <option value="6">6</option>
+      <option value="7">7</option>
+      <option value="8">8</option>
+      <option value="9">9</option>
+      <option value="10">10</option>
+    </select>
+
+    <div id="day-inputs-update-container"></div>
 
     <input class="form-button" type="submit" value="Actualizar tratamiento" />
   </form>

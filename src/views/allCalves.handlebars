@@ -41,64 +41,73 @@
 
 
 
-
-
 {{#each calves}}
     <div class="treated-container">
-    <div>
-    <p class="calf">Nombre del ternero: {{this.name}}</p>
-    </div>
-    <div>
-    <p class="gender">Sexo: {{this.gender}}</p>
-    </div>
-    <div>
-    {{#if this.birthDate}}
-    <p class="birthDate">        
-    Fecha de nacimiento: {{formatDate this.birthDate}}
-    </p>
-    {{else}}
-    <form action="/calf/birth/{{this._id}}" method="POST">
-            <button type="button" class="link-button load-birth-button" data-id="{{this._id}}">Cargar fecha de nacimiento</button>
-    </form>
-    {{/if}}
-    </div>
-    {{#if this.calfWeight}}
-    <div>
-    <p>Peso al nacimiento: {{this.calfWeight}} kilos</p>
-    </div>
-    {{/if}}
-    {{#if this.calfCalostro}}
-    <div>
-    <p>Resultado de calostrado: {{this.calfCalostro}}</p>
-    </div>
-    {{/if}}
-
-    {{#unless this.calfWeight}}
-        <form action="/calf/weigh/{{this._id}}" method="POST">
-                <button type="button" class="link-button load-weight-button" data-id="{{this._id}}">Cargar peso del ternero</button>
-        </form>
-    {{/unless}}
-    {{#unless this.calfCalostro}}
-        <form action="/calf/calostrum/{{this._id}}" method="POST">
-                <button type="button" class="link-button load-calostrum-button" data-id="{{this._id}}">Cargar calostrado</button>
-        </form>
-    {{/unless}}
-    <form action="/calf/dead/{{this._id}}" method="POST">
-            <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
-    </form>
-    <form action="/calf/released/{{this._id}}" method="POST">
-            <button type="button" class="link-button release-calf-button" data-id="{{this._id}}">Largar ternero a recria</button>
-    </form>
-    {{#unless this.stopMilking}}
-    <form action="/stopMilking/calf/{{this._id}}" method="POST"  class="stop-milking-form">
-            <button type="button" class="link-button stop-milking-button" data-id="{{this._id}}">Comenzar desleche</button>
-    </form>
-    
-    {{/unless}}
-</div>
+        <div>
+            <p class="calf">Nombre del ternero: {{this.name}}</p>
+        </div>
+        <div>
+            <p class="gender">Sexo: {{this.gender}}</p>
+        </div>
+        <div>
+            {{#if this.birthDate}}
+                <p class="birthDate">        
+                    Fecha de nacimiento: {{formatDate this.birthDate}}
+                </p>
+            {{else}}
+                <form action="/calf/birth/{{this._id}}" method="POST">
+                    <button type="button" class="link-button load-birth-button" data-id="{{this._id}}">Cargar fecha de nacimiento</button>
+                </form>
+            {{/if}}
+            {{#if this.birthType}}
+                <p class="birthType">        
+                    Tipo de parto: {{this.birthType}}
+                </p>
+            {{/if}}
+        </div>
+        <div>
+            {{#if this.calfWeight}}
+                <p>Peso al nacimiento: {{this.calfWeight}} kilos</p>
+            {{/if}}
+        </div>
+        <div>
+            {{#if this.calfCalostro}}
+                <p>Resultado de calostrado: {{this.calfCalostro}}</p>
+            {{/if}}
+        </div>
+        <div>
+            {{#unless this.calfWeight}}
+                <form action="/calf/weigh/{{this._id}}" method="POST">
+                    <button type="button" class="link-button load-weight-button" data-id="{{this._id}}">Cargar peso del ternero</button>
+                </form>
+            {{/unless}}
+        </div>
+        <div>
+            {{#unless this.calfCalostro}}
+                <form action="/calf/calostrum/{{this._id}}" method="POST">
+                    <button type="button" class="link-button load-calostrum-button" data-id="{{this._id}}">Cargar calostrado</button>
+                </form>
+            {{/unless}}
+        </div>
+        <div>
+            <form action="/calf/dead/{{this._id}}" method="POST">
+                <button type="button" class="link-button mark-dead-calf" data-id="{{this._id}}">Dar ternero de baja</button>
+            </form>
+        </div>
+        <div>
+            <form action="/calf/released/{{this._id}}" method="POST">
+                <button type="button" class="link-button release-calf-button" data-id="{{this._id}}">Largar ternero a recria</button>
+            </form>
+        </div>
+        <div>
+            {{#unless this.stopMilking}}
+                <form action="/stopMilking/calf/{{this._id}}" method="POST" class="stop-milking-form">
+                    <button type="button" class="link-button stop-milking-button" data-id="{{this._id}}">Comenzar desleche</button>
+                </form>
+            {{/unless}}
+        </div>
+    </div><!-- Cierre del treated-container -->
 {{/each}}
-</div>
-
 
 <script src="/js/enfermery/markAsDead.js"></script>
 <script src="/js/calves/loadWeight.js"></script>

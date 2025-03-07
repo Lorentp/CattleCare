@@ -40,19 +40,20 @@
         {{/if}}
         <div>
             <p class="treatment">        
-                Tratamiento: {{this.treatment}}
+                Tratamiento: {{this.treatment.[0].title}}
             </p>
         </div>
         <div>
             <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
         </div>
         <div>
-            <p>Días totales de tratamiento: {{this.duration}}</p>
+            <p>Días totales de tratamiento: {{this.treatment.[0].duration}}</p>
         </div>
-        <div>
-            <p class="medication">        
-                Suministrar por día: {{this.medication}}
-            </p>
+        <div class="medication-container"
+                data-start-date="{{this.startDate}}"
+                data-medication="{{json this.treatment.[0].medication}}">
+
+            <p class="medication"></p>
         </div>
         <div>
             <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
@@ -98,7 +99,7 @@
         </div>
         <div>
             <p class="treatment">        
-                Tratamiento: {{this.treatment}}
+                Tratamiento: {{this.treatment.[0].title}}
             </p>
         </div>
          {{#if this.calfCalostro}}
@@ -112,12 +113,13 @@
             <p>Empieza tratamiento el día: {{formatDate this.startDate}}</p>
         </div>
         <div>
-            <p>Días totales de tratamiento: {{this.duration}}</p>
+            <p>Días totales de tratamiento: {{this.treatment.[0].duration}}</p>
         </div>
-        <div>
-            <p class="medication">        
-                Suministrar por día: {{this.medication}}
-            </p>
+        <div class="medication-container"
+                data-start-date="{{this.startDate}}"
+                data-medication="{{json this.treatment.[0].medication}}">
+
+            <p class="medication"></p>
         </div>
         <div>
             <p>Finaliza tratamiento el día: {{{formatDate this.endDate}}}</p>
@@ -143,3 +145,4 @@
    
 <script src="/js/enfermery/isTreatedForm.js"></script>
 <script src="/js/enfermery/markAsDead.js"></script>
+<script src="/js/enfermery/currentMedication.js"></script>

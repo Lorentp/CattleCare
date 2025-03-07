@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
     { buttonId: "newCalfButton", formId: "newCalfForm" },
     { buttonId: "newTaskButton", formId: "newTaskForm" },
     { buttonId: "updateCalfButton", formId: "updateCalfForm" },
+    { buttonId: "DeleteCalfButton", formId: "deleteCalfForm" },
     { buttonId: "newUpdateTaskButton", formId: "newUpdateTaskForm" },
     { buttonId: "newDeleteTaskButton", formId: "newDeleteTaskForm" },
   ];

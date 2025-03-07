@@ -1,11 +1,11 @@
 
 /*Form para agregar terneros*/ 
-const treatment= document.getElementById('treatment')
+const treatmentSelect= document.getElementById('treatment')
 const startDateInput = document.getElementById("startDate")
 const infoTreatment = document.getElementById("infoTreatment")
 const durationInput = document.getElementById("duration")
 const endDateInput = document.getElementById("endDate")
-const medicationInput = document.getElementById("medication")
+//const medicationInput = document.getElementById("medication")
 const corral = document.getElementById("corral")
 const corralIdInput = document.getElementById("corralIdInput")
 
@@ -23,19 +23,26 @@ function calculateEndDate(startDate, duration) {
 }
 
 function updateTreatmentInfo() {
-  const selectedOption = treatment.options[treatment.selectedIndex]
-  const durationDays = selectedOption.getAttribute("data-duration");
-  const medication = selectedOption.getAttribute("medication")
-  const duration = parseInt(selectedOption.getAttribute("data-duration"), 10)
+  const selectedOption = treatmentSelect.options[treatmentSelect.selectedIndex];
+  if (!selectedOption || selectedOption.value === "") {
+    console.log("No se seleccionó tratamiento.");
+    return;
+  }
+  const duration = parseInt(selectedOption.getAttribute("data-duration"), 10);
+  if (!startDateInput.value || isNaN(duration)) {
+    console.log("Falta fecha de inicio o duración inválida.");
+    endDateInput.value = "";
+    return;
+  }
+
   const startDate = new Date (startDateInput.value)
 
   if(startDate && !isNaN(duration)) {
     const endDate = new Date(startDate.getTime())
     endDate.setDate(endDate.getDate() + (duration - 1))
-    const formattedEndDate = endDate.toISOString().slice(0, 10);
+    const formattedEndDate = endDate.toISOString().slice(0, 10);  
     durationInput.value = duration
     endDateInput.value = formattedEndDate
-    medicationInput.value = medication 
   } else {
     durationInput.value = ""
     endDateInput.value = ""         

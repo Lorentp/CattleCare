@@ -5,7 +5,7 @@
   <form id="updateCalfNameFormData">
     <input type="hidden" name="_method" value="PUT" />
     <div>
-      <p>Nombre del ternero:</p>
+      <p>Caravana del ternero:</p>
       <select id="nameUpdateCalfName" required>
         <option value="" disabled selected>Seleccionar ternero</option>
         {{#each calves}}
@@ -13,6 +13,11 @@
             value="{{this.name}}"
             _id="{{this._id}}"
             name="{{this.name}}"
+            data-birth-type="{{this.birthType}}"
+            data-gender="{{this.gender}}"
+            data-birth-date="{{this.birthDate}}"
+            data-weight="{{this.calfWeight}}"
+            data-calotrum="{{this.calfCalostro}}"
           >{{this.name}}</option>
         {{/each}}
       </select>
@@ -20,8 +25,38 @@
     <input type="hidden" name="_id" id="idInputCalfName" readonly />
 
     <div>
-      <p>Nuevo nombre para el ternero</p>
+      <p>Nueva caravana para el ternero</p>
       <input type="text" id="newName" name="name" required />
+    </div>
+
+    <div>
+      <p>Tipo de parto</p>
+      <select name="newBirthType" id="" >
+        <option value="" disabled selected>Tipo de parto</option>
+        <option value="1-Normal">1-Normal</option>
+        <option value="2-Asistido">2-Asistido</option>
+        <option value="3-Cesárea">3-Cesárea</option>
+      </select>
+    </div>
+    <div>
+      <p>Sexo</p>
+      <select name="newGender" id="" >
+        <option value="" disabled selected>Género</option>
+        <option value="Macho">Macho</option>
+        <option value="Hembra">Hembra</option>
+      </select>
+    </div>
+    <div>
+      <p>Fecha de nacimiento</p>
+      <input type="date" id="newBirthDate" name="birthDate"/>
+    </div>
+    <div>
+      <p>Peso</p>
+      <input type="text" id="newWeigh" name="name"  />
+    </div>
+    <div>
+      <p>Calostrado</p>
+      <input type="text" id="newCalotrum" name="name"  />
     </div>
     <input class="form-button" type="submit" value="Actualizar ternero" />
   </form>

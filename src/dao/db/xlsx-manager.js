@@ -15,13 +15,12 @@ class ExcelManager {
       sheet.freezePanes(0, 4); 
       sheet.cell("B4").value("Ternero");
       sheet.cell("C4").value("Sexo");
-      sheet.cell("D4").value("Nacimiento");
-      sheet.cell("E4").value("Peso al nacer");
-      sheet.cell("F4").value("Calostrado");
-      sheet.cell("G4").value("Tratamiento");
-      sheet.cell("H4").value("Cuando fue");
-      sheet.cell("I4").value("Protocolo");
-      
+      sheet.cell("D4").value("Tipo de parto"); 
+      sheet.cell("E4").value("Nacimiento");   
+      sheet.cell("F4").value("Peso al nacer");
+      sheet.cell("G4").value("Calostrado");    
+      sheet.cell("H4").value("Tratamiento");   
+      sheet.cell("I4").value("Cuando fue");    
 
       sheet.range("B4:I4").style({
         fill: { type: "solid", color: "FFFF00" },
@@ -35,33 +34,46 @@ class ExcelManager {
 
       sheet.column("B").width(20);
       sheet.column("C").width(10);
-      sheet.column("D").width(12);
-      sheet.column("E").width(13);
-      sheet.column("F").width(15);
-      sheet.column("G").width(25);
-      sheet.column("H").width(12);
-      sheet.column("I").width(160);
+      sheet.column("D").width(15);
+      sheet.column("E").width(12);
+      sheet.column("F").width(13);
+      sheet.column("G").width(15);
+      sheet.column("H").width(25);
+      sheet.column("I").width(12);
       calves.forEach((calf, index) => {
         const row = index + 5;
 
         sheet.cell(`B${row}`).value(calf.name || "");
         sheet.cell(`C${row}`).value(calf.gender || "");
         
+       
+        sheet.cell(`D${row}`).value(calf.birthType || "");
+
+        
         const birthDate = calf.birthDate 
               ? moment(calf.birthDate, "YYYY-MM-DD").toDate() 
               : null;
-            sheet.cell(`D${row}`).value(birthDate);
-            sheet.cell(`D${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`E${row}`).value(birthDate); 
+        sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");
 
-        sheet.cell(`E${row}`).value(calf.calfWeight || "");
-        sheet.cell(`F${row}`).value(calf.calfCalostro || "");
+        sheet.cell(`F${row}`).value(calf.calfWeight || ""); 
+        sheet.cell(`G${row}`).value(calf.calfCalostro || ""); 
+        
+        let treatmentName = "";
+        if (typeof calf.treatment === 'string') {
+          treatmentName = calf.treatment;
+        } else if (Array.isArray(calf.treatment) && calf.treatment.length > 0) {
+          const treatmentObj = calf.treatment[0];
+          treatmentName = treatmentObj.title || "";
+        }
+        sheet.cell(`H${row}`).value(treatmentName); 
+
         const startDate = calf.startDate 
               ? moment(calf.startDate, "YYYY-MM-DD").toDate() 
               : null;
-            sheet.cell(`H${row}`).value(startDate);
-            sheet.cell(`H${row}`).style("numberFormat", "dd/mm/yyyy")
-        sheet.cell(`G${row}`).value(calf.treatment || "");
-        sheet.cell(`I${row}`).value(calf.medication || "");
+        sheet.cell(`I${row}`).value(startDate); 
+        sheet.cell(`I${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`G${row}`).value(treatmentName);
         sheet.range(`B${row}:I${row}`).style({
           border: {
             bottom: { style: "thin", color: "000000" },
@@ -95,17 +107,19 @@ class ExcelManager {
       sheet.freezePanes(0, 4); 
       sheet.cell("B4").value("Ternero");
       sheet.cell("C4").value("Sexo");
-      sheet.cell("D4").value("Nacimiento");
-      sheet.cell("E4").value("Dia largado");
-      sheet.cell("F4").value("Dias en guachera");
-      sheet.cell("G4").value("Peso al nacimiento");
-      sheet.cell("H4").value("Peso al ser largado");
-      sheet.cell("I4").value("Kilos ganados");
-      sheet.cell("J4").value("Aumento x día");
-      sheet.cell("K4").value("Tratamiento");
-      sheet.cell("L4").value("Cuando fue");
+      sheet.cell("D4").value("Tipo de parto"); 
+      sheet.cell("E4").value("Nacimiento");    
+      sheet.cell("F4").value("Dia largado");  
+      sheet.cell("G4").value("Dias en guachera"); 
+      sheet.cell("H4").value("Peso al nacimiento"); 
+      sheet.cell("I4").value("Peso al ser largado"); 
+      sheet.cell("J4").value("Kilos ganados");  
+      sheet.cell("K4").value("Aumento x día");  
+      sheet.cell("L4").value("Tratamiento");    
+      sheet.cell("M4").value("Cuando fue");    
 
-      sheet.range("B4:L4").style({
+      
+      sheet.range("B4:M4").style({
         fill: { type: "solid", color: "FFFF00" },
         border: {
           top: { style: "thick", color: "000000" },
@@ -117,60 +131,73 @@ class ExcelManager {
 
       sheet.column("B").width(20);
       sheet.column("C").width(10);
-      sheet.column("D").width(12);
-      sheet.column("E").width(13);
-      sheet.column("F").width(15);
-      sheet.column("G").width(20);
-      sheet.column("H").width(20);
-      sheet.column("I").width(15);
-      sheet.column("J").width(15);
-      sheet.column("K").width(25);
-      sheet.column("L").width(15);
+      sheet.column("D").width(12); 
+      sheet.column("E").width(12); 
+      sheet.column("F").width(13); 
+      sheet.column("G").width(15);
+      sheet.column("H").width(20); 
+      sheet.column("I").width(20); 
+      sheet.column("J").width(15); 
+      sheet.column("K").width(15);
+      sheet.column("L").width(25); 
+      sheet.column("M").width(15);
+
       calvesReleased.forEach((calf, index) => {
         const row = index + 5;
 
         sheet.cell(`B${row}`).value(calf.name || "");
         sheet.cell(`C${row}`).value(calf.gender || "");
 
+        
+        sheet.cell(`D${row}`).value(calf.birthType || "");
+
+        
         const birthDate = calf.birthDate
                 ? moment(calf.birthDate, "YYYY-MM-DD").toDate()
                 : null;
-            sheet.cell(`D${row}`).value(birthDate);
-            sheet.cell(`D${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`E${row}`).value(birthDate); 
+        sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");
 
         const releaseDate = calf.whenReleased
             ? moment(calf.whenReleased, "YYYY-MM-DD").toDate()
             : null;
-            sheet.cell(`E${row}`).value(releaseDate);
-            sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`F${row}`).value(releaseDate); 
+        sheet.cell(`F${row}`).style("numberFormat", "dd/mm/yyyy");
 
-        sheet.cell(`F${row}`).value(calf.daysInGuachera || "");
-        sheet.cell(`G${row}`).value(calf.calfWeight || "35");
-        sheet.cell(`H${row}`).value(calf.releasedWeight || "");
+        sheet.cell(`G${row}`).value(calf.daysInGuachera || ""); 
+        sheet.cell(`H${row}`).value(calf.calfWeight || "35");  
+        sheet.cell(`I${row}`).value(calf.releasedWeight || ""); 
+
         if (typeof calf.weightDiference === 'number') {
-          sheet.cell(`I${row}`).value(calf.weightDiference);
+          sheet.cell(`J${row}`).value(calf.weightDiference);
         } else {
-          sheet.cell(`I${row}`).formula(`=H${row}-G${row}`);
+          sheet.cell(`J${row}`).formula(`=I${row}-H${row}`); 
         }
-      
       
         if (typeof calf.weightGainPerDay === 'number') {
-          sheet.cell(`J${row}`).value(calf.weightGainPerDay);
+          sheet.cell(`K${row}`).value(calf.weightGainPerDay); 
         } else {
-          sheet.cell(`J${row}`).formula(`=I${row}/F${row}`);
+          sheet.cell(`K${row}`).formula(`=J${row}/G${row}`); 
         }
-        sheet.column("J").style({ numberFormat: "0.000" });
+        sheet.column("K").style({ numberFormat: "0.000" });
 
-        sheet.cell(`K${row}`).value(calf.treatment || "");
+        let treatmentName = "";
+        if (typeof calf.treatment === 'string') {
+          treatmentName = calf.treatment;
+        } else if (Array.isArray(calf.treatment) && calf.treatment.length > 0) {
+          const treatmentObj = calf.treatment[0];
+          treatmentName = treatmentObj.title || "";
+        }
+        sheet.cell(`L${row}`).value(treatmentName); 
 
         const startDate = calf.startDate
                 ? moment(calf.startDate, "YYYY-MM-DD").toDate()
                 : null;
-            sheet.cell(`L${row}`).value(startDate);
-            sheet.cell(`L${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`M${row}`).value(startDate); 
+        sheet.cell(`M${row}`).style("numberFormat", "dd/mm/yyyy");
 
-
-        sheet.range(`B${row}:L${row}`).style({
+        
+        sheet.range(`B${row}:M${row}`).style({
           border: {
             bottom: { style: "thin", color: "000000" },
             left: { style: "thin", color: "000000" },
@@ -203,16 +230,17 @@ class ExcelManager {
 
       sheet.cell("B4").value("Ternero");
       sheet.cell("C4").value("Sexo");
-      sheet.cell("D4").value("Nacimiento");
-      sheet.cell("E4").value("Fecha de muerte");
-      sheet.cell("F4").value("Calostrado");
-      sheet.cell("G4").value("Tratamiento");
-      sheet.cell("H4").value("Cuando fue");
-      sheet.cell("I4").value("Comentario");
-      sheet.cell("J4").value("Fue retratado");
-      sheet.cell("K4").value("Otro tratamiento previo");
-      sheet.cell("L4").value("Cuando fue");
-      sheet.range("B4:L4").style({
+      sheet.cell("D4").value("Tipo de parto"); 
+      sheet.cell("E4").value("Nacimiento");    
+      sheet.cell("F4").value("Fecha de muerte");
+      sheet.cell("G4").value("Calostrado");     
+      sheet.cell("H4").value("Tratamiento");   
+      sheet.cell("I4").value("Cuando fue");     
+      sheet.cell("J4").value("Comentario");     
+      sheet.cell("K4").value("Fue retratado");  
+
+      
+      sheet.range("B4:K4").style({
         fill: { type: "solid", color: "FFFF00" },
         border: {
           top: { style: "thick", color: "000000" },
@@ -224,51 +252,59 @@ class ExcelManager {
 
       sheet.column("B").width(20);
       sheet.column("C").width(10);
-      sheet.column("D").width(12);
-      sheet.column("E").width(13);
-      sheet.column("F").width(13);
-      sheet.column("G").width(25);
-      sheet.column("H").width(25);
-      sheet.column("I").width(120);
-      sheet.column("J").width(15);
-      sheet.column("K").width(25);
-      sheet.column("L").width(15);
+      sheet.column("D").width(12); 
+      sheet.column("E").width(12); 
+      sheet.column("F").width(13); 
+      sheet.column("G").width(13); 
+      sheet.column("H").width(25); 
+      sheet.column("I").width(25); 
+      sheet.column("J").width(120); 
+      sheet.column("K").width(15);  
+
       deadCalves.forEach((calf, index) => {
         const row = index + 5;
-        sheet.cell(`B${row}`).value(calf.name);
-        sheet.cell(`C${row}`).value(calf.gender);
+        sheet.cell(`B${row}`).value(calf.name || "");
+        sheet.cell(`C${row}`).value(calf.gender || "");
 
+       
+        sheet.cell(`D${row}`).value(calf.birthType || "");
+
+        
         const birthDate = calf.birthDate
                 ? moment(calf.birthDate, "YYYY-MM-DD").toDate()
                 : null;
-            sheet.cell(`D${row}`).value(birthDate);
-            sheet.cell(`D${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`E${row}`).value(birthDate);
+        sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");
 
         const deadDate = calf.timeDead
             ? moment(calf.timeDead, "YYYY-MM-DD").toDate()
             : null;
-             sheet.cell(`E${row}`).value(deadDate);
-            sheet.cell(`E${row}`).style("numberFormat", "dd/mm/yyyy");    
-        sheet.cell(`F${row}`).value(calf.calostro || "");
-        sheet.cell(`G${row}`).value(calf.treatment || "N/A");
+        sheet.cell(`F${row}`).value(deadDate);
+        sheet.cell(`F${row}`).style("numberFormat", "dd/mm/yyyy");    
+
+        sheet.cell(`G${row}`).value(calf.calostro || ""); 
+
+        let treatmentName = "";
+        if (typeof calf.treatment === 'string') {
+          treatmentName = calf.treatment;
+        } else if (Array.isArray(calf.treatment) && calf.treatment.length > 0) {
+          const treatmentObj = calf.treatment[0];
+          treatmentName = treatmentObj.title || "";
+        }
+        sheet.cell(`H${row}`).value(treatmentName); 
+
         const startDate = calf.startDate
             ? moment(calf.startDate, "YYYY-MM-DD").toDate()
             : null;
-            sheet.cell(`H${row}`).value(startDate);
-            sheet.cell(`H${row}`).style("numberFormat", "dd/mm/yyyy");
+        sheet.cell(`I${row}`).value(startDate);
+        sheet.cell(`I${row}`).style("numberFormat", "dd/mm/yyyy");
 
-        sheet.cell(`I${row}`).value(calf.comment || "");
+        sheet.cell(`J${row}`).value(calf.comment || "");
 
-        sheet.cell(`J${row}`).value(calf.resetTreatment ? "SI" : "NO");
-        sheet.cell(`K${row}`).value(calf.prevTreatment || "");
+        sheet.cell(`K${row}`).value(calf.resetTreatment ? "SI" : "NO"); 
 
-        const prevEndDate = calf.prevEndDate
-            ? moment(calf.prevEndDate, "YYYY-MM-DD").toDate()
-            : null;
-            sheet.cell(`L${row}`).value(prevEndDate);
-            sheet.cell(`L${row}`).style("numberFormat", "dd/mm/yyyy");
-
-        sheet.range(`B${row}:L${row}`).style({
+        
+        sheet.range(`B${row}:K${row}`).style({
           border: {
             bottom: { style: "thin", color: "000000" },
             left: { style: "thin", color: "000000" },
@@ -285,7 +321,6 @@ class ExcelManager {
     } catch (error) {
       console.log(error);
     }
-  }
-}
+  }}
 
 module.exports = ExcelManager;

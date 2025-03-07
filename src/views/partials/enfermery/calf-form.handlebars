@@ -27,22 +27,19 @@
     <div>
       <p>Tratamiento:</p>
 
-      <select id="treatment" name="treatment" required>
+      <select id="treatment" name="treatmentId" required>
         <option value="" disabled selected>Seleccionar Tratamiento</option>
         {{#each treatments}}
           <option
-            value="{{this.title}}"
+            value="{{this._id}}"
             data-duration="{{this.duration}}"
-            medication="{{this.medication}}"
           >{{this.title}}</option>
         {{/each}}
       </select>
     </div>
 
     <div id="infoTreatment">
-      <p>Tratar con:</p>
-      <input type="text" name="medication" id="medication" readonly />
-      <p>Duración del tratamiento:</p>
+      <p>Días de tratamiento:</p>
       <input type="number" name="duration" id="duration" readonly />
       <p>Fecha de finalización del tratamiento:</p>
       <input type="date" name="endDate" id="endDate" readonly />

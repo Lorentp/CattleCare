@@ -19,7 +19,7 @@
     </div>
     <div>
     <p class="treatment">        
-    Tratamiento: {{this._doc.treatment}}
+    Tratamiento: {{this._doc.treatment.0.title}}
     </p>
     {{#if this.calfCalostro}}
         <div>
@@ -33,39 +33,36 @@
     <p>Empieza tratamiento el día: {{formatDate this._doc.startDate}}</p>
     </div>
     <div>
-    <p>Dias totales de tratamiento: {{this._doc.duration}}</p>
+    <p>Dias totales de tratamiento: {{this._doc.treatment.0.duration}}</p>
     </div>
-    <div>
-    <p class="medication">        
-    Suministrar por día: {{this._doc.medication}}
-    </p>
-    </div>
+    
     <div>
     <p>Finaliza tratamiento el día: {{{formatDate this._doc.endDate}}}</p>
     </div>
     <div class="reset-button-container">
-      <form action="/calf/resetTreatment" method="POST">
-       <h3>EN CASO DE QUERER REINICIAR EL TRATAMIENTO, SELECCIONE CON CUAL QUIERE CONTINUAR</h3>
+      <form action="/calf/resetTreatment" method="POST" id="resetTreatmentForm">
+        <h3>EN CASO DE QUERER REINICIAR EL TRATAMIENTO, SELECCIONE CON CUAL QUIERE CONTINUAR</h3>
         <select id="resetTreatmentCalf" name="newTreatment" required>
-        <option value="" disabled selected>Tratamientos</option>
-        {{#each treatments}}
-          <option
-            value="{{this.title}}"
-            medication="{{this.medication}}"
-            data-duration="{{this.duration}}"
-          >{{this.title}}</option>
-        {{/each}}
+          <option value="" disabled selected>Tratamientos</option>
+          {{#each treatments}}
+            <option
+              value="{{this._id}}"
+              data-title="{{this.title}}"
+              data-duration="{{this.duration}}"
+              data-medication='{{json this.medication}}'
+            >{{this.title}}</option>
+          {{/each}}
         </select>
+        <input type="hidden" id="newTitleInput" name="newTitle" value="">
         <input type="hidden" id="newMedicationInput" name="newMedication" value="">
         <input type="hidden" id="newDurationInput" name="newDuration" value="">
-      
         <input type="hidden" name="calfId" value="{{this._doc._id}}">
         <button type="button" class="link-button reset-button">Reiniciar tratamiento</button>
       </form>
       
       <form action="/calf/finishTreatment" method="post">
         <input type="hidden" name="calfId" value="{{this._doc._id}}">
-        <input type="hidden" name="treatment" value="{{this._doc.treatment}}">
+        <input type="hidden" name="treatmentTitle" value="{{this._doc.treatment.0.title}}">
         <input type="hidden" name="endDate" value="{{this._doc.endDate}}">
         <button type="button" class="link-button finish-button">Finalizar tratamiento</button> 
       </form>
