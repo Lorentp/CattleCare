@@ -5,9 +5,9 @@ const startDateInput = document.getElementById("startDate")
 const infoTreatment = document.getElementById("infoTreatment")
 const durationInput = document.getElementById("duration")
 const endDateInput = document.getElementById("endDate")
-//const medicationInput = document.getElementById("medication")
 const corral = document.getElementById("corral")
 const corralIdInput = document.getElementById("corralIdInput")
+const day1Example = document.getElementById("day1Example");
 
 function updateCorralInfo(){
   const selectedOption = corral.options[corral.selectedIndex]
@@ -29,6 +29,11 @@ function updateTreatmentInfo() {
     return;
   }
   const duration = parseInt(selectedOption.getAttribute("data-duration"), 10);
+
+  const medicationJson = selectedOption.getAttribute("data-medication"); 
+  const medication = JSON.parse(medicationJson);
+  day1Example.value = medication[0] || "No hay información disponible para el Día 1."
+  
   if (!startDateInput.value || isNaN(duration)) {
     console.log("Falta fecha de inicio o duración inválida.");
     endDateInput.value = "";
@@ -43,9 +48,11 @@ function updateTreatmentInfo() {
     const formattedEndDate = endDate.toISOString().slice(0, 10);  
     durationInput.value = duration
     endDateInput.value = formattedEndDate
+    
   } else {
     durationInput.value = ""
-    endDateInput.value = ""         
+    endDateInput.value = ""  
+           
   }
 }
 

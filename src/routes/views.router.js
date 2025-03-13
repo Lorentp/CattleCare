@@ -303,6 +303,7 @@ router.get("/enfermeria/terneros-enfermeria", async (req, res) => {
       search,
       sortOrder
     );
+    
 
     res.render("enfermery/calvesEnfermery", { calves });
   } catch (error) {

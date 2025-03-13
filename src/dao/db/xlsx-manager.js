@@ -73,7 +73,6 @@ class ExcelManager {
               : null;
         sheet.cell(`I${row}`).value(startDate); 
         sheet.cell(`I${row}`).style("numberFormat", "dd/mm/yyyy");
-        sheet.cell(`G${row}`).value(treatmentName);
         sheet.range(`B${row}:I${row}`).style({
           border: {
             bottom: { style: "thin", color: "000000" },

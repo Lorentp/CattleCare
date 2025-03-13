@@ -113,7 +113,7 @@ class CalfManager {
       let query = {
         owner: userId,
         isDead: { $in: [false, undefined] },
-        treatment: { $exists: true, $ne: null },
+        treatment: { $exists: true, $ne: null, $ne: [] },
       };
       if (search) {
         query.name = { $regex: search };

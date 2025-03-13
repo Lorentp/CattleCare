@@ -1,29 +1,10 @@
-QUE EN CASO DE QUE UN TERNERO YA HAYA SIDO TRATADO PREVIAMENTE, TIRE UNA ALARMA O ALERTA QUE EL MISMO YA FUE TRATADO✅
-Ternero que finaliza tratamiento, que este la opcion de dar de alta como que esta bien ✅
-Agregar opcion de modificar el corral en el que esta un animal cuando lo actualizas ✅
-Agregar botones para dar de baja ternero en caso de que se muera ✅
-Arreglar el boton de ver terneros en los corrales ✅
-Agregar seccion de tareas semanales con protocolos sobre que hacer cada dia de la semana ✅
-
-Agregar seccion donde se cargan todos los terneros y se les maneja el desleche en la misma
-En esta seccion se carga el ternero a nacimiento y se le pone el peso del mismo, el desleche es un select de verano o invierno
-Y al largar terneros que se eliga la fecha de largado y se le coloque el peso neuvo del mismo
+agregar botos de buscar en buscar  LISTO
+corregir excel que me paso gasto LISTO
+agregar ejemplo de dia 1 en agretar ternero a tratamiento LISTO
 
 
+se crea un ternero nuevo cuando ya existe. VER CON ELY
+hacer que no se cree otro ternero si ya existe uWo en agregar terneros VER CON ELY
 
-DESLECHE:
-DURACION MAXIMA 1 semana
-CARGAR COMO SI FUERA UN TRATAMIENTO PARA CADA TERNERO, CUNADO ENTRA  A  DESLECHE COMENZAR CON DIA 1, PUEDE DURAR MENOS DIAS, ES SEGUN PROTOCOLO
+no se ven lso tratamientos en ver todos los terneros tratados
 
-EJEMPLO
-ARRANCA EL 1er dia tomando 4 y 3 lts
-ARRANCA EL 2do dia tomando 3 y 3 lts
-ARRANCA EL 3er dia tomando 3 y 2 lts
-ARRANCA EL 4to dia tomando 2 y 2 lts
-ARRANCA EL 5to dia tomando 2 y 1 lts
-ARRANCA EL 6to dia tomando 1 y 0 lts
-ARRANCA EL 7mo dia tomando 0 y 0 lts
-
-se tiene una semana con comida y agua y deps largar a recria
-
-cargar peso a cuarta seman opcional
