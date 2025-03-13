@@ -24,29 +24,28 @@ const hbs = expressHandlebars.create({
   },
   helpers: {
     getTreatment: function (treatment) {
-      
-      if (typeof treatment === 'string' && treatment.trim() !== '') {
+      if (typeof treatment === "string" && treatment.trim() !== "") {
         try {
           const parsed = JSON.parse(treatment);
           if (Array.isArray(parsed) && parsed.length > 0) {
-            if (typeof parsed[0] === 'string') {
-              return parsed[0]; 
+            if (typeof parsed[0] === "string") {
+              return parsed[0];
             } else if (parsed[0].title) {
               return parsed[0].title;
             }
           }
-          return treatment; 
+          return treatment;
         } catch (e) {
-          return treatment; 
+          return treatment;
         }
       } else if (Array.isArray(treatment) && treatment.length > 0) {
-        if (typeof treatment[0] === 'string') {
-          return treatment[0]; 
+        if (typeof treatment[0] === "string") {
+          return treatment[0];
         } else if (treatment[0].title) {
-          return treatment[0].title; 
+          return treatment[0].title;
         }
       }
-      return 'Sin tratamiento';
+      return "Sin tratamiento";
     },
     contains: function (arrayString, item) {
       const array = JSON.parse(arrayString);

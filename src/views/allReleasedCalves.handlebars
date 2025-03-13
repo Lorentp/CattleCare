@@ -46,11 +46,13 @@
     <div>
     <p class="gender">Sexo: {{this.gender}}</p>
     </div>
+    {{#if this.birthDate}}
     <div>
     <p class="birthDate">        
     Fecha de nacimiento: {{formatDate this.birthDate}}
     </p>
     </div>
+    {{/if}}
     <div>
     <p class="releasedDate">        
     Fue largado el día: {{formatDate this.whenReleased}}
