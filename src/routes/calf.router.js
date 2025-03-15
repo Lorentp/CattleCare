@@ -7,7 +7,8 @@ const moment = require("moment-timezone");
 router.post("/add", async (req, res) => {
   try {
     const owner = req.session.user._id;
-    const { name, birthDate, calfWeight, calfCalostro, gender, birthType } = req.body;
+    const { name, birthDate, calfWeight, calfCalostro, gender, birthType } =
+      req.body;
 
     const newBirthDate = moment(birthDate).add(12, "hours").toDate();
     const newCalf = {
@@ -20,10 +21,15 @@ router.post("/add", async (req, res) => {
       owner: owner,
     };
 
-    await calfManager.addCalf(newCalf);
-    res
-      .status(200)
-      .json({ success: true, message: "¡Ternero agregado exitosamente!" });
+    const result = await calfManager.addCalf(newCalf);
+
+    if (result.success) {
+      res.status(201).json(result);
+    } else if (result.message.includes("ya existe")) {
+      res.status(409).json(result);
+    } else {
+      res.status(500).json(result);
+    }
   } catch (error) {
     res
       .status(500)
@@ -44,7 +50,7 @@ router.post("/addtoTreatment", async (req, res) => {
       corral,
       corralId,
     } = req.body;
-    console.log(treatmentId)
+    console.log(treatmentId);
     const newStartDate = moment(startDate).add(0, "hours").toDate();
     const newEndDate = moment(endDate).add(0, "hours").toDate();
     const yesterday = moment(startDate).subtract(1, "day").toDate();
@@ -58,7 +64,7 @@ router.post("/addtoTreatment", async (req, res) => {
       corral: corral,
       corralId: corralId,
       lastDayTreated: yesterday,
-      treatmentId: treatmentId
+      treatmentId: treatmentId,
     };
 
     await calfManager.addCalfToTreatment(newCalf);
@@ -83,33 +89,45 @@ router.post("/updatename/:cid", async (req, res) => {
     const { cid } = req.params;
     const newCalfData = req.body;
     if (newCalfData.birthDate) {
-      newCalfData.birthDate = moment.tz(newCalfData.birthDate, "America/Argentina/Buenos_Aires").startOf('day').toDate();
+      newCalfData.birthDate = moment
+        .tz(newCalfData.birthDate, "America/Argentina/Buenos_Aires")
+        .startOf("day")
+        .toDate();
     }
-    const newCalf = await calfManager.updateCalf(cid, newCalfData);
-    console.log(newCalf);
-    res.redirect("/terneros");
+    const result = await calfManager.updateCalf(cid, newCalfData);
+    if (result.success) {
+      res.status(200).json(result);
+    } else if (result.message.includes("ya existe")) {
+      res.status(409).json(result);
+    } else {
+      res.status(500).json(result);
+    }
   } catch (error) {
     console.log(error);
   }
 });
 
-router.post("/delete:cid", async (req, res) => {
+router.post("/delete/:cid", async (req, res) => {
   try {
-    const deletedCalf = await calfManager.deleteCalf(req.params.cid);
-    console.log(deletedCalf);
-    res.redirect("/terneros");
+    const result = await calfManager.deleteCalf(req.params.cid);
+
+    if (result.success) {
+      res.status(200).json(result);
+    } else {
+      res.status(400).json(result);
+    }
   } catch (error) {
     console.log(error);
   }
 });
 
-
-router.post('/resetTreatment', async (req, res) => {
+router.post("/resetTreatment", async (req, res) => {
   try {
-    const { calfId, newTreatment, newTitle, newMedication, newDuration } = req.body;
+    const { calfId, newTreatment, newTitle, newMedication, newDuration } =
+      req.body;
 
     if (!calfId || !newTreatment || !newMedication || !newDuration) {
-      throw new Error('Faltan datos requeridos');
+      throw new Error("Faltan datos requeridos");
     }
 
     const medicationArray = JSON.parse(newMedication);
@@ -118,29 +136,31 @@ router.post('/resetTreatment', async (req, res) => {
     const endDate = today.clone().add(parseInt(newDuration, 10), "days");
     const newEndDate = endDate.clone().subtract(1, "days");
 
-    const newTreatmentData = [{
-      _id: newTreatment, 
-      title: newTitle,   
-      duration: parseInt(newDuration, 10),
-      medication: medicationArray 
-    }];
+    const newTreatmentData = [
+      {
+        _id: newTreatment,
+        title: newTitle,
+        duration: parseInt(newDuration, 10),
+        medication: medicationArray,
+      },
+    ];
 
     const newCalf = await calfManager.updateCalf(calfId, {
       treatment: newTreatmentData,
       startDate: today.toDate(),
       endDate: newEndDate.toDate(),
-      resetTreatment: true
+      resetTreatment: true,
     });
 
     if (!newCalf) {
-      throw new Error('Ternero no encontrado o no actualizado');
+      throw new Error("Ternero no encontrado o no actualizado");
     }
 
-    console.log('Ternero actualizado:', newCalf);
-    res.redirect('/enfermeria/terneros-por-terminar-tratamiento');
+    console.log("Ternero actualizado:", newCalf);
+    res.redirect("/enfermeria/terneros-por-terminar-tratamiento");
   } catch (error) {
-    console.error('Error al reiniciar tratamiento:', error);
-    res.status(500).send('Error al reiniciar el tratamiento');
+    console.error("Error al reiniciar tratamiento:", error);
+    res.status(500).send("Error al reiniciar el tratamiento");
   }
 });
 
@@ -158,7 +178,7 @@ router.post("/finishTreatment", async (req, res) => {
       calfId,
       {
         finished: true,
-        prevTreatment: treatmentTitle, 
+        prevTreatment: treatmentTitle,
         prevEndDate: endDate,
         resetTreatment: false,
       },
@@ -259,20 +279,16 @@ router.post("/released/:id", async (req, res) => {
     );
     const referer = req.headers.referer;
 
-    res
-      .status(200)
-      .json({
-        success: true,
-        message: "El ternero ha sido liberado exitosamente.",
-      });
+    res.status(200).json({
+      success: true,
+      message: "El ternero ha sido liberado exitosamente.",
+    });
   } catch (error) {
     console.error(error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Hubo un problema al procesar la solicitud.",
-      });
+    res.status(500).json({
+      success: false,
+      message: "Hubo un problema al procesar la solicitud.",
+    });
   }
 });
 

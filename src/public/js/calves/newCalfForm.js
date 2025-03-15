@@ -13,24 +13,25 @@ document
         body: JSON.stringify(fObject),
       });
 
-      if (!response.ok) {
-        throw new Error(`Error ${response.status}: ${response.statusText}`);
-      }
-
       const result = await response.json();
 
-      if (result.success) {
+      if (response.status === 201 && result.success) {
         Swal.fire({
           icon: "success",
           title: "Ternero generado con exito",
-          text: result.message,
         }).then(() => {
           window.location.href = "/terneros";
+        });
+      } else if (response.status === 409) {
+        Swal.fire({
+          icon: "warning",
+          title: "El ternero ya existe, intentelo de nuevo por favor",
         });
       } else {
         Swal.fire({
           icon: "error",
-          title: "Ha ocurrido un error, intentelo nuevamente",
+          title: "Error",
+          text: "Ha ocurrido un error, intentelo de nuevo",
         });
       }
     } catch (error) {

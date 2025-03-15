@@ -3,32 +3,40 @@ const TreatmentModel = require("../models/treatment.model.js");
 const moment = require("moment-timezone");
 
 class CalfManager {
-  async addCalf({ name, birthDate, gender, birthType , calfWeight, calfCalostro, owner }) {
+  async addCalf({
+    name,
+    birthDate,
+    gender,
+    birthType,
+    calfWeight,
+    calfCalostro,
+    owner,
+  }) {
     try {
       let calfExist = await CalfModel.findOne({ owner: owner, name: name });
 
       if (calfExist) {
-        calfExist.gender;
-        calfExist.birthDate;
-        calfExist.calfWeight;
-        calfExist.calfCalostro;
-        calfExist.calfBirthType;
-        await calfExist.save();
-        console.log("Ternero actualizado:", calfExist);
-      } else {
-        // Si no existe, crear un nuevo ternero
-        const newCalf = new CalfModel({
-          name,
-          birthDate,
-          calfWeight,
-          calfCalostro,
-          gender,
-          birthType,
-          owner,
-        });
-        await newCalf.save();
-        console.log("Nuevo ternero creado:", newCalf);
+        // Si existe, devolver un error indicando duplicado
+        return {
+          success: false,
+          message: "El ternero con esta caravana ya existe, intentelo de nuevo",
+        };
       }
+
+      const newCalf = new CalfModel({
+        name,
+        birthDate,
+        calfWeight,
+        calfCalostro,
+        gender,
+        birthType,
+        owner,
+      });
+      await newCalf.save();
+      return {
+        success: true,
+        message: "Ternero creado con éxito",
+      };
     } catch (error) {
       console.log(error);
     }
@@ -45,8 +53,7 @@ class CalfManager {
     lastDayTreated,
   }) {
     try {
-
-      const treatment = await TreatmentModel.findById(treatmentId)
+      const treatment = await TreatmentModel.findById(treatmentId);
       let calfExist = await CalfModel.findOne({ owner: owner, name: name });
       if (calfExist) {
         calfExist.treatment = treatment; // Asignamos el array completo
@@ -70,7 +77,7 @@ class CalfManager {
           corralId,
           lastDayTreated,
         });
-        
+
         await newCalf.save();
         console.log("Nuevo ternero creado:", newCalf);
       }
@@ -326,17 +333,35 @@ class CalfManager {
 
   async updateCalf(id, updatedCalfData) {
     try {
-      const updatedCalf = await CalfModel.findByIdAndUpdate(
-        id,
-        updatedCalfData
-      );
-
-      if (!updatedCalf) {
-        console.log("El ternero no existe");
-        return;
+      const currentCalf = await CalfModel.findById(id);
+      if (!currentCalf) {
+        return {
+          success: false,
+          message: "El ternero no existe",
+        };
+      }
+      const calfWithNewName = await CalfModel.findOne({
+        name: updatedCalfData.name,
+        owner: currentCalf.owner, // Solo revisar el mismo propietario
+        _id: { $ne: id }, // Excluir el ternero actual
+      });
+      if (calfWithNewName) {
+        return {
+          success: false,
+          message: "Ya existe otro ternero con esta carvana",
+        };
       }
 
-      return updatedCalf;
+      const updatedCalf = await CalfModel.findByIdAndUpdate(
+        id,
+        updatedCalfData,
+        { new: true }
+      );
+      return {
+        success: true,
+        message: "Ternero actualizado con exito",
+        data: updatedCalf,
+      };
     } catch (error) {
       console.log(error);
     }
@@ -345,7 +370,19 @@ class CalfManager {
   async deleteCalf(id) {
     try {
       const deletedCalf = await CalfModel.findByIdAndDelete(id);
-      return deletedCalf;
+
+      if (!deletedCalf) {
+        return {
+          success: false,
+          message: "El ternero no existe",
+        };
+      }
+
+      return {
+        success: true,
+        message: "Ternero eliminado con éxito",
+        data: deletedCalf,
+      };
     } catch (error) {
       console.log(error);
     }

@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", () => {
   const buttons = document.querySelectorAll(".release-calf-button");
-  console.log("Botones encontrados:", buttons.length);
+
   buttons.forEach((button) => {
     button.addEventListener("click", function () {
       const calfId = this.getAttribute("data-id");
       Swal.fire({
-        title: "Desea largar este ternero a la recria, coloque el peso por favor",
+        title:
+          "Desea largar este ternero a la recria, coloque el peso por favor",
         icon: "info",
         showCancelButton: true,
         confirmButtonText: "Sí",
@@ -15,9 +16,11 @@ document.addEventListener("DOMContentLoaded", () => {
         `,
         preConfirm: () => {
           const weight = document.getElementById("weightReleased").value;
-        
+
           if (!weight || isNaN(weight) || weight <= 0) {
-            Swal.showValidationMessage("Por favor, ingrese un peso válido mayor a 0");
+            Swal.showValidationMessage(
+              "Por favor, ingrese un peso válido mayor a 0"
+            );
             return false;
           }
           return { weightReleased: weight };
@@ -27,7 +30,9 @@ document.addEventListener("DOMContentLoaded", () => {
           const releasedWeight = result.value.weightReleased;
           console.log("Peso confirmado:", releasedWeight);
 
-          const form = document.querySelector(`form[action="/calf/released/${calfId}"]`);
+          const form = document.querySelector(
+            `form[action="/calf/released/${calfId}"]`
+          );
           if (!form) {
             console.error("Formulario no encontrado para el ID:", calfId);
             return;
