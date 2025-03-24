@@ -6,36 +6,61 @@ const treatmentManager = new TreatmentsManager();
 
 router.post("/add", async (req, res) => {
   try {
-    const owner = req.session.user._id
+    const owner = req.session.user._id;
     const newTreatment = req.body;
-    newTreatment.owner = owner
+    newTreatment.owner = owner;
+
     await treatmentManager.addTreatment(newTreatment);
-    console.log(newTreatment)
-    res.redirect("/enfermeria");
+
+    res.status(200).json({
+      success: true,
+      message: "Tratamiento creado con éxito",
+    });
   } catch (error) {
-    res.json({ message: "Error, intentelo nuevamente" });
+    res.status(500).json({
+      success: false,
+      message: "Error, intentelo nuevamente",
+    });
     console.log(error);
   }
 });
 
-router.post("/update/:cid", async (req,res) => {
+router.post("/update/:cid", async (req, res) => {
   try {
-    const newTreatment = await treatmentManager.updateTreatment(req.params.cid, req.body)
-    console.log(newTreatment)
-    res.redirect("/enfermeria")
-  } catch (error) {
-    console.log(error)
-  }
-})
+    const treatmentId = req.params.cid;
+    const formData = req.body;
+    const updatedTreatment = await treatmentManager.updateTreatment(
+      treatmentId,
+      formData
+    );
 
-router.post("/delete:cid", async (req,res) => {
+    res.status(200).json({
+      success: true,
+      message: "Tratamiento actualizado con éxito",
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error al actualizar el tratamiento, intenta nuevamente.",
+    });
+  }
+});
+
+router.post("/delete/:cid", async (req, res) => {
   try {
-    const deletedTreatment = await treatmentManager.deleteTreatment(req.params.cid)
-    console.log(deletedTreatment)
-    res.redirect("/enfermeria")
-  } catch (error) {
-    console.log(error)
-  }
-})
+    const result = await treatmentManager.deleteTreatment(
+      req.params.cid
+    );
 
-module.exports = router
+    if(result.success){
+      res.status(200).json(result)
+    } else {
+      res.status(400).json(result)
+    }
+  } catch (error) {
+    console.log(error);
+  }
+});
+
+module.exports = router;

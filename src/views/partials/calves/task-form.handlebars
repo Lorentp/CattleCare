@@ -1,6 +1,6 @@
 <div class="form-container">
   <h1>Nueva tarea</h1>
-  <form action="/schedule/add" method="post">
+  <form id="addScheduleForm" action="/schedule/add" method="post">
      <select id="nameDeleteTreatment" name="title" required>
         {{#each days}}
             {{#if (contains ../existingTitles this)}}

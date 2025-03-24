@@ -33,19 +33,31 @@ class ScheduleManager {
         }
     }
 
-    async updateSchedule(id, updateSchedule){
+    async updateSchedule(id, updatedScheduleData){
         try {
-            const updatedSchedule = await ScheduleModel.findByIdAndUpdate(id, updateSchedule)
-            return updatedSchedule
+            const updatedSchedule = await ScheduleModel.findByIdAndUpdate(id, updatedScheduleData, { new:true })
+            return {
+                success: true,
+                message: "Tarea actualizada con éxito",
+                data: updatedSchedule
+              };
         } catch (error) {
             console.log(error)
+            return {
+                success: false,
+                message: "Error al actualizar la tarea"
+              };
         }
     }
 
     async deleteSchedule(id){
         try {
             const deletedSchedule = await ScheduleModel.findByIdAndDelete(id)
-            return deletedSchedule
+            return {
+                success: true,
+                message: "Tarea eliminada con éxito",
+                data: deletedSchedule
+              };
         } catch (error) {
             console.log(error)
         }

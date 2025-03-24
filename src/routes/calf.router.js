@@ -43,7 +43,6 @@ router.post("/addtoTreatment", async (req, res) => {
     const {
       name,
       startDate,
-      //treatment,
       endDate,
       duration,
       treatmentId,
@@ -57,7 +56,6 @@ router.post("/addtoTreatment", async (req, res) => {
     const newCalf = {
       name: name,
       startDate: newStartDate,
-      //treatment: treatment,
       duration: duration,
       endDate: newEndDate,
       owner: owner,
@@ -68,9 +66,15 @@ router.post("/addtoTreatment", async (req, res) => {
     };
 
     await calfManager.addCalfToTreatment(newCalf);
-    res.redirect("/enfermeria/terneros-en-tratamiento");
+    res.status(200).json({
+      success: true,
+      message: "Ternero agregado con éxito",
+    });
   } catch (error) {
-    res.json({ message: "Error, intentelo nuevamente" });
+    res.status(500).json({
+      success: false,
+      message: "Error, intentelo nuevamente",
+    });
     console.log(error);
   }
 });

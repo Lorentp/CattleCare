@@ -1,10 +1,18 @@
-agregar botos de buscar en buscar  LISTO
-corregir excel que me paso gasto LISTO
-agregar ejemplo de dia 1 en agretar ternero a tratamiento LISTO
+Agregar sweet alert a:
 
 
-se crea un ternero nuevo cuando ya existe. VER CON ELY
-hacer que no se cree otro ternero si ya existe uWo en agregar terneros VER CON ELY
+°Agregar ternerto LISTO
+°Modificar ternero LISTO
+°Eliminar ternero LISTO
+°Agregar tarea LISTO
+°Modificar tarea LISTO
+°Eliminar tarea LISTO
+°Agregar ternero a tratamiento LISTO
+°Eliminar ternero en enfermeria ( lo elimina completo, tengo que aclarar eso) LISTO
+°Agregar tratamiento LISTO
+°Modificar tratamiento LISTO
+°Eliminar tratamiento LISTO
 
-no se ven lso tratamientos en ver todos los terneros tratados
 
+°Agregar corral
+°Eliminar corral

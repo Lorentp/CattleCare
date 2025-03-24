@@ -12,25 +12,38 @@ nameInputDeleteTreatment.addEventListener("change", updateDeleteFormInfo)
 const deleteTreatmentFormSubmit = document.getElementById("deleteTreatmentFormSubmit")
  
 
-deleteTreatmentFormSubmit.addEventListener("submit", function (e) {
+deleteTreatmentFormSubmit.addEventListener("submit", async function (e) {
     e.preventDefault();
 
     const cid = idInputDeleteTreatment.value; 
+    
+    try {
+        const response = await fetch("/treatment/delete/" + cid, { 
+            method: "POST",
+            headers: { 
+                "Content-Type": "application/json"
+            }
+        })
 
-    fetch("/treatment/delete" + cid, { 
-        method: "POST",
-        headers: { 
-            "Content-Type": "application/json"
+        const result = await response.json();
+
+        if(response.status === 200 && result.success) {
+            Swal.fire({
+                icon:"success",
+                title: "Tratamiento eliminado con exito"
+            }).then(() => {
+                window.location.href = "/enfermeria"
+            })
+        } else {
+            Swal.fire({
+                icon:"error",
+                title: "Error",
+                text: "Ha ocurrido un error"
+            })
         }
-    })
-    .then(response => {
-        if (!response.ok) {
-            throw new Error("Error al eliminar el ternero");
-        }
-       
-        window.location.href = "/enfermeria"; 
-    })
-    .catch(error => {
-        console.error("Error:", error);
-    });
+
+        
+    } catch (error) {
+        console.log(error)
+    }   
 });

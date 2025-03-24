@@ -55,7 +55,7 @@ nameInputUpdateSchedule.addEventListener("change", updateTasksFormInfo)
 
 const updateScheduleFormData = document.getElementById("updateScheduleFormData")
 
-updateScheduleFormData.addEventListener("submit", function(e) {
+updateScheduleFormData.addEventListener("submit", async function(e) {
     e.preventDefault()
 
     let formData = {
@@ -69,22 +69,38 @@ updateScheduleFormData.addEventListener("submit", function(e) {
     taskSeven: taskSevenUpdateInput.value,
     taskEight: taskEightUpdateInput.value
     }
-    fetch("/schedule/update" + formData._id, {
-        method:"POST",
-        headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify(formData)
-    })
-    .then(response => {
-        if (!response.ok) {
-          throw new Error("Error al actualizar el ternero");
+    
+    try {
+        const response = await fetch("/schedule/update/" + formData._id, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(formData)
+        })
+
+        const result = await response.json()
+
+        if(response.status === 200 && result.success) {
+            Swal.fire ({
+                icon:"success",
+                title:"Tarea actualizada con exito",
+            }).then(() => {
+                window.location.href = "/terneros"
+            })
+        } else {
+            Swal.fire ({
+                icon:"error",
+                title:"Error",
+                text: result.message || "Ha ocurrido un error al actualizar la tarea"
+            })
         }
-       
-        window.location.href = "/home"; 
-      })
-      .catch(error => {
-        console.error("Error:", error);
-       
-      });
+    } catch (error) {
+        console.log(error)
+        Swal.fire({
+            icon: "error",
+            title:"Error",
+            text: "Error de servidor, intente de nuevo o revise su conexion a internet"
+        })
+    }
 })

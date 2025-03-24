@@ -35,31 +35,47 @@ router.post("/add", async (req,res) => {
 
 
         await scheduleManager.addSchedule(newSchedule)
-        res.redirect("/terneros")
+        res.status(201).json({ success: true, message: "Tarea creada con exito"})
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({ success: false, message: "Error al crear la tarea" });
+    }
+})
+
+
+router.post("/update/:cid", async (req,res) => {
+    try {
+        const { cid } = req.params
+        const updatedScheduleData = req.body
+
+        const result = await scheduleManager.updateSchedule(cid, updatedScheduleData)
+        
+        if (result.success){
+            res.status(200).json(result)
+        } else {
+            res.status(500).json(result)
+        }
     } catch (error) {
         console.log(error)
     }
 })
 
 
-router.post("/update:cid", async (req,res) => {
+router.post("/delete/:cid", async(req,res)=> {
     try {
-        const newSchedule = await scheduleManager.updateSchedule(req.params.cid, req.body)
-        console.log(newSchedule)
-        res.redirect("/terneros")
+        const {cid} = req.params
+        const result = await scheduleManager.deleteSchedule(cid)
+        if(result.success){
+            res.status(200).json(result)
+        } else {
+            res.status(404).json(result)
+        }
     } catch (error) {
         console.log(error)
-    }
-})
-
-
-router.post("/delete:cid", async(req,res)=> {
-    try {
-        const deletedSchedule = await scheduleManager.deleteSchedule(req.params.cid)
-        console.log(deletedSchedule)
-        res.redirect("/home")
-    } catch (error) {
-        console.log(error)
+        res.status(500).json({
+            success: false,
+            message: "Error interno del servidor"
+        });
     }
 })
 
