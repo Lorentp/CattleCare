@@ -344,4 +344,36 @@ router.get("/desleche-cargar", async (req, res) => {
   }
 });
 
+//Excel download
+
+router.get("/descargar", async (req, res) => {
+  try {
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+
+    const userId = req.session.user._id;
+    const fromDate = req.query.fromDate || null;
+    const toDate = req.query.toDate || null;
+
+    console.log("Fechas recibidas:", { fromDate, toDate });
+
+    const calves = await calfManager.getCalves(userId);
+    const calvesBirth = await calfManager.getCalvesBirth(userId, fromDate, toDate);
+    const calvesTreated = await calfManager.getCalvesTreated(userId, fromDate, toDate);
+    const calvesReleased = await calfManager.getReleasedCalves(userId, null, null, fromDate, toDate);
+    const deadCalves = await calfManager.getDeadCalf(userId, null, null, fromDate, toDate);
+
+
+    res.render("excelDownload", { calves, calvesBirth, calvesTreated, calvesReleased, deadCalves, fromDate, toDate });
+  } catch (error) {
+    console.log("Error en /descargar:", error);
+    res.status(500).send("Error al cargar la página de descarga");
+  }
+});
+
+
+
+
 module.exports = router;

@@ -1,18 +1,7 @@
-Agregar sweet alert a:
+°Revisar excel, mas quee nada el de todos los terneros.
 
+°Agregar descargar excel y poder filtrar por mes en todos los terneros tratados.
 
-°Agregar ternerto LISTO
-°Modificar ternero LISTO
-°Eliminar ternero LISTO
-°Agregar tarea LISTO
-°Modificar tarea LISTO
-°Eliminar tarea LISTO
-°Agregar ternero a tratamiento LISTO
-°Eliminar ternero en enfermeria ( lo elimina completo, tengo que aclarar eso) LISTO
-°Agregar tratamiento LISTO
-°Modificar tratamiento LISTO
-°Eliminar tratamiento LISTO
+°Que en excel mde muertos tmb te saque la edad de vida que tuvo ese ternero
 
-
-°Agregar corral
-°Eliminar corral
+°Generar excel que haga un resumen de todo en el inicio para pc

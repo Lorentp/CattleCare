@@ -115,6 +115,45 @@ class CalfManager {
     }
   }
 
+  async getCalvesBirth(userId, fromDate, toDate){
+    try {
+      let query = {
+        owner: userId
+      }
+  
+      if(fromDate && toDate){
+        query.birthDate = {
+          $gte: new Date(fromDate), $lte: new Date(toDate)
+        }
+      }
+      const calvesBirth = await CalfModel.find(query)
+  
+      return calvesBirth
+    } catch (error) {
+      console.log(error)
+    }
+
+  }
+
+  async getCalvesTreated(userId, fromDate, toDate){
+    try {
+      let query = {
+        owner: userId
+      }
+      if(fromDate && toDate){
+        query.startDate = {
+          $gte: new Date(fromDate), $lte: new Date(toDate)
+        }
+      }
+
+      const treatedCalves = await CalfModel.find(query)
+
+      return treatedCalves
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   async getTreatedCalves(userId, search, sortOrder, fromDate, toDate) {
     try {
       let query = {
