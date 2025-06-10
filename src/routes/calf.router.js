@@ -337,7 +337,7 @@ router.post("/dead/:id", async (req, res) => {
     ) {
       res.redirect("/enfermeria/terneros-por-terminar-tratamiento");
     } else {
-      res.redirect("/terneros");
+      res.redirect("/terneros-guachera");
     }
     return deadCalf;
   } catch (error) {
