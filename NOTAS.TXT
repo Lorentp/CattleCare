@@ -1,7 +1,9 @@
-°Revisar excel, mas quee nada el de todos los terneros.
+acomodoar calostro solo a numero
 
-°Agregar descargar excel y poder filtrar por mes en todos los terneros tratados.
+en tratados y muertos que aparezcan retratamientos
 
-°Que en excel mde muertos tmb te saque la edad de vida que tuvo ese ternero
+acomodar excel para resumen calostro
 
-°Generar excel que haga un resumen de todo en el inicio para pc
+ver posibilidad de que admin pueda modificar fecha de muerte de algun animal o dato viejo
+
+ver nombre de tabla porcentaje de tratamientos muertos

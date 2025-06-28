@@ -37,6 +37,11 @@
         <div>
             <p class="calf">Nombre del ternero: {{this.name}}</p>
         </div>
+        {{#if this.mother}}
+        <div>
+            <p>Madre del ternero: {{this.mother}}</p>
+        </div>
+        {{/if}}
         <div>
             <p class="treatment">        
             Tratamiento: {{getTreatment this.treatment}}

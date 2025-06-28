@@ -7,7 +7,7 @@ const moment = require("moment-timezone");
 router.post("/add", async (req, res) => {
   try {
     const owner = req.session.user._id;
-    const { name, birthDate, calfWeight, calfCalostro, gender, birthType } =
+    const { name, birthDate, calfWeight, calfCalostro, gender, birthType, mother } =
       req.body;
 
     const newBirthDate = moment(birthDate).add(12, "hours").toDate();
@@ -18,6 +18,7 @@ router.post("/add", async (req, res) => {
       calfWeight: calfWeight,
       calfCalostro: calfCalostro,
       gender: gender,
+      mother: mother,
       owner: owner,
     };
 

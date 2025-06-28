@@ -1,6 +1,7 @@
 const nameInputUpdateCalfName = document.getElementById("nameUpdateCalfName");
 const idInputCalfName = document.getElementById("idInputCalfName");
 const newNameInput = document.getElementById("newName");
+const newMotherInput = document.getElementById("newMother");
 const newBirthTypeSelect = document.querySelector(
   'select[name="newBirthType"]'
 );
@@ -27,6 +28,7 @@ function updateFormInfo() {
   const name = selectedOption.getAttribute("name");
   const birthType = selectedOption.getAttribute("data-birth-type");
   const gender = selectedOption.getAttribute("data-gender");
+  const mother = selectedOption.getAttribute("data-mother");
   const birthDate = selectedOption.getAttribute("data-birth-date");
   const weight = selectedOption.getAttribute("data-weight");
   const calotrum = selectedOption.getAttribute("data-calotrum");
@@ -34,6 +36,7 @@ function updateFormInfo() {
   // Actualizar todos los campos del formulario
   idInputCalfName.value = _id || "";
   newNameInput.value = name || "";
+  newMotherInput.value = mother || "";
   newBirthTypeSelect.value = birthType || "";
   newGenderSelect.value = gender || "";
   newBirthDateInput.value = birthDate ? formatDateToISO(birthDate) : "";
@@ -53,6 +56,7 @@ updaCalfNameFormData.addEventListener("submit", async function (e) {
     name: newNameInput.value,
     birthType: newBirthTypeSelect.value,
     gender: newGenderSelect.value,
+    mother: newMotherInput.value,
     birthDate: newBirthDateInput.value,
     calfWeight: newWeighInput.value,
     calfCalostro: newCalotrumInput.value,

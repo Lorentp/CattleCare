@@ -10,6 +10,7 @@ class CalfManager {
     birthType,
     calfWeight,
     calfCalostro,
+    mother,
     owner,
   }) {
     try {
@@ -30,6 +31,7 @@ class CalfManager {
         calfCalostro,
         gender,
         birthType,
+        mother,
         owner,
       });
       await newCalf.save();

@@ -13,6 +13,7 @@
             value="{{this.name}}"
             _id="{{this._id}}"
             name="{{this.name}}"
+            data-mother="{{this.mother}}"
             data-birth-type="{{this.birthType}}"
             data-gender="{{this.gender}}"
             data-birth-date="{{this.birthDate}}"
@@ -27,6 +28,10 @@
     <div>
       <p>Nueva caravana para el ternero</p>
       <input type="text" id="newName" name="name" required />
+    </div>
+    <div>
+      <p>Madre del ternero</p>
+      <input type="text" id="newMother" name="newMother"/>
     </div>
 
     <div>

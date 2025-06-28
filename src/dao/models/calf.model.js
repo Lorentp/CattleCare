@@ -28,6 +28,7 @@ const calfSchema = new mongoose.Schema({
   weightDiference: { type: Number },
   weightGainPerDay: { type: Number },
   stopMilking: { type: Boolean },
+  mother: {type: String},
 });
 
 const CalfModel = mongoose.model("calves", calfSchema);
