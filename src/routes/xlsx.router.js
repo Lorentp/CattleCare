@@ -7,6 +7,18 @@ const excelManager = new ExcelManager();
 router.post("/createExcel", async (req, res) => {
   try {
     const { calves, calvesBirth, calvesTreated, calvesReleased, deadCalves, fromDate, toDate } = req.body;
+    
+    const user = req.session.user
+    console.log("User en session:", user);
+
+    if (!user) {
+      return res.status(401).json({ error: "Usuario no autenticado" });
+    }
+
+    // Verificar si farmname está definido
+    if (!user.farmname) {
+      return res.status(400).json({ error: "El usuario no tiene un nombre de establecimiento definido" });
+    }
 
     const parsedCalves = JSON.parse(calves || "[]");
     const parsedCalvesBirth = JSON.parse(calvesBirth || "[]");
@@ -33,10 +45,11 @@ router.post("/createExcel", async (req, res) => {
       parsedCalvesReleased,
       parsedDeadCalves,
       fromDate,
-      toDate
+      toDate,
+      user
     );
 
-    const fileName = `Resumen-guachera_${formatDate(fromDate)}_al_${formatDate(toDate)}.xlsx`;
+    const fileName = `Resumen-guachera${user.farmname}_${formatDate(fromDate)}_al_${formatDate(toDate)}.xlsx`;
     res.download(filePath, fileName);
   } catch (error) {
     console.error("Error en el endpoint:", error);

@@ -10,6 +10,8 @@ const ScheduleManager = require("../dao/db/schedule-manager.js");
 const scheduleManager = new ScheduleManager();
 const StopMilkingManager = require("../dao/db/calfStopMilking-manager.js");
 const stopMilkingManager = new StopMilkingManager();
+const DailyRecordManager = require("../dao/db/dailyRecord-manager.js")
+const dailyRecordManager= new DailyRecordManager()
 const moment = require("moment-timezone");
 
 //HOME
@@ -42,29 +44,30 @@ router.get("/home", async (req, res) => {
 
     user = req.session.user;
     const tasks = await scheduleManager.getSchedules(userId);
+
+    await dailyRecordManager.registerDailyTotal(userId)
     res.render("home", { user, tasks });
   } catch (error) {
     console.log("Error de servidor", error);
   }
 });
 
-router.get("/buscar-ternero", async(req,res) => {
+router.get("/buscar-ternero", async (req, res) => {
   try {
-    if(!req.session.login){
-      res.redirect("/")
-      return
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
     }
     const userId = req.session.user._id;
     const search = req.query.search || "";
     const sortOrder = req.query.sort || "asc";
 
     const calves = await calfManager.getCalves(userId, search, sortOrder);
-    res.render("searchCalves", {calves})
+    res.render("searchCalves", { calves });
   } catch (error) {
-    console.log("Error de servidor", error)
+    console.log("Error de servidor", error);
   }
-})
-
+});
 
 router.get("/terneros", async (req, res) => {
   try {
@@ -111,7 +114,13 @@ router.get("/terneros-guachera", async (req, res) => {
     const toDate = req.query.toDate || null;
 
     const corrals = await corralManager.getCorrals(userId);
-    const calves = await calfManager.getCalves(userId, search, sortOrder, fromDate, toDate);
+    const calves = await calfManager.getCalves(
+      userId,
+      search,
+      sortOrder,
+      fromDate,
+      toDate
+    );
 
     res.render("allCalves", { calves, corrals });
   } catch (error) {
@@ -303,7 +312,6 @@ router.get("/enfermeria/terneros-enfermeria", async (req, res) => {
       search,
       sortOrder
     );
-    
 
     res.render("enfermery/calvesEnfermery", { calves });
   } catch (error) {
@@ -360,20 +368,71 @@ router.get("/descargar", async (req, res) => {
     console.log("Fechas recibidas:", { fromDate, toDate });
 
     const calves = await calfManager.getCalves(userId);
-    const calvesBirth = await calfManager.getCalvesBirth(userId, fromDate, toDate);
-    const calvesTreated = await calfManager.getCalvesTreated(userId, fromDate, toDate);
-    const calvesReleased = await calfManager.getReleasedCalves(userId, null, null, fromDate, toDate);
-    const deadCalves = await calfManager.getDeadCalf(userId, null, null, fromDate, toDate);
+    const calvesBirth = await calfManager.getCalvesBirth(
+      userId,
+      fromDate,
+      toDate
+    );
+    const calvesTreated = await calfManager.getCalvesTreated(
+      userId,
+      fromDate,
+      toDate
+    );
+    const calvesReleased = await calfManager.getReleasedCalves(
+      userId,
+      null,
+      null,
+      fromDate,
+      toDate
+    );
+    const deadCalves = await calfManager.getDeadCalf(
+      userId,
+      null,
+      null,
+      fromDate,
+      toDate
+    );
 
-
-    res.render("excelDownload", { calves, calvesBirth, calvesTreated, calvesReleased, deadCalves, fromDate, toDate });
+    res.render("excelDownload", {
+      calves,
+      calvesBirth,
+      calvesTreated,
+      calvesReleased,
+      deadCalves,
+      fromDate,
+      toDate,
+    });
   } catch (error) {
     console.log("Error en /descargar:", error);
     res.status(500).send("Error al cargar la página de descarga");
   }
 });
 
+router.get("/swdescargar", async (req, res) => {
+  try {
+    if (!req.session.login) {
+      res.redirect("/");
+      return;
+    }
+    const userId = req.session.user._id;
+    const { fromDate, toDate } = req.query;
+    let calves = await calfManager.getCalves(
+      userId,
+      "",
+      "desc",
+      fromDate,
+      toDate
+    );
 
-
+    res.render("swDownload", {
+      calves,
+      fromDate,
+      toDate,
+    });
+  } catch (error) {
+    console.error("Error al obtener datos para descarga SW:", error);
+    res.status(500).send("Error interno del servidor");
+  }
+});
 
 module.exports = router;

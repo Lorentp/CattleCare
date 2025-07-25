@@ -163,7 +163,8 @@ class ExcelManager {
     deadCalves,
     calvesBirth,
     calvesReleased,
-    calvesTreated
+    calvesTreated,
+    user
   ) {
     const summarySheet = workbook.sheet(0).name("Resumen");
 
@@ -172,7 +173,7 @@ class ExcelManager {
       .cell("B2")
       .value("Resumen de Terneros")
       .style({ bold: true, fontSize: 14 });
-    summarySheet
+      summarySheet
       .cell("B3")
       .value(
         `Período: ${this._formatFilterDate(
@@ -180,6 +181,10 @@ class ExcelManager {
         )} a ${this._formatFilterDate(toDate)}`
       )
       .style({ italic: true });
+      summarySheet
+        .cell("B4")
+        .value(user.farmname)
+        .style({ bold: true, fontSize: 14 });
     summarySheet
       .cell("I2")
       .value("Este archivo generado por TERNTECH || Contacto: 3534270126");
@@ -256,23 +261,23 @@ class ExcelManager {
         formula: '=COUNTIF(Muertes!E5:D1048576, "3-Cesárea")',
       },
       {
-        label: "Edad 0-10 días",
+        label: "Edad 0-3 días",
         formula:
-          '=COUNTIFS(Muertes!M5:M1048576, ">=0", Muertes!M5:M1048576, "<=10")',
+          '=COUNTIFS(Muertes!M5:M1048576, ">=0", Muertes!M5:M1048576, "<=3")',
       },
       {
-        label: "Edad 11-20 días",
+        label: "Edad 4-7 días",
         formula:
-          '=COUNTIFS(Muertes!M5:M1048576, ">10", Muertes!M5:M1048576, "<=20")',
+          '=COUNTIFS(Muertes!M5:M1048576, ">3", Muertes!M5:M1048576, "<=7")',
       },
       {
-        label: "Edad 21-30 días",
+        label: "Edad 8-14 días",
         formula:
-          '=COUNTIFS(Muertes!M5:M1048576, ">20", Muertes!M5:M1048576, "<=30")',
+          '=COUNTIFS(Muertes!M5:M1048576, ">7", Muertes!M5:M1048576, "<=14")',
       },
       {
-        label: "Edad +31 días",
-        formula: '=COUNTIF(Muertes!M5:M1048576, ">30")',
+        label: "Edad +14 días",
+        formula: '=COUNTIF(Muertes!M5:M1048576, ">14")',
       },
       ...deadTreatments.map((treatment) => ({
         label: `Tratamiento: ${treatment}`,
@@ -1023,6 +1028,7 @@ class ExcelManager {
    * @param {Array} deadCalves
    * @param {string} fromDate
    * @param {string} toDate
+   * @param {Object} 
    * @returns {string}
    */
   async createExcel(
@@ -1032,7 +1038,8 @@ class ExcelManager {
     calvesReleased,
     deadCalves,
     fromDate,
-    toDate
+    toDate,
+    user
   ) {
     try {
       const workbook = await XlsxPopulate.fromBlankAsync();
@@ -1043,7 +1050,8 @@ class ExcelManager {
         deadCalves,
         calvesBirth,
         calvesReleased,
-        calvesTreated
+        calvesTreated,
+        user
       );
       this._createGuacheraSheet(workbook, calves);
       this._createBirthSheet(workbook, calvesBirth, fromDate, toDate);

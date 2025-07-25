@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", () => {
   buttons.forEach((button) => {
     button.addEventListener("click", function () {
       const calfId = this.getAttribute("data-id");
+      const today = new Date().toISOString().split("T")[0];
       Swal.fire({
         title:
           "Desea largar este ternero a la recria, coloque el peso por favor",
@@ -13,9 +14,11 @@ document.addEventListener("DOMContentLoaded", () => {
         cancelButtonText: "No",
         html: `
           <input id="weightReleased" name="weightReleased" type="number" placeholder="Colocar el peso en kilos(número)" style="width: 100%; margin-top: 10px;" required>
+          <input id="releaseDate" name="releaseDate" type="date" value="${today}" style="width: 100%; margin-top: 10px;" required>
         `,
         preConfirm: () => {
           const weight = document.getElementById("weightReleased").value;
+          const releaseDate = document.getElementById("releaseDate").value;
 
           if (!weight || isNaN(weight) || weight <= 0) {
             Swal.showValidationMessage(
@@ -23,12 +26,24 @@ document.addEventListener("DOMContentLoaded", () => {
             );
             return false;
           }
-          return { weightReleased: weight };
+          if (!releaseDate) {
+            Swal.showValidationMessage(
+              "Por favor, seleccione una fecha válida"
+            );
+            return false;
+          }
+          return { weightReleased: weight, whenReleased: releaseDate };
         },
       }).then((result) => {
         if (result.isConfirmed) {
           const releasedWeight = result.value.weightReleased;
-          console.log("Peso confirmado:", releasedWeight);
+          const whenReleased = result.value.whenReleased;
+          console.log(
+            "Peso confirmado:",
+            releasedWeight,
+            "Fecha:",
+            whenReleased
+          );
 
           const form = document.querySelector(
             `form[action="/calf/released/${calfId}"]`
@@ -38,11 +53,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
-          // Crear un objeto URLSearchParams para enviar como urlencoded
           const formData = new URLSearchParams();
           formData.append("releasedWeight", releasedWeight);
+          formData.append("whenReleased", whenReleased);
 
-          console.log("Datos enviados al servidor:", formData.toString()); // Depuración
+          console.log("Datos enviados al servidor:", formData.toString());
 
           fetch(form.action, {
             method: form.method,

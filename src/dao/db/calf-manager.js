@@ -117,42 +117,43 @@ class CalfManager {
     }
   }
 
-  async getCalvesBirth(userId, fromDate, toDate){
+  async getCalvesBirth(userId, fromDate, toDate) {
     try {
       let query = {
-        owner: userId
-      }
-  
-      if(fromDate && toDate){
-        query.birthDate = {
-          $gte: new Date(fromDate), $lte: new Date(toDate)
-        }
-      }
-      const calvesBirth = await CalfModel.find(query)
-  
-      return calvesBirth
-    } catch (error) {
-      console.log(error)
-    }
+        owner: userId,
+      };
 
+      if (fromDate && toDate) {
+        query.birthDate = {
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate),
+        };
+      }
+      const calvesBirth = await CalfModel.find(query);
+
+      return calvesBirth;
+    } catch (error) {
+      console.log(error);
+    }
   }
 
-  async getCalvesTreated(userId, fromDate, toDate){
+  async getCalvesTreated(userId, fromDate, toDate) {
     try {
       let query = {
-        owner: userId
-      }
-      if(fromDate && toDate){
+        owner: userId,
+      };
+      if (fromDate && toDate) {
         query.startDate = {
-          $gte: new Date(fromDate), $lte: new Date(toDate)
-        }
+          $gte: new Date(fromDate),
+          $lte: new Date(toDate),
+        };
       }
 
-      const treatedCalves = await CalfModel.find(query)
+      const treatedCalves = await CalfModel.find(query);
 
-      return treatedCalves
+      return treatedCalves;
     } catch (error) {
-      console.log(error)
+      console.log(error);
     }
   }
 
@@ -477,12 +478,13 @@ class CalfManager {
     }
   }
 
-  async releaseCalf(calfId, weightReleasedInput) {
+  async releaseCalf(calfId, weightReleasedInput, whenReleasedInput) {
     try {
       const calf = await CalfModel.findById(calfId);
 
       const birthDate = moment(calf.birthDate);
-      const whenReleased = moment();
+      const whenReleased = moment(whenReleasedInput); // Asegura que sea un objeto moment
+
       const daysInGuachera = whenReleased.diff(birthDate, "days");
 
       if (calf.calfWeight) {
@@ -498,7 +500,7 @@ class CalfManager {
         calf.weightGainPerDay = formattedWeightGainPerDay;
 
         calf.isReleased = true;
-        calf.whenReleased = whenReleased;
+        calf.whenReleased = whenReleased.toDate(); // Guarda como Date
         calf.daysInGuachera = daysInGuachera;
 
         const releasedCalf = await calf.save();
@@ -506,7 +508,7 @@ class CalfManager {
         return releasedCalf;
       } else {
         calf.isReleased = true;
-        calf.whenReleased = whenReleased;
+        calf.whenReleased = whenReleased.toDate();
         calf.daysInGuachera = daysInGuachera;
         calf.releasedWeight = weightReleasedInput;
         const releasedCalf = await calf.save();
@@ -518,13 +520,14 @@ class CalfManager {
     }
   }
 
-  async calfDie(calfId, currentTime, comment) {
+  async calfDie(calfId, timeDead, comment) {
     try {
       const calf = await CalfModel.findById(calfId);
       calf.isDead = true;
-      calf.timeDead = currentTime;
+      calf.timeDead = timeDead; // Already expects a Date object
       calf.comment = comment;
       const deadCalf = await calf.save();
+      console.log("Ternero marcado como muerto:", deadCalf);
       return deadCalf;
     } catch (error) {
       console.log(error);

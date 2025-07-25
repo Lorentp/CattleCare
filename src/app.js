@@ -133,6 +133,7 @@ const corralRouter = require("./routes/corral.router.js");
 const scheduleRouter = require("./routes/schedule.router.js");
 const stopMilkingRouter = require("./routes/stopMilking.router.js");
 const excelRouter = require("./routes/xlsx.router.js");
+const swXlsRouter = require("./routes/swXls.router.js");
 app.use("/", viewsRouter);
 app.use("/register", userRouter);
 app.use("/login", sessionsRouter);
@@ -142,6 +143,7 @@ app.use("/corral", corralRouter);
 app.use("/schedule", scheduleRouter);
 app.use("/stopMilking", stopMilkingRouter);
 app.use("/xlsx", excelRouter);
+app.use("/swxls", swXlsRouter);
 
 const httpServer = app.listen(port, () => {
   console.log(`Servidor testeando en el puerto ${port}`);

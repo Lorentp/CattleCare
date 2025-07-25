@@ -1,9 +1,6 @@
-acomodoar calostro solo a numero
-
-en tratados y muertos que aparezcan retratamientos
-
-acomodar excel para resumen calostro
 
 ver posibilidad de que admin pueda modificar fecha de muerte de algun animal o dato viejo
 
-ver nombre de tabla porcentaje de tratamientos muertos
+
+
+muertes/Promedio de animales en fecha

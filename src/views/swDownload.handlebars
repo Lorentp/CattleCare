@@ -1,0 +1,35 @@
+{{>global/headerlogged}}
+
+<nav class="">
+    <a href="/home" class="link-button">⬅️ Volver al inicio</a>
+</nav>
+
+<div class="title">
+    <!-- Formulario de filtrado por fechas de nacimiento -->
+    <form action="/swdescargar" method="GET">
+        <h2>Elegir fecha de inicio de búsqueda (nacimiento)</h2>
+        <input type="date" id="fromDate" name="fromDate">
+
+        <h2>Elegir fecha de fin de búsqueda (nacimiento)</h2>
+        <input type="date" id="toDate" name="toDate">
+
+        <button type="submit" class="link-button">Filtrar</button>
+    </form>
+
+    <!-- Formulario de descarga -->
+    <form action="/swxls/createSwExcel" method="POST">
+        <input type="hidden" name="calves" value='{{{json calves}}}'>
+        <input type="hidden" name="fromDate" value="{{fromDate}}">
+        <input type="hidden" name="toDate" value="{{toDate}}">
+        <button type="submit" class="excel-button mobile-hidden">Descargar Excel SW</button>
+    </form>
+
+    <!-- Mostrar rango de fechas filtrado -->
+    <div class="link-button">
+    {{#if fromDate}}
+        <p>Filtrado por fechas de nacimiento: desde {{formatDate fromDate}} hasta {{formatDate toDate}}</p>
+    {{else}}
+        <p>Filtrado por fechas de nacimiento: Sin inicio a Sin fin</p>
+    {{/if}}
+    </div>
+</div>

@@ -7,8 +7,15 @@ const moment = require("moment-timezone");
 router.post("/add", async (req, res) => {
   try {
     const owner = req.session.user._id;
-    const { name, birthDate, calfWeight, calfCalostro, gender, birthType, mother } =
-      req.body;
+    const {
+      name,
+      birthDate,
+      calfWeight,
+      calfCalostro,
+      gender,
+      birthType,
+      mother,
+    } = req.body;
 
     const newBirthDate = moment(birthDate).add(12, "hours").toDate();
     const newCalf = {
@@ -274,15 +281,30 @@ router.post("/released/:id", async (req, res) => {
   try {
     const calfId = req.params.id;
     const weight = req.body.releasedWeight;
-    console.log("Router - ID del ternero:", calfId, "Peso recibido:", weight); // Depuración
+    let whenReleased = moment.tz("America/Argentina/Buenos_Aires").toDate(); // Por defecto, fecha actual
+
+    if (req.body.whenReleased) {
+      whenReleased = moment
+        .tz(req.body.whenReleased, "America/Argentina/Buenos_Aires")
+        .toDate();
+    }
+
+    console.log(
+      "Router - ID del ternero:",
+      calfId,
+      "Peso recibido:",
+      weight,
+      "Fecha:",
+      whenReleased
+    );
+
     if (!weight) throw new Error("No se recibió peso del ternero");
-    const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate();
+
     const releasedCalf = await calfManager.releaseCalf(
       calfId,
       weight,
-      currentTime
+      whenReleased
     );
-    const referer = req.headers.referer;
 
     res.status(200).json({
       success: true,
@@ -296,7 +318,6 @@ router.post("/released/:id", async (req, res) => {
     });
   }
 });
-
 router.post("/treated/:id", async (req, res) => {
   try {
     const calfId = req.params.id;
@@ -322,27 +343,44 @@ router.post("/treated/:id", async (req, res) => {
 router.post("/dead/:id", async (req, res) => {
   try {
     const calfId = req.params.id;
-    const currentTime = moment.tz("America/Argentina/Buenos_Aires").toDate();
     const comment = req.body.comment;
-    const deadCalf = await calfManager.calfDie(calfId, currentTime, comment);
-    const referer = req.headers.referer;
+    let timeDead = moment.tz("America/Argentina/Buenos_Aires").toDate(); // Default to current date
 
-    if (referer && referer.includes("/enfermeria/terneros-en-tratamiento")) {
-      res.redirect("/enfermeria/terneros-en-tratamiento");
-    } else if (referer && referer.includes("/enfermeria/corral/")) {
-      const dynamicRouteId = referer.split("/").pop();
-      res.redirect(`/enfermeria/corral/${dynamicRouteId}`);
-    } else if (
-      referer &&
-      referer.includes("/enfermeria/terneros-por-terminar-tratamiento")
-    ) {
-      res.redirect("/enfermeria/terneros-por-terminar-tratamiento");
-    } else {
-      res.redirect("/terneros-guachera");
+    if (req.body.timeDead) {
+      timeDead = moment
+        .tz(req.body.timeDead, "America/Argentina/Buenos_Aires")
+        .toDate();
     }
-    return deadCalf;
+
+    console.log(
+      "Router - ID del ternero:",
+      calfId,
+      "Comentario:",
+      comment,
+      "Fecha de muerte:",
+      timeDead
+    );
+
+    const deadCalf = await calfManager.calfDie(calfId, timeDead, comment);
+
+    if (!deadCalf) {
+      return res.status(404).json({
+        success: false,
+        message: "Ternero no encontrado",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "El ternero ha sido dado de baja exitosamente.",
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
+    res.status(500).json({
+      success: false,
+      message: "Hubo un problema al procesar la solicitud.",
+    });
   }
 });
+
 module.exports = router;

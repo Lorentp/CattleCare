@@ -27,6 +27,7 @@
     "socket.io": "^4.7.5",
     "sweetalert2": "^11.10.7",
     "vercel": "^33.6.3",
+    "xlsx": "^0.18.5",
     "xlsx-populate": "^1.21.0"
   }
 }
