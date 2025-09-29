@@ -533,6 +533,13 @@ class CalfManager {
       console.log(error);
     }
   }
+
+
+  async addVacunationToCalf(calfId, protocolId, date){
+    const calf = await CalfModel.findById(calfId)
+    calf.vacunation.push({ protocolId, date})
+    return await calf.save()
+  }
 }
 
 module.exports = CalfManager;

@@ -1,0 +1,69 @@
+{{>global/headerlogged}}
+
+<nav>
+    <a href="/home" class="link-button">Volver al inicio</a>
+    <a href="/vacunacion-protocolos" class="link-button">Ver protocolos</a>
+    <button id="addProtocolButton" class="link-button">Agregar Protocolo</button>
+</nav>
+
+<div class="treatment-container">
+    <h2>Gestión de Vacunación de Terneros</h2>
+
+    <!-- Sección de protocolos existentes -->
+    <div class="protocols-list">
+        <h3>Protocolos Existentes</h3>
+        {{#if protocols}}
+            <ul>
+                {{#each protocols}}
+                    <li>
+                        {{this.name}}
+                        <button class="delete-protocol-button" data-protocol-id="{{this._id}}">Eliminar</button>
+                    </li>
+                {{/each}}
+            </ul>
+        {{else}}
+            <p>No hay protocolos registrados.</p>
+        {{/if}}
+    </div>
+
+    <!-- Select para elegir ternero -->
+    <div class="select-calf">
+        <label for="calfSelect">Seleccionar Ternero:</label>
+        <select id="calfSelect">
+            <option value="">-- Elige un ternero --</option>
+            {{#each calves}}
+                <option value="{{this._id}}">{{this.name}} (Nacimiento: {{formatDateBirth this.birthDate}})</option>
+            {{/each}}
+        </select>
+    </div>
+
+    <!-- Ficha del ternero (se muestra dinámicamente) -->
+    <div id="calfInfo" class="calf-info hidden">
+        <h3>Información del Ternero</h3>
+        <p><strong>Nombre/Caravana:</strong> <span id="calfName"></span></p>
+        <p><strong>Fecha de Nacimiento:</strong> <span id="calfBirthDate"></span></p>
+        <p><strong>Género:</strong> <span id="calfGender"></span></p>
+        <p><strong>Peso al Nacer:</strong> <span id="calfWeight"></span></p>
+        <p><strong>Calostro:</strong> <span id="calfCalostro"></span></p>
+        <p><strong>Madre:</strong> <span id="calfMother"></span></p>
+    </div>
+
+    <!-- Botones de protocolos (se muestran dinámicamente) -->
+    <div id="protocolsSection" class="protocols-section hidden">
+        <h3>Protocolos de Vacunación</h3>
+        <div id="protocolsButtons"></div>
+    </div>
+</div>
+
+<script>
+    try {
+        window.protocols = {{{json protocols}}};
+        console.log('Protocols cargados:', window.protocols);
+    } catch (e) {
+        console.error('Error al parsear protocols:', e);
+        window.protocols = [];
+    }
+</script>
+
+<script src="/js/vacunation/vacunation.js"></script>
+<script src="/js/vacunation/vacunation-protocols.js"></script>

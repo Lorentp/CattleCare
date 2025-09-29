@@ -3,6 +3,7 @@ const router = express.Router();
 const CalfManager = require("../dao/db/calf-manager.js");
 const calfManager = new CalfManager();
 const moment = require("moment-timezone");
+const { dateToNumber } = require("xlsx-populate/lib/dateConverter.js");
 
 router.post("/add", async (req, res) => {
   try {
@@ -175,8 +176,6 @@ router.post("/resetTreatment", async (req, res) => {
     res.status(500).send("Error al reiniciar el tratamiento");
   }
 });
-
-module.exports = router;
 
 router.post("/finishTreatment", async (req, res) => {
   try {
@@ -380,6 +379,37 @@ router.post("/dead/:id", async (req, res) => {
       success: false,
       message: "Hubo un problema al procesar la solicitud.",
     });
+  }
+});
+
+router.get("/:id", async (req, res) => {
+  try {
+    const calf = await calfManager.getCalfById(req.params.id);
+    if (!calf) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Ternero no encontrado" });
+    }
+    res.json(calf);
+  } catch (error) {
+    console.error("Error en GET /calf/:id:", error);
+    res
+      .status(500)
+      .json({ success: false, message: "Error al obtener ternero" });
+  }
+});
+
+router.post("/vacunation/:id", async (req, res) => {
+  try {
+    const { protocolId, date } = req.body;
+    const calf = await calfManager.addVacunationToCalf(
+      req.params.id,
+      protocolId,
+      date
+    );
+    res.json({ success: true, message: "Vacunación registrada", data: calf });
+  } catch (error) {
+    console.log(error);
   }
 });
 

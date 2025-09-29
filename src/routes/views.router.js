@@ -12,6 +12,8 @@ const StopMilkingManager = require("../dao/db/calfStopMilking-manager.js");
 const stopMilkingManager = new StopMilkingManager();
 const DailyRecordManager = require("../dao/db/dailyRecord-manager.js")
 const dailyRecordManager= new DailyRecordManager()
+const VacunationManager = require("../dao/db/vacunation-manager.js")
+const vacunationManager = new VacunationManager()
 const moment = require("moment-timezone");
 
 //HOME
@@ -435,4 +437,19 @@ router.get("/swdescargar", async (req, res) => {
   }
 });
 
+
+router.get("/vacunacion", async(req,res) => {
+  try {
+    if(!req.session.login) {
+      res.redirect("/")
+      return
+    }
+    const userId = req.session.user._id
+    const calves = await calfManager.getCalves(userId)
+    const protocols = await vacunationManager.getProtocols(userId)
+    res.render("vacunation", {calves, protocols})
+  } catch (error) {
+    
+  }
+})
 module.exports = router;

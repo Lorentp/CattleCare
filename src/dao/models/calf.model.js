@@ -29,6 +29,10 @@ const calfSchema = new mongoose.Schema({
   weightGainPerDay: { type: Number },
   stopMilking: { type: Boolean },
   mother: {type: String},
+  vacunation: [{
+    protocolId: {type: mongoose.Types.ObjectId,  ref: "vacunations"},
+    date: {type: Date, default: Date.now}
+  }]
 });
 
 const CalfModel = mongoose.model("calves", calfSchema);

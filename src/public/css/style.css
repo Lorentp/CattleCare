@@ -187,7 +187,24 @@ nav {
   display: flex;
   justify-content: center;
   align-items: center;
+  color: black;
+  font-family: "Futura Medium", sans-serif;
 }
+.link-button:hover {
+  background-color: #8abf3b; /* Un tono más oscuro de --Verde */
+}
+.link-button button {
+  background: none;
+  border: none;
+  color: inherit;
+  font-family: inherit;
+  font-size: inherit;
+  padding: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
 .corral-button {
   width: 10%;
   text-align: center;
@@ -244,11 +261,10 @@ nav {
 input,
 select {
   width: 100%;
-
   height: 3rem;
   font-size: 20px;
   border-radius: 10px;
-  border: black 2px black;
+  border: black 2px solid;
 }
 
 .select-container select {
@@ -256,7 +272,7 @@ select {
   margin-top: 1rem;
   height: 3rem;
   border-radius: 10px;
-  border: black 2px black;
+  border: black 2px solid;
 }
 
 .form-button {
@@ -292,6 +308,70 @@ select {
 
 .mobile-hidden {
   display: none;
+}
+
+.vacunation-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+}
+.select-calf {
+  margin-bottom: 20px;
+}
+.calf-info {
+  background-color: #ffc32c;
+  margin: 1.5rem 0.5rem;
+  border-radius: 12px;
+  border: solid 2px;
+  padding: 15px;
+}
+.protocols-section {
+  margin-top: 20px;
+}
+.protocol-button {
+  margin: 5px;
+  padding: 10px;
+  background: var(--Naranja);
+  color: white;
+  border: solid 2px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: "Futura Medium", sans-serif;
+}
+.protocol-button.completed {
+  background: rgb(255, 222, 161);
+  color: black;
+  cursor: default;
+}
+.protocols-list {
+  margin-bottom: 20px;
+}
+.protocols-list ul {
+  list-style: none;
+  padding: 0;
+}
+.protocols-list li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  background-color: var(--Naranja);
+  margin: 0.5rem;
+  border-radius: 12px;
+  border: solid 2px;
+  font-family: "Futura Medium", sans-serif;
+}
+.delete-protocol-button {
+  background-color: rgb(255, 78, 78);
+  color: white;
+  border: solid 2px;
+  padding: 5px 10px;
+  border-radius: 12px;
+  cursor: pointer;
+  font-family: "Futura Medium", sans-serif;
+}
+.delete-protocol-button:hover {
+  background-color: rgb(200, 0, 0);
 }
 
 @media (min-width: 720px) {
