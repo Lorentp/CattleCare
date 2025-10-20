@@ -47,8 +47,18 @@
     {{/if}}
 
     {{#if this.treatment}}
+        <div>
+            <p class="treatment">Tratamientos:</p>
+            {{#each this.treatment}}
+            <p class="treatment">
+                Tratamiento: {{this.title}} iniciado el {{formatDate this.startDate}}
+            </p>
+            {{/each}}
+        </div>
+    {{/if}}
+    {{#if this.prevTreatment}}
     <p class="treatment">        
-        Tratado por {{getTreatment this.treatment}} el dia {{formatDate this.startDate}}
+        Tratamiento anterior: {{this.prevTreatment}} el dia {{formatDate this.prevEndDate}}
     </p>  
     {{/if}}
 </div>

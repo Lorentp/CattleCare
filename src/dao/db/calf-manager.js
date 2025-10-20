@@ -58,20 +58,34 @@ class CalfManager {
       const treatment = await TreatmentModel.findById(treatmentId);
       let calfExist = await CalfModel.findOne({ owner: owner, name: name });
       if (calfExist) {
-        calfExist.treatment = treatment; // Asignamos el array completo
+
+        const currentTreatments  = Array.isArray(calfExist.treatment) ? calfExist.treatment : []
+
+        const newTreatment = {
+          treatmentId: treatment._id,
+          startDate: startDate,
+          title: treatment.title,
+          duration: treatment.duration,
+          medication: treatment.medication
+        };
+
+        const updatedTreatments = [newTreatment, ...currentTreatments]
+
+        calfExist.treatment = updatedTreatments; // Asignamos el array completo
         calfExist.startDate = startDate;
         calfExist.endDate = endDate;
         calfExist.corral = corral;
         calfExist.corralId = corralId;
         calfExist.lastDayTreated = lastDayTreated;
         calfExist.resetTreatment = false; // Reseteamos si había un reset
+        calfExist.finished = false;
         await calfExist.save();
         console.log("Ternero actualizado:", calfExist);
       } else {
         // Si no existe, crear un nuevo ternero
         const newCalf = new CalfModel({
           name,
-          treatment: treatment,
+          treatment: [treatment],
           startDate,
           endDate,
           owner,
@@ -439,6 +453,24 @@ class CalfManager {
       return updatedCalf;
     } catch (error) {
       console.log(error);
+    }
+  }
+
+  async finishTreatment(calfId) {
+    try {
+      const calf = await CalfModel.findById(calfId);
+      if (!calf) {
+        console.log("El ternero no existe");
+        return null;
+      }
+
+      calf.finished = true;
+      await calf.save();
+      console.log("Tratamiento finalizado para ternero:", calf);
+      return calf;
+    } catch (error) {
+      console.log(error);
+      return null;
     }
   }
 

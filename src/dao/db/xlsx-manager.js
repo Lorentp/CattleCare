@@ -1,1070 +1,363 @@
 const XlsxPopulate = require("xlsx-populate");
 const moment = require("moment-timezone");
+const VacunationModel = require("../models/vacunation.model");
+const CalfModel = require("../models/calf.model"); // Asegúrate de que esta ruta sea correcta
 
 class ExcelManager {
-  /**
-   * @param {string} dateStr
-   * @returns {string}
-   */
-  _formatFilterDate(dateStr) {
-    if (!dateStr || !/^\d{4}-\d{2}-\d{2}$/.test(dateStr)) return "Sin fecha";
-    const [year, month, day] = dateStr.split("-");
-    if (
-      !year ||
-      !month ||
-      !day ||
-      isNaN(parseInt(day)) ||
-      isNaN(parseInt(month)) ||
-      isNaN(parseInt(year))
-    ) {
-      return "Sin fecha";
-    }
-    return `${day.padStart(2, "0")}/${month.padStart(2, "0")}/${year.slice(
-      -2
-    )}`;
+  constructor() {
+    this.workbook = null;
   }
 
-  /**
-   * @param {string|Array|Object} treatment
-   * @returns {string}
-   */
-  _getTreatmentName(treatment) {
-    if (typeof treatment === "string") return treatment;
-    if (Array.isArray(treatment) && treatment.length > 0) {
-      const treatmentItem = treatment[0];
-      if (typeof treatmentItem === "string") return treatmentItem;
-      if (
-        treatmentItem &&
-        typeof treatmentItem === "object" &&
-        treatmentItem.title
-      ) {
-        return treatmentItem.title;
-      }
-    }
-    return "";
+  // Función auxiliar para formatear fechas en DD-MM-YY (cambiado de / a - para evitar problemas en nombres de archivos)
+  _formatDate(dateStr, fullYear = false) {
+    if (!dateStr || !moment(dateStr).isValid()) return "Sin fecha";
+    return moment(dateStr).format(fullYear ? "DD-MM-YYYY" : "DD-MM-YY");
   }
 
-  /**
-   * @param {Object} sheet
-   * @param {string} range
-   * @param {Array} columns
-   */
+  // Función auxiliar para obtener lista de tratamientos como string
+  _getTreatmentsList(treatments, includeDate = false) {
+    if (!Array.isArray(treatments) || treatments.length === 0) return "";
+    return treatments
+      .map(t => {
+        const title = t.title || "Sin título";
+        const date = includeDate && t.startDate ? ` (${this._formatDate(t.startDate, true)})` : "";
+        return `${title}${date}`;
+      })
+      .join("; ");
+  }
+
+  // Función auxiliar para obtener nombres únicos de tratamientos
+  _getUniqueTreatments(calves) {
+    const titles = calves.flatMap(calf => 
+      (Array.isArray(calf.treatment) ? calf.treatment.map(t => t.title).filter(Boolean) : [])
+    );
+    return [...new Set(titles)];
+  }
+
+  // Función auxiliar para obtener nombre de tratamiento (para resúmenes)
+  _getTreatmentName(treatments) {
+    if (!Array.isArray(treatments) || treatments.length === 0) return "";
+    return treatments.map(t => t.title || "").filter(Boolean).join("; ");
+  }
+
+  // Estilo para encabezados
   _styleHeaders(sheet, range, columns) {
     sheet.range(range).style({
       fill: { type: "solid", color: "FFFF00" },
-      border: {
-        top: { style: "thick", color: "000000" },
-        bottom: { style: "thick", color: "000000" },
-        left: { style: "thick", color: "000000" },
-        right: { style: "thick", color: "000000" },
-      },
+      bold: true,
+      border: { style: "thin", color: "000000" },
+      horizontalAlignment: "center",
     });
-    columns.forEach(({ col, width }) => sheet.column(col).width(width));
+    columns.forEach(({ col, width }) => sheet.column(col).width(width || 15));
   }
 
-  /**
-   * @param {Object} sheet
-   * @param {string} range
-   */
+  // Estilo para bordes de filas
   _styleRowBorders(sheet, range) {
     sheet.range(range).style({
-      border: {
-        bottom: { style: "thin", color: "000000" },
-        left: { style: "thin", color: "000000" },
-        right: { style: "thin", color: "000000" },
-      },
+      border: { style: "thin", color: "000000" },
     });
   }
 
-  /**
-   * @param {Object} sheet
-   * @param {string} title
-   * @param {string} startCol
-   * @param {number} startRow
-   * @param {Array} metrics
-   */
-  _createPercentageTable(sheet, title, startCol, startRow, metrics) {
+  // Crear tabla de porcentajes o conteos en resumen
+  _createMetricsTable(sheet, title, startCol, startRow, metrics) {
     const valueCol = String.fromCharCode(startCol.charCodeAt(0) + 1);
     sheet.cell(`${startCol}${startRow}`).value(title).style({ bold: true });
-    sheet.cell(`${startCol}${startRow + 2}`).value("Métrica");
-    sheet.cell(`${valueCol}${startRow + 2}`).value("Porcentaje");
-
-    this._styleHeaders(
-      sheet,
-      `${startCol}${startRow + 2}:${valueCol}${startRow + 2}`,
-      [
-        { col: startCol, width: 25 },
-        { col: valueCol, width: 15 },
-      ]
-    );
+    sheet.cell(`${startCol}${startRow + 1}`).value("Métrica");
+    sheet.cell(`${valueCol}${startRow + 1}`).value("Valor");
+    this._styleHeaders(sheet, `${startCol}${startRow + 1}:${valueCol}${startRow + 1}`, [
+      { col: startCol, width: 25 },
+      { col: valueCol, width: 15 },
+    ]);
 
     metrics.forEach((metric, index) => {
-      const row = startRow + 3 + index;
+      const row = startRow + 2 + index;
       sheet.cell(`${startCol}${row}`).value(metric.label);
-      sheet
-        .cell(`${valueCol}${row}`)
-        .formula(metric.formula)
-        .style("numberFormat", "0.00%");
+      sheet.cell(`${valueCol}${row}`).formula(metric.formula).style("numberFormat", metric.format || "0");
       this._styleRowBorders(sheet, `${startCol}${row}:${valueCol}${row}`);
     });
-
-    return startRow + 3 + metrics.length;
   }
 
-  /**
-   * @param {Object} sheet
-   * @param {string} countLabel
-   * @param {number} count
-   * @param {string} headerRange
-   * @param {Array} columns
-   * @param {Array} headers
-   * @param {string} [footerCol="I"]
-   * @param {string} [filterText]
-   */
-  _setupSheet(
-    sheet,
-    countLabel,
-    count,
-    headerRange,
-    columns,
-    headers,
-    footerCol = "I",
-    filterText
-  ) {
-    sheet.cell("B2").value(countLabel);
-    sheet.cell("C2").value(count);
-    sheet
-      .cell(`${footerCol}2`)
-      .value("Este archivo generado por TERNTECH || Contacto: 3534270126");
-    if (filterText)
-      sheet.cell(`${footerCol === "I" ? "K" : "M"}2`).value(filterText);
-
-    sheet.freezePanes(0, 4);
-    headers.forEach((header, index) => {
-      sheet.cell(`${String.fromCharCode(66 + index)}4`).value(header);
-    });
-
-    this._styleHeaders(sheet, headerRange, columns);
+  // Configuración general de hoja
+  _setupSheet(sheet, title, countLabel, count, footerText, filterText) {
+    sheet.cell("B2").value(title).style({ bold: true, fontSize: 14 });
+    if (countLabel) sheet.cell("B3").value(countLabel).style({ bold: true });
+    if (count) sheet.cell("C3").value(count);
+    sheet.cell("I2").value(footerText);
+    if (filterText) sheet.cell("K2").value(filterText);
+    sheet.freezePanes(1, 1); // Congelar primera fila
   }
 
-  /**
-   * @param {Object} workbook
-   * @param {string} fromDate
-   * @param {string} toDate
-   * @param {Array} deadCalves
-   * @param {Array} calvesBirth
-   * @param {Array} calvesReleased
-   * @param {Array} calvesTreated
-   */
-  _createSummarySheet(
-    workbook,
-    fromDate,
-    toDate,
-    deadCalves,
-    calvesBirth,
-    calvesReleased,
-    calvesTreated,
-    user
-  ) {
-    const summarySheet = workbook.sheet(0).name("Resumen");
+// Hoja de Resumen
+  async _createSummarySheet(fromDate, toDate, deadCalves, calvesBirth, calvesReleased, calvesTreated, user) {
+    const sheet = this.workbook.sheet(0).name("Resumen");
+    const filterText = `Período: ${this._formatDate(fromDate, true)} a ${this._formatDate(toDate, true)}`;
+    this._setupSheet(sheet, "Resumen de Terneros", null, null, "Archivo generado por TERNTECH || Contacto: 3534270126", filterText);
+    sheet.cell("B4").value(user.farmname || "Establecimiento").style({ bold: true });
 
-    // Title and period
-    summarySheet
-      .cell("B2")
-      .value("Resumen de Terneros")
-      .style({ bold: true, fontSize: 14 });
-      summarySheet
-      .cell("B3")
-      .value(
-        `Período: ${this._formatFilterDate(
-          fromDate
-        )} a ${this._formatFilterDate(toDate)}`
-      )
-      .style({ italic: true });
-      summarySheet
-        .cell("B4")
-        .value(user.farmname)
-        .style({ bold: true, fontSize: 14 });
-    summarySheet
-      .cell("I2")
-      .value("Este archivo generado por TERNTECH || Contacto: 3534270126");
+    // Filtrar datos por período
+    const start = moment(fromDate).startOf("day");
+    const end = moment(toDate).endOf("day");
 
-    // Births table (B-C)
-    summarySheet
-      .cell("B5")
-      .value("Resumen de Nacimientos")
-      .style({ bold: true });
+    const filteredBirths = calvesBirth.filter(c => moment(c.birthDate).isBetween(start, end));
+    const filteredDead = deadCalves.filter(c => moment(c.timeDead).isBetween(start, end));
+    const filteredReleased = calvesReleased.filter(c => moment(c.whenReleased).isBetween(start, end));
+    const filteredTreated = calvesTreated.filter(c => moment(c.startDate).isBetween(start, end));
+
+    // Métricas de Nacimientos
     const birthMetrics = [
-      { label: "Total Nacidos", formula: "=COUNTA(Nacimientos!B5:B1048576)" },
-      {
-        label: "Machos",
-        formula: '=COUNTIF(Nacimientos!D5:C1048576, "Macho")',
-      },
-      {
-        label: "Hembras",
-        formula: '=COUNTIF(Nacimientos!D5:C1048576, "Hembra")',
-      },
-      {
-        label: "Parto Normal",
-        formula: '=COUNTIF(Nacimientos!E5:D1048576, "1-Normal")',
-      },
-      {
-        label: "Parto Asistido",
-        formula: '=COUNTIF(Nacimientos!E5:D1048576, "2-Asistido")',
-      },
-      {
-        label: "Parto Cesárea",
-        formula: '=COUNTIF(Nacimientos!E5:D1048576, "3-Cesárea")',
-      },
-    ];
-    this._styleHeaders(summarySheet, "B7:C7", [
-      { col: "B", width: 25 },
-      { col: "C", width: 15 },
-    ]);
-    birthMetrics.forEach((metric, index) => {
-      const row = 8 + index;
-      summarySheet.cell(`B${row}`).value(metric.label);
-      summarySheet
-        .cell(`C${row}`)
-        .formula(metric.formula)
-        .style("numberFormat", "0");
-      this._styleRowBorders(summarySheet, `B${row}:C${row}`);
-    });
+      { label: "Total Nacimientos", formula: "=COUNTA(Nacimientos!B5:B1048576)", format: "0" },
+      { label: "Machos", formula: '=COUNTIF(Nacimientos!C5:C1048576, "Macho")', format: "0" },
+      { label: "Hembras", formula: '=COUNTIF(Nacimientos!C5:C1048576, "Hembra")', format: "0" },
+      { label: "Parto Normal", formula: '=COUNTIF(Nacimientos!H5:H1048576, "1-Normal")', format: "0" },
+      { label: "Parto Asistido", formula: '=COUNTIF(Nacimientos!H5:H1048576, "2-Asistido")', format: "0" },
+      { label: "Parto Cesárea", formula: '=COUNTIF(Nacimientos!H5:H1048576, "3-Cesárea")', format: "0" },
 
-    // Deaths table (E-F)
-    summarySheet.cell("E5").value("Resumen de Muertes").style({ bold: true });
-    const deadCalvesFiltered =
-      deadCalves && Array.isArray(deadCalves)
-        ? deadCalves.filter((calf) => calf.isDead)
-        : [];
-    const deadTreatments = [
-      ...new Set(
-        deadCalvesFiltered
-          .map((calf) => this._getTreatmentName(calf.treatment))
-          .filter((t) => t)
-      ),
     ];
+    this._createMetricsTable(sheet, "Resumen de Nacimientos", "B", 5, birthMetrics);
+
+    // Métricas de Muertes
+    const deadTreatments = this._getUniqueTreatments(filteredDead);
     const deadMetrics = [
-      { label: "Total Muertos", formula: "=COUNTA(Muertes!B5:B1048576)" },
-      { label: "Machos", formula: '=COUNTIF(Muertes!D5:C1048576, "Macho")' },
-      { label: "Hembras", formula: '=COUNTIF(Muertes!D5:C1048576, "Hembra")' },
-      {
-        label: "Parto Normal",
-        formula: '=COUNTIF(Muertes!E5:D1048576, "1-Normal")',
-      },
-      {
-        label: "Parto Asistido",
-        formula: '=COUNTIF(Muertes!E5:D1048576, "2-Asistido")',
-      },
-      {
-        label: "Parto Cesárea",
-        formula: '=COUNTIF(Muertes!E5:D1048576, "3-Cesárea")',
-      },
-      {
-        label: "Edad 0-3 días",
-        formula:
-          '=COUNTIFS(Muertes!M5:M1048576, ">=0", Muertes!M5:M1048576, "<=3")',
-      },
-      {
-        label: "Edad 4-7 días",
-        formula:
-          '=COUNTIFS(Muertes!M5:M1048576, ">3", Muertes!M5:M1048576, "<=7")',
-      },
-      {
-        label: "Edad 8-14 días",
-        formula:
-          '=COUNTIFS(Muertes!M5:M1048576, ">7", Muertes!M5:M1048576, "<=14")',
-      },
-      {
-        label: "Edad +14 días",
-        formula: '=COUNTIF(Muertes!M5:M1048576, ">14")',
-      },
-      ...deadTreatments.map((treatment) => ({
-        label: `Tratamiento: ${treatment}`,
-        formula: `=COUNTIF(Muertes!I5:I1048576, "${treatment}")`,
+      { label: "Total Muertos", formula: "=COUNTA(Muertes!B5:B1048576)", format: "0" },
+      { label: "Machos", formula: '=COUNTIF(Muertes!C5:C1048576, "Macho")', format: "0" },
+      { label: "Hembras", formula: '=COUNTIF(Muertes!C5:C1048576, "Hembra")', format: "0" },
+      { label: "Parto Normal", formula: '=COUNTIF(Muertes!D5:D1048576, "1-Normal")', format: "0" },
+      { label: "Parto Asistido", formula: '=COUNTIF(Muertes!D5:D1048576, "2-Asistido")', format: "0" },
+      { label: "Parto Cesárea", formula: '=COUNTIF(Muertes!D5:D1048576, "3-Cesárea")', format: "0" },
+      { label: "Edad 0-3 días", formula: '=COUNTIFS(Muertes!G5:G1048576, ">=0", Muertes!G5:G1048576, "<=3")', format: "0" },
+      { label: "Edad 4-7 días", formula: '=COUNTIFS(Muertes!G5:G1048576, ">3", Muertes!G5:G1048576, "<=7")', format: "0" },
+      { label: "Edad 8-14 días", formula: '=COUNTIFS(Muertes!G5:G1048576, ">7", Muertes!G5:G1048576, "<=14")', format: "0" },
+      { label: "Edad +14 días", formula: '=COUNTIF(Muertes!G5:G1048576, ">14")', format: "0" },
+      ...deadTreatments.map(t => ({
+        label: `Tratamiento: ${t}`,
+        formula: `=COUNTIF(Muertes!I5:I1048576, "*${t}*")`,
+        format: "0"
       })),
     ];
-    this._styleHeaders(summarySheet, "E7:F7", [
-      { col: "E", width: 25 },
-      { col: "F", width: 15 },
-    ]);
-    deadMetrics.forEach((metric, index) => {
-      const row = 8 + index;
-      summarySheet.cell(`E${row}`).value(metric.label);
-      summarySheet
-        .cell(`F${row}`)
-        .formula(metric.formula)
-        .style("numberFormat", "0");
-      this._styleRowBorders(summarySheet, `E${row}:F${row}`);
-    });
+    this._createMetricsTable(sheet, "Resumen de Muertes", "E", 5, deadMetrics);
 
-    // Released calves table (H-I)
-    summarySheet
-      .cell("H5")
-      .value("Resumen de Terneros Largados")
-      .style({ bold: true });
-    const releasedMetrics = [
-      { label: "Total Largados", formula: "=COUNTA(Largados!B5:B1048576)" },
-      { label: "Machos", formula: '=COUNTIF(Largados!D5:C1048576, "Macho")' },
-      { label: "Hembras", formula: '=COUNTIF(Largados!D5:C1048576, "Hembra")' },
-      {
-        label: "Días en Guachera (Promedio)",
-        formula: "=AVERAGE(Largados!H5:H1048576)",
-      },
-      {
-        label: "Peso al Nacimiento (Promedio)",
-        formula: '=AVERAGEIF(Largados!I5:I1048576, ">0")',
-      },
-      {
-        label: "Peso al Ser Largado (Promedio)",
-        formula: '=AVERAGEIF(Largados!J5:J1048576, ">0")',
-      },
-      {
-        label: "Aumento por Día (Promedio)",
-        formula: '=AVERAGEIF(Largados!L5:L1048576, ">0")',
-      },
-    ];
-    this._styleHeaders(summarySheet, "H7:I7", [
-      { col: "H", width: 25 },
-      { col: "I", width: 15 },
-    ]);
-    releasedMetrics.forEach((metric, index) => {
-      const row = 8 + index;
-      summarySheet.cell(`H${row}`).value(metric.label);
-      summarySheet
-        .cell(`I${row}`)
-        .formula(metric.formula)
-        .style("numberFormat", index >= 3 ? "0.00" : "0");
-      this._styleRowBorders(summarySheet, `H${row}:I${row}`);
-    });
-
-    // Treated calves table (K-L)
-    summarySheet
-      .cell("K5")
-      .value("Resumen de Terneros Tratados")
-      .style({ bold: true });
-    const treatedCalvesFiltered =
-      calvesTreated && Array.isArray(calvesTreated) ? calvesTreated : [];
-    const treatedTreatments = [
-      ...new Set(
-        treatedCalvesFiltered
-          .map((calf) => this._getTreatmentName(calf.treatment))
-          .filter((t) => t)
-      ),
-    ];
+    // Métricas de Tratados
+    const treatedTreatments = this._getUniqueTreatments(filteredTreated);
     const treatedMetrics = [
-      { label: "Total Tratados", formula: "=COUNTA(Tratados!B5:B1048576)" },
-      {
-        label: "Parto Normal",
-        formula: '=COUNTIF(Tratados!D5:D1048576, "1-Normal")',
-      },
-      {
-        label: "Parto Asistido",
-        formula: '=COUNTIF(Tratados!D5:D1048576, "2-Asistido")',
-      },
-      {
-        label: "Parto Cesárea",
-        formula: '=COUNTIF(Tratados!D5:D1048576, "3-Cesárea")',
-      },
-      ...treatedTreatments.map((treatment) => ({
-        label: `Tratamiento: ${treatment}`,
-        formula: `=COUNTIF(Tratados!G5:G1048576, "${treatment}")`,
+      { label: "Total Tratados", formula: "=COUNTA(Tratados!B5:B1048576)", format: "0" },
+      { label: "Machos", formula: '=COUNTIF(Tratados!C5:C1048576, "Macho")', format: "0" },
+      { label: "Hembras", formula: '=COUNTIF(Tratados!C5:C1048576, "Hembra")', format: "0" },
+      ...treatedTreatments.map(t => ({
+        label: `Tratamiento: ${t}`,
+        formula: `=COUNTIF(Tratados!H5:H1048576, "*${t}*")`,
+        format: "0"
       })),
     ];
-    this._styleHeaders(summarySheet, "K7:L7", [
-      { col: "K", width: 25 },
-      { col: "L", width: 15 },
-    ]);
-    treatedMetrics.forEach((metric, index) => {
-      const row = 8 + index;
-      summarySheet.cell(`K${row}`).value(metric.label);
-      summarySheet
-        .cell(`L${row}`)
-        .formula(metric.formula)
-        .style("numberFormat", "0");
-      this._styleRowBorders(summarySheet, `K${row}:L${row}`);
-    });
+    this._createMetricsTable(sheet, "Resumen de Tratados", "I", 5, treatedMetrics);
 
-    // Calculate starting row for percentage tables
-    const startRowPercentages =
-      Math.max(
-        8 + birthMetrics.length,
-        8 + deadMetrics.length,
-        8 + releasedMetrics.length,
-        8 + treatedMetrics.length
-      ) + 3;
-
-    // Table 1: Sex percentages (B-C)
-    this._createPercentageTable(
-      summarySheet,
-      "Porcentaje de Sexo (Nacidos)",
-      "B",
-      startRowPercentages,
-      [
-        { label: "Machos", formula: "=IF(C8=0, 0, C9/C8)" },
-        { label: "Hembras", formula: "=IF(C8=0, 0, C10/C8)" },
-      ]
-    );
-
-    // Table 2: Birth type percentages (E-F)
-    this._createPercentageTable(
-      summarySheet,
-      "Porcentaje de Tipos de Parto (Nacidos)",
-      "E",
-      startRowPercentages,
-      [
-        { label: "Parto Normal", formula: "=IF(C8=0, 0, C11/C8)" },
-        { label: "Parto Asistido", formula: "=IF(C8=0, 0, C12/C8)" },
-        { label: "Parto Cesárea", formula: "=IF(C8=0, 0, C13/C8)" },
-      ]
-    );
-
-    // Table 3: Dead treatment percentages (H-I)
-    const deadTreatmentPercentMetrics = deadTreatments.map(
-      (treatment, index) => ({
-        label: `Tratamiento: ${treatment}`,
-        formula: `=IF(F8=0, 0, F${18 + index}/F8)`,
-      })
-    );
-    const deadTreatmentEndRow = this._createPercentageTable(
-      summarySheet,
-      "Porcentaje de Tratamientos (Muertos)",
-      "H",
-      startRowPercentages,
-      deadTreatmentPercentMetrics
-    );
-
-    // Table 4: Outcome percentages (K-L)
-    this._createPercentageTable(
-      summarySheet,
-      "Porcentaje de Largados y Muertos",
-      "K",
-      startRowPercentages,
-      [
-        { label: "Largados", formula: "=IF((I8+F8)=0, 0, I8/(I8+F8))" },
-        { label: "Muertos", formula: "=IF((I8+F8)=0, 0, F8/(I8+F8))" },
-      ]
-    );
-
-    // Table 5: Treated treatment percentages (N-O)
-    this._createPercentageTable(
-      summarySheet,
-      "Porcentaje de Tratamientos (Tratados)",
-      "N",
-      startRowPercentages,
-      treatedTreatments.map((treatment) => ({
-        label: `Tratamiento: ${treatment}`,
-        formula: `=IF(L8=0, 0, (COUNTIF(Tratados!G5:G1048576, "${treatment}")/L8))`,
-      }))
-    );
-
-    // Table 6: Age at death percentages (H-I, below Table 3)
-    this._createPercentageTable(
-      summarySheet,
-      "Porcentaje de Edades al Morir (Muertos)",
-      "H",
-      deadTreatmentEndRow + 2,
-      [
-        { label: "Edad 0-10 días", formula: "=IF(F8=0, 0, F14/F8)" },
-        { label: "Edad 11-20 días", formula: "=IF(F8=0, 0, F15/F8)" },
-        { label: "Edad 21-30 días", formula: "=IF(F8=0, 0, F16/F8)" },
-        { label: "Edad +31 días", formula: "=IF(F8=0, 0, F17/F8)" },
-      ]
-    );
-    /*summarySheet
-    .cell("N5")
-    .value("Resumen de Calostro")
-    .style({ bold: true });
-      const colostrumMetrics = [
-        {
-          label: "Total Calificados",
-          formula: "=COUNT(Nacimientos!H5:H1048576)",
-        },
-        {
-          label: "Calostro > 9.4",
-          formula: '=COUNTIF(Nacimientos!H5:H1048576, ">9.4")',
-        },
-        {
-          label: "Calostro 8.9 - 9.3",
-          formula:
-            '=COUNTIFS(Nacimientos!H5:H1048576, ">=8.9", Nacimientos!H5:H1048576, "<=9.3")',
-        },
-        {
-          label: "Calostro 8.1 - 8.8",
-          formula:
-            '=COUNTIFS(Nacimientos!H5:H1048576, ">=8.1", Nacimientos!H5:H1048576, "<=8.8")',
-        },
-        {
-          label: "Calostro < 8.1",
-          formula:
-            '=COUNTIFS(Nacimientos!H5:H1048576, "<8.1", Nacimientos!H5:H1048576, "<>"")',
-        },
-      ];
-      this._styleHeaders(summarySheet, "N7:O7", [
-        { col: "N", width: 25 },
-        { col: "O", width: 15 },
-      ]);
-      colostrumMetrics.forEach((metric, index) => {
-        const row = 8 + index;
-        summarySheet.cell(`N${row}`).value(metric.label);
-        summarySheet
-          .cell(`O${row}`)
-          .formula(metric.formula)
-          .style("numberFormat", "0");
-        this._styleRowBorders(summarySheet, `N${row}:O${row}`);
-      });    
-      
-      
-      this._createPercentageTable(
-        summarySheet,
-        "Porcentaje de Calostro (Nacimientos)",
-        "Q",
-        startRowPercentages,
-        [
-          { label: "Calostro > 9.4", formula: "=IF(O8=0, 0, O9/O8)" },
-          { label: "Calostro 8.9 - 9.3", formula: "=IF(O8=0, 0, O10/O8)" },
-          { label: "Calostro 8.1 - 8.8", formula: "=IF(O8=0, 0, O11/O8)" },
-          { label: "Calostro < 8.1", formula: "=IF(O8=0, 0, O12/O8)" },
-        ]
-      );*/
+    // Métricas de Largados
+    const releasedMetrics = [
+      { label: "Total Largados", formula: "=COUNTA(Largados!B5:B1048576)", format: "0" },
+      { label: "Machos", formula: '=COUNTIF(Largados!C5:C1048576, "Macho")', format: "0" },
+      { label: "Hembras", formula: '=COUNTIF(Largados!C5:C1048576, "Hembra")', format: "0" },
+      { label: "Promedio Días en Guachera", formula: "=AVERAGE(Largados!H5:H1048576)", format: "0" },
+      { label: "Promedio Peso", formula: "=AVERAGE(Largados!I5:I1048576)", format: "0.00" },
+      { label: "Promedio Kilos Ganados", formula: "=AVERAGE(Largados!J5:J1048576)", format: "0.00" },
+      { label: "Promedio Aumento/Día", formula: "M12/M10", format: "0.000" },
+    ];
+    this._createMetricsTable(sheet, "Resumen de Largados", "L", 5, releasedMetrics);
   }
 
-  /**.
-   * @param {Object} workbook
-   * @param {Array} calves
-   */
-  _createGuacheraSheet(workbook, calves) {
-  const guacheraSheet = workbook.addSheet("Terneros en guachera");
-  this._setupSheet(
-    guacheraSheet,
-    "Cantidad de terneros",
-    calves.length,
-    "B4:J4", 
-    [
-      { col: "B", width: 20 },
-      { col: "C", width: 20 },
-      { col: "D", width: 10 },
-      { col: "E", width: 15 },
-      { col: "F", width: 12 },
-      { col: "G", width: 13 }, 
-      { col: "H", width: 15 },
-      { col: "I", width: 25 },
-      { col: "J", width: 12 }, 
-    ],
-    [
-      "Ternero",
-      "Madre",
-      "Sexo",
-      "Tipo de parto",
-      "Nacimiento",
-      "Peso al nacer",
-      "Calostrado",
-      "Tratamiento",
-      "Cuando fue",
-    ]
-  );
+  // Hoja de Guachera (Terneros actuales)
+  _createGuacheraSheet(calves) {
+    const sheet = this.workbook.addSheet("Guachera");
+    const headers = ["Caravana", "Sexo", "Fecha Nacimiento", "Peso Nacimiento", "Calostro"];
+    const columns = headers.map((_, i) => ({ col: String.fromCharCode(66 + i), width: i === headers.length - 1 ? 50 : 15 }));
+    this._setupSheet(sheet, "Terneros en Guachera", "Cantidad:", calves.length, "Archivo generado por TERNTECH");
+    headers.forEach((h, i) => sheet.cell(`${String.fromCharCode(66 + i)}4`).value(h));
+    this._styleHeaders(sheet, `B4:${String.fromCharCode(66 + headers.length - 1)}4`, columns);
 
-  calves.forEach((calf, index) => {
-    const row = index + 5;
-    guacheraSheet.cell(`B${row}`).value(calf.name || "");
-    guacheraSheet.cell(`C${row}`).value(calf.mother || ""); 
-    guacheraSheet.cell(`D${row}`).value(calf.gender || ""); 
-    guacheraSheet.cell(`E${row}`).value(calf.birthType || "");
+    calves.sort((a, b) => a.name.localeCompare(b.name)); // Ordenar por caravana
+    calves.forEach((calf, index) => {
+      const row = 5 + index;
+      sheet.cell(`B${row}`).value(calf.name);
+      sheet.cell(`C${row}`).value(calf.gender);
+      sheet.cell(`D${row}`).value(this._formatDate(calf.birthDate, true));
+      sheet.cell(`E${row}`).value(calf.calfWeight);
+      sheet.cell(`F${row}`).value(calf.calfCalostro);
+      this._styleRowBorders(sheet, `B${row}:F${row}`);
+    });
+  }
 
-    const birthDate =
-      calf.birthDate && moment(calf.birthDate).isValid()
-        ? moment(calf.birthDate).toDate()
-        : "";
-    guacheraSheet
-      .cell(`F${row}`)
-      .value(birthDate)
-      .style(birthDate ? { numberFormat: "dd/mm/yyyy" } : {});
+  // Hoja de Nacimientos
+  _createBirthSheet(calvesBirth, fromDate, toDate) {
+    const sheet = this.workbook.addSheet("Nacimientos");
+    const headers = ["Caravana", "Sexo", "Fecha Nacimiento", "Peso", "Calostro", "Madre", "Tipo Parto"];
+    const columns = headers.map((_, i) => ({ col: String.fromCharCode(66 + i), width: 15 }));
+    const filterText = `Período: ${this._formatDate(fromDate, true)} a ${this._formatDate(toDate, true)}`;
+    this._setupSheet(sheet, "Nacimientos", "Cantidad:", calvesBirth.length, "Archivo generado por TERNTECH", filterText);
+    headers.forEach((h, i) => sheet.cell(`${String.fromCharCode(66 + i)}4`).value(h));
+    this._styleHeaders(sheet, `B4:${String.fromCharCode(66 + headers.length - 1)}4`, columns);
 
-    guacheraSheet.cell(`G${row}`).value(calf.calfWeight || "");
-    guacheraSheet.cell(`H${row}`).value(calf.calfCalostro || "");
-    guacheraSheet
-      .cell(`I${row}`)
-      .value(this._getTreatmentName(calf.treatment) || "");
+    calvesBirth.sort((a, b) => moment(a.birthDate).diff(moment(b.birthDate)));
+    calvesBirth.forEach((calf, index) => {
+      const row = 5 + index;
+      sheet.cell(`B${row}`).value(calf.name);
+      sheet.cell(`C${row}`).value(calf.gender);
+      sheet.cell(`D${row}`).value(this._formatDate(calf.birthDate, true));
+      sheet.cell(`E${row}`).value(calf.calfWeight);
+      sheet.cell(`F${row}`).value(calf.calfCalostro);
+      sheet.cell(`G${row}`).value(calf.mother);
+      sheet.cell(`H${row}`).value(calf.birthType);
+      this._styleRowBorders(sheet, `B${row}:H${row}`);
+    });
+  }
 
-    const startDate =
-      calf.startDate && moment(calf.startDate).isValid()
-        ? moment(calf.startDate).toDate()
-        : "";
-    guacheraSheet
-      .cell(`J${row}`)
-      .value(startDate)
-      .style(startDate ? { numberFormat: "dd/mm/yyyy" } : {});
+  // Hoja de Muertos
+  _createDeadSheet(deadCalves, fromDate, toDate) {
+    const sheet = this.workbook.addSheet("Muertes");
+    const headers = ["Caravana", "Sexo", "Tipo Parto", "Fecha Nacimiento", "Fecha Muerte", "Edad de muerte (dias)", "Peso Nacimiento", "Tratamientos", "Comentario"];
+    const columns = headers.map((_, i) => ({ col: String.fromCharCode(66 + i), width: i === 7 ? 50 : 15 }));
+    const filterText = `Período: ${this._formatDate(fromDate, true)} a ${this._formatDate(toDate, true)}`;
+    this._setupSheet(sheet, "Terneros Muertos", "Cantidad:", deadCalves.length, "Archivo generado por TERNTECH", filterText);
+    headers.forEach((h, i) => sheet.cell(`${String.fromCharCode(66 + i)}4`).value(h));
+    this._styleHeaders(sheet, `B4:${String.fromCharCode(66 + headers.length - 1)}4`, columns);
 
-    this._styleRowBorders(guacheraSheet, `B${row}:J${row}`);
-  });
-}
+    deadCalves.sort((a, b) => moment(a.timeDead).diff(moment(b.timeDead)));
+    deadCalves.forEach((calf, index) => {
+      const row = 5 + index;
+      sheet.cell(`B${row}`).value(calf.name);
+      sheet.cell(`C${row}`).value(calf.gender);
+      sheet.cell(`D${row}`).value(calf.birthType);
+      sheet.cell(`E${row}`).value(this._formatDate(calf.birthDate, true));
+      sheet.cell(`F${row}`).value(this._formatDate(calf.timeDead, true));
+      sheet.cell(`G${row}`).value(calf.daysInGuachera || moment(calf.timeDead).diff(moment(calf.birthDate), "days"));
+      sheet.cell(`H${row}`).value(calf.calfWeight);
+      sheet.cell(`I${row}`).value(this._getTreatmentsList(calf.treatment, true));
+      sheet.cell(`J${row}`).value(calf.comment);
+      this._styleRowBorders(sheet, `B${row}:J${row}`);
+    });
+  }
 
-  /**
-   * @param {Object} workbook
-   * @param {Array} calvesBirth
-   * @param {string} fromDate
-   * @param {string} toDate
-   */
-  _createBirthSheet(workbook, calvesBirth, fromDate, toDate) {
-  const birthSheet = workbook.addSheet("Nacimientos");
-  this._setupSheet(
-    birthSheet,
-    "Cantidad de terneros",
-    calvesBirth.length,
-    "B4:H4",
-    [
-      { col: "B", width: 20 },
-      { col: "C", width: 20 }, 
-      { col: "D", width: 15 }, 
-      { col: "E", width: 12 },
-      { col: "F", width: 13 },
-      { col: "G", width: 15 },
-      { col: "H", width: 15 },
-    ],
-    [
-      "Ternero",
-      "Madre",
-      "Sexo",
-      "Tipo de parto",
-      "Nacimiento",
-      "Peso al nacer",
-      "Calostrado",
-    ],  
-    "I",
-    `Filtrado por fechas: ${this._formatFilterDate(
-      fromDate
-    )} a ${this._formatFilterDate(toDate)}`
-  );
-
-  calvesBirth.forEach((calf, index) => {
-    const row = index + 5;
-    birthSheet.cell(`B${row}`).value(calf.name || "");
-    birthSheet.cell(`C${row}`).value(calf.mother || ""); 
-    birthSheet.cell(`D${row}`).value(calf.gender || "");
-    birthSheet.cell(`E${row}`).value(calf.birthType || ""); 
-
-    const birthDate =
-      calf.birthDate && moment(calf.birthDate).isValid()
-        ? moment(calf.birthDate).toDate()
-        : "";
-    birthSheet
-      .cell(`F${row}`)
-      .value(birthDate)
-      .style(birthDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-    birthSheet.cell(`G${row}`).value(calf.calfWeight || "");
-    birthSheet.cell(`H${row}`).value(calf.calfCalostro || ""); 
-
-    this._styleRowBorders(birthSheet, `B${row}:H${row}`);
-  });
-}
-
-  /**
-   * @param {Object} workbook
-   * @param {Array} deadCalves
-   * @param {string} fromDate
-   * @param {string} toDate
-   */
-  _createDeadSheet(workbook, deadCalves, fromDate, toDate) {
-  const deadSheet = workbook.addSheet("Muertes");
-  this._setupSheet(
-    deadSheet,
-    "Cantidad de terneros",
-    deadCalves.length,
-    "B4:M4",
-    [
-      { col: "B", width: 20 },
-      { col: "C", width: 20 },
-      { col: "D", width: 12 },
-      { col: "E", width: 12 }, 
-      { col: "F", width: 13 }, 
-      { col: "G", width: 13 }, 
-      { col: "H", width: 25 }, 
-      { col: "I", width: 25 }, 
-      { col: "J", width: 25 }, 
-      { col: "K", width: 120 }, 
-      { col: "L", width: 15 }, 
-      { col: "M", width: 15 }, 
-    ],
-    [
-      "Ternero",
-      "Madre",
-      "Sexo",
-      "Tipo de parto",
-      "Nacimiento",
-      "Fecha de muerte",
-      "Calostrado",
-      "Tratamiento",
-      "Cuando fue",
-      "Comentario",
-      "Fue retratado",
-      "Edad a Muerte (Dias)",
-    ],
-    "H",
-    `Filtrado por fechas: ${this._formatFilterDate(
-      fromDate
-    )} a ${this._formatFilterDate(toDate)}`
-  );
-
-  deadCalves.forEach((calf, index) => {
-    const row = index + 5;
-    deadSheet.cell(`B${row}`).value(calf.name || "");
-    deadSheet.cell(`C${row}`).value(calf.mother || "");
-    deadSheet.cell(`D${row}`).value(calf.gender || "");
-    deadSheet.cell(`E${row}`).value(calf.birthType || "");
-
-    const birthDate =
-      calf.birthDate && moment(calf.birthDate).isValid()
-        ? moment(calf.birthDate).toDate()
-        : "";
-    deadSheet
-      .cell(`F${row}`)
-      .value(birthDate)
-      .style(birthDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-    const deadDate =
-      calf.timeDead && moment(calf.timeDead).isValid()
-        ? moment(calf.timeDead).toDate()
-        : "";
-    deadSheet
-      .cell(`G${row}`)
-      .value(deadDate)
-      .style(deadDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-    deadSheet.cell(`H${row}`).value(calf.calfCalostro || "");
-    deadSheet
-      .cell(`I${row}`)
-      .value(this._getTreatmentName(calf.treatment) || "");
-
-    const startDate =
-      calf.startDate && moment(calf.startDate).isValid()
-        ? moment(calf.startDate).toDate()
-        : "";
-    deadSheet
-      .cell(`J${row}`)
-      .value(startDate)
-      .style(startDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-    deadSheet.cell(`K${row}`).value(calf.comment || "");
-    deadSheet.cell(`L${row}`).value(calf.resetTreatment ? "SÍ" : "NO");
-
-    const ageAtDeath =
-      birthDate && deadDate
-        ? moment(deadDate).diff(moment(birthDate), "days")
-        : "";
-    deadSheet
-      .cell(`M${row}`)
-      .value(ageAtDeath)
-      .style(ageAtDeath !== "" ? { numberFormat: "0" } : {});
-
-    this._styleRowBorders(deadSheet, `B${row}:M${row}`); 
-  });
-}
-
-  /**
-   * @param {Object} workbook
-   * @param {Array} calvesTreated
-   * @param {string} fromDate
-   * @param {string} toDate
-   */
-  _createTreatedSheet(workbook, calvesTreated, fromDate, toDate) {
-    const treatedSheet = workbook.addSheet("Tratados");
-    this._setupSheet(
-      treatedSheet,
-      "Cantidad de terneros",
-      calvesTreated.length,
-      "B4:L4",
-      [
-        { col: "B", width: 20 },
-        { col: "C", width: 10 },
-        { col: "D", width: 12 },
-        { col: "E", width: 12 },
-        { col: "F", width: 13 },
-        { col: "G", width: 25 },
-        { col: "H", width: 12 },
-        { col: "I", width: 120 },
-        { col: "J", width: 15 },
-        { col: "K", width: 15 },
-        { col: "L", width: 15 },
-      ],
-      [
-        "Ternero",
-        "Sexo",
-        "Tipo de parto",
-        "Nacimiento",
-        "Calostrado",
-        "Tratamiento",
-        "Cuando fue",
-        "Comentario",
-        "Fue retratado",
-        "Edad a tratamiento (Días)",
-        "Estado",
-      ],
-      "I",
-      `Filtrado por fechas: ${this._formatFilterDate(
-        fromDate
-      )} a ${this._formatFilterDate(toDate)}`
-    );
+  // Hoja de Tratados
+  _createTreatedSheet(calvesTreated, fromDate, toDate) {
+    const sheet = this.workbook.addSheet("Tratados");
+    const headers = ["Caravana", "Sexo", "Fecha Nacimiento", "Peso Nacimiento", "Calostro", "Tratamientos"];
+    const columns = headers.map((_, i) => ({ col: String.fromCharCode(66 + i), width: i === 6 ? 50 : 15 }));
+    const filterText = `Período: ${this._formatDate(fromDate, true)} a ${this._formatDate(toDate, true)}`;
+    this._setupSheet(sheet, "Terneros Tratados", "Cantidad:", calvesTreated.length, "Archivo generado por TERNTECH", filterText);
+    headers.forEach((h, i) => sheet.cell(`${String.fromCharCode(66 + i)}4`).value(h));
+    this._styleHeaders(sheet, `B4:${String.fromCharCode(66 + headers.length - 1)}4`, columns);
 
     calvesTreated.forEach((calf, index) => {
-      const row = index + 5;
-      treatedSheet.cell(`B${row}`).value(calf.name || "");
-      treatedSheet.cell(`C${row}`).value(calf.gender || "");
-      treatedSheet.cell(`D${row}`).value(calf.birthType || "");
-
-      const birthDate =
-        calf.birthDate && moment(calf.birthDate).isValid()
-          ? moment(calf.birthDate).toDate()
-          : "";
-      treatedSheet
-        .cell(`E${row}`)
-        .value(birthDate)
-        .style(birthDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-      treatedSheet.cell(`F${row}`).value(calf.calfCalostro || "");
-      treatedSheet
-        .cell(`G${row}`)
-        .value(this._getTreatmentName(calf.treatment) || "");
-
-      const startDate =
-        calf.startDate && moment(calf.startDate).isValid()
-          ? moment(calf.startDate).toDate()
-          : "";
-      treatedSheet
-        .cell(`H${row}`)
-        .value(startDate)
-        .style(startDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-      treatedSheet.cell(`I${row}`).value(calf.comment || "");
-      treatedSheet.cell(`J${row}`).value(calf.resetTreatment ? "SÍ" : "NO");
-
-      const ageAtTreatment =
-        birthDate && startDate
-          ? moment(startDate).diff(moment(birthDate), "days")
-          : "";
-      treatedSheet
-        .cell(`K${row}`)
-        .value(ageAtTreatment)
-        .style(ageAtTreatment !== "" ? { numberFormat: "0" } : {});
-
-      treatedSheet.cell(`L${row}`).value(calf.isDead ? "Murió" : "Recuperado");
-
-      this._styleRowBorders(treatedSheet, `B${row}:L${row}`);
+      const row = 5 + index;
+      sheet.cell(`B${row}`).value(calf.name);
+      sheet.cell(`C${row}`).value(calf.gender);
+      sheet.cell(`D${row}`).value(this._formatDate(calf.birthDate, true));
+      sheet.cell(`E${row}`).value(calf.calfWeight);
+      sheet.cell(`F${row}`).value(calf.calfCalostro);
+      sheet.cell(`G${row}`).value(this._getTreatmentsList(calf.treatment, true));
+      this._styleRowBorders(sheet, `B${row}:G${row}`);
     });
   }
 
-  /**
-   * @param {Object} workbook
-   * @param {Array} calvesReleased
-   * @param {string} fromDate
-   * @param {string} toDate
-   */
-  _createReleasedSheet(workbook, calvesReleased, fromDate, toDate) {
-  const releasedSheet = workbook.addSheet("Largados");
-  this._setupSheet(
-    releasedSheet,
-    "Cantidad de terneros",
-    calvesReleased.length,
-    "B4:N4",
-    [
-      { col: "B", width: 20 }, 
-      { col: "C", width: 20 }, 
-      { col: "D", width: 12 }, 
-      { col: "E", width: 12 }, 
-      { col: "F", width: 13 },
-      { col: "G", width: 15 }, 
-      { col: "H", width: 20 }, 
-      { col: "I", width: 20 }, 
-      { col: "J", width: 15 }, 
-      { col: "K", width: 15 }, 
-      { col: "L", width: 25 }, 
-      { col: "M", width: 15 }, 
-      { col: "N", width: 15 },
-    ],
-    [
-      "Ternero",
-      "Madre",
-      "Sexo",
-      "Tipo de parto",
-      "Nacimiento",
-      "Día largado",
-      "Días en guachera",
-      "Peso al nacimiento",
-      "Peso al ser largado",
-      "Kilos ganados",
-      "Aumento x día",
-      "Tratamiento",
-      "Cuando fue",
-    ],
-    "G",
-    `Filtrado por fechas: ${this._formatFilterDate(
-      fromDate
-    )} a ${this._formatFilterDate(toDate)}`
-  );
-  releasedSheet
-    .cell("K2")
-    .value(
-      "Los terneros que no tengan un peso inicial se les agrega 35kg que es un valor promedio"
-    );
+  // Hoja de Largados (Liberados)
+  _createReleasedSheet(calvesReleased, fromDate, toDate) {
+    const sheet = this.workbook.addSheet("Largados");
+    const headers = ["Caravana", "Sexo", "Fecha Nacimiento", "Peso Inicial", "Calostro", "Fecha Largado", "Días Guachera", "Peso Final", "Kilos Ganados", "Aumento/Día", "Tratamientos"];
+    const columns = headers.map((_, i) => ({ col: String.fromCharCode(66 + i), width: i === headers.length - 1 ? 50 : 15 }));
+    const filterText = `Período: ${this._formatDate(fromDate, true)} a ${this._formatDate(toDate, true)}`;
+    this._setupSheet(sheet, "Terneros Liberados", "Cantidad:", calvesReleased.length, "Archivo generado por TERNTECH", filterText);
+    headers.forEach((h, i) => sheet.cell(`${String.fromCharCode(66 + i)}4`).value(h));
+    this._styleHeaders(sheet, `B4:${String.fromCharCode(66 + headers.length - 1)}4`, columns);
 
-  calvesReleased.forEach((calf, index) => {
-    const row = index + 5;
-    releasedSheet.cell(`B${row}`).value(calf.name || "");
-    releasedSheet.cell(`C${row}`).value(calf.mother || "");
-    releasedSheet.cell(`D${row}`).value(calf.gender || ""); 
-    releasedSheet.cell(`E${row}`).value(calf.birthType || ""); 
+    calvesReleased.forEach((calf, index) => {
+      const row = 5 + index;
+      const initialWeight = Number(calf.calfWeight) || 0;
+      const finalWeight = Number(calf.releasedWeight) || 0;
+      const weightGain = finalWeight - initialWeight;
+      const days = calf.daysInGuachera || 0;
+      const gainPerDay = days > 0 ? (weightGain / days).toFixed(3) : "";
 
-    const birthDate =
-      calf.birthDate && moment(calf.birthDate).isValid()
-        ? moment(calf.birthDate).toDate()
-        : "";
-    releasedSheet
-      .cell(`F${row}`)
-      .value(birthDate)
-      .style(birthDate ? { numberFormat: "dd/mm/yyyy" } : {});
+      sheet.cell(`B${row}`).value(calf.name);
+      sheet.cell(`C${row}`).value(calf.gender);
+      sheet.cell(`D${row}`).value(this._formatDate(calf.birthDate, true));
+      sheet.cell(`E${row}`).value(initialWeight);
+      sheet.cell(`F${row}`).value(calf.calfCalostro);
+      sheet.cell(`G${row}`).value(this._formatDate(calf.whenReleased, true));
+      sheet.cell(`H${row}`).value(days);
+      sheet.cell(`I${row}`).value(finalWeight);
+      sheet.cell(`J${row}`).value(weightGain);
+      sheet.cell(`K${row}`).value(gainPerDay);
+      sheet.cell(`L${row}`).value(this._getTreatmentsList(calf.treatment, true));
+      this._styleRowBorders(sheet, `B${row}:L${row}`);
+    });
+  }
 
-    const releaseDate =
-      calf.whenReleased && moment(calf.whenReleased).isValid()
-        ? moment(calf.whenReleased).toDate()
-        : "";
-    releasedSheet
-      .cell(`G${row}`)
-      .value(releaseDate)
-      .style(releaseDate ? { numberFormat: "dd/mm/yyyy" } : {});
+  // Hoja de Vacunaciones
+  async _createVaccinationsSheet(allCalves, fromDate, toDate, user) {
+    const sheet = this.workbook.addSheet("Vacunaciones");
+    const protocols = await VacunationModel.find({ owner: user._id }).sort({ name: 1 });
+    const headers = ["Caravana", ...protocols.map(p => p.name)];
+    const columns = headers.map((_, i) => ({ col: String.fromCharCode(66 + i), width: 20 }));
+    const filterText = `Período: ${this._formatDate(fromDate, true)} a ${this._formatDate(toDate, true)}`;
+    this._setupSheet(sheet, "Vacunaciones Realizadas", "Cantidad:", 0, "Archivo generado por TERNTECH", filterText);
+    headers.forEach((h, i) => sheet.cell(`${String.fromCharCode(66 + i)}4`).value(h));
+    const lastCol = String.fromCharCode(66 + headers.length - 1);
+    this._styleHeaders(sheet, `B4:${lastCol}4`, columns);
 
-    const daysInGuachera =
-      birthDate && releaseDate
-        ? moment(releaseDate).diff(moment(birthDate), "days")
-        : "";
-    releasedSheet
-      .cell(`H${row}`)
-      .value(daysInGuachera)
-      .style(daysInGuachera !== "" ? { numberFormat: "0" } : {});
+    const start = moment(fromDate).startOf("day");
+    const end = moment(toDate).endOf("day");
+    let vacCount = 0;
 
-    // Convertir peso al nacimiento a número, usar 35 si no es válido
-    const birthWeight = !isNaN(Number(calf.calfWeight))
-      ? Number(calf.calfWeight)
-      : 35;
-    releasedSheet
-      .cell(`I${row}`)
-      .value(birthWeight)
-      .style({ numberFormat: "0.00" });
+    allCalves.sort((a, b) => a.name.localeCompare(b.name));
+    allCalves.forEach((calf, index) => {
+      const row = 5 + index;
+      sheet.cell(`B${row}`).value(calf.name);
 
-    // Convertir peso al ser largado a número, dejar vacío si no es válido
-    const releasedWeight = !isNaN(Number(calf.releasedWeight))
-      ? Number(calf.releasedWeight)
-      : "";
-    releasedSheet
-      .cell(`J${row}`)
-      .value(releasedWeight)
-      .style(releasedWeight !== "" ? { numberFormat: "0.00" } : {});
-
-    // Calcular kilos ganados si ambos pesos son válidos
-    let weightDifference = "";
-    if (releasedWeight !== "" && birthWeight !== "") {
-      weightDifference = releasedWeight - birthWeight;
-      releasedSheet
-        .cell(`K${row}`)
-        .value(weightDifference)
-        .style({ numberFormat: "0.00" });
-    } else if (!isNaN(Number(calf.weightDiference))) {
-      weightDifference = Number(calf.weightDiference);
-      releasedSheet
-        .cell(`K${row}`)
-        .value(weightDifference)
-        .style({ numberFormat: "0.00" });
-    } else {
-      releasedSheet
-        .cell(`K${row}`)
-        .formula(`=IF(AND(J${row}<>"",I${row}<>""),J${row}-I${row},"")`);
-    }
-
-    // Calcular aumento por día si kilos ganados y días en guachera son válidos
-    if (
-      weightDifference !== "" &&
-      daysInGuachera !== "" &&
-      daysInGuachera > 0
-    ) {
-      const weightGainPerDay = weightDifference / daysInGuachera;
-      releasedSheet
-        .cell(`L${row}`)
-        .value(weightGainPerDay)
-        .style({ numberFormat: "0.000" });
-    } else if (!isNaN(Number(calf.weightGainPerDay))) {
-      releasedSheet
-        .cell(`L${row}`)
-        .value(Number(calf.weightGainPerDay))
-        .style({ numberFormat: "0.000" });
-    } else {
-      releasedSheet
-        .cell(`L${row}`)
-        .formula(
-          `=IF(AND(K${row}<>"",H${row}<>"",H${row}>0),K${row}/H${row},"")`
+      protocols.forEach((proto, protoIndex) => {
+        const col = String.fromCharCode(67 + protoIndex);
+        const vacs = (calf.vacunation || []).filter(v => 
+          v.protocolId.toString() === proto._id.toString() && 
+          moment(v.date).isBetween(start, end)
         );
-    }
+        if (vacs.length > 0) {
+          const dates = vacs.map(v => this._formatDate(v.date, true)).join("; ");
+          sheet.cell(`${col}${row}`).value(dates);
+          vacCount += vacs.length;
+        } else {
+          sheet.cell(`${col}${row}`).value("X");
+        }
+      });
+      this._styleRowBorders(sheet, `B${row}:${lastCol}${row}`);
+    });
 
-    releasedSheet
-      .cell(`M${row}`)
-      .value(this._getTreatmentName(calf.treatment) || "");
+    sheet.cell("C3").value(vacCount); // Actualizar conteo total
+  }
 
-    const startDate =
-      calf.startDate && moment(calf.startDate).isValid()
-        ? moment(calf.startDate).toDate()
-        : "";
-    releasedSheet
-      .cell(`N${row}`)
-      .value(startDate)
-      .style(startDate ? { numberFormat: "dd/mm/yyyy" } : {});
-
-    this._styleRowBorders(releasedSheet, `B${row}:N${row}`); 
-  });
-}
-
-  /**
-   * @param {Array} calves
-   * @param {Array} calvesBirth
-   * @param {Array} calvesTreated
-   * @param {Array} calvesReleased
-   * @param {Array} deadCalves
-   * @param {string} fromDate
-   * @param {string} toDate
-   * @param {Object} 
-   * @returns {string}
-   */
-  async createExcel(
-    calves,
-    calvesBirth,
-    calvesTreated,
-    calvesReleased,
-    deadCalves,
-    fromDate,
-    toDate,
-    user
-  ) {
+  // Método principal para crear Excel
+  async createExcel(calves, calvesBirth, calvesTreated, calvesReleased, deadCalves, fromDate, toDate, user) {
     try {
-      const workbook = await XlsxPopulate.fromBlankAsync();
-      this._createSummarySheet(
-        workbook,
-        fromDate,
-        toDate,
-        deadCalves,
-        calvesBirth,
-        calvesReleased,
-        calvesTreated,
-        user
-      );
-      this._createGuacheraSheet(workbook, calves);
-      this._createBirthSheet(workbook, calvesBirth, fromDate, toDate);
-      this._createDeadSheet(workbook, deadCalves, fromDate, toDate);
-      this._createTreatedSheet(workbook, calvesTreated, fromDate, toDate);
-      this._createReleasedSheet(workbook, calvesReleased, fromDate, toDate);
+      this.workbook = await XlsxPopulate.fromBlankAsync();
 
-      const fileName = `ResumenTerneros.xlsx`;
+      // Recopilar todos los terneros únicos
+      const allCalvesMap = new Map();
+      [calves, calvesBirth, calvesTreated, calvesReleased, deadCalves].forEach(list => 
+        list.forEach(c => allCalvesMap.set(c._id.toString(), c))
+      );
+      const allCalves = Array.from(allCalvesMap.values());
+
+      // Crear hojas
+      await this._createSummarySheet(fromDate, toDate, deadCalves, calvesBirth, calvesReleased, calvesTreated, user);
+      this._createGuacheraSheet(calves);
+      this._createBirthSheet(calvesBirth, fromDate, toDate);
+      this._createDeadSheet(deadCalves, fromDate, toDate);
+      this._createTreatedSheet(calvesTreated, fromDate, toDate);
+      this._createReleasedSheet(calvesReleased, fromDate, toDate);
+      await this._createVaccinationsSheet(allCalves, fromDate, toDate, user);
+
+      const fileName = `ResumenTerneros_${user.farmname || "General"}_${this._formatDate(fromDate)}_al_${this._formatDate(toDate)}.xlsx`;
       const filePath = `./${fileName}`;
-      await workbook.toFileAsync(filePath);
+      await this.workbook.toFileAsync(filePath);
       return filePath;
     } catch (error) {
-      throw error;
+      console.error("Error generando Excel:", error);
+      throw new Error("Error al generar el archivo Excel");
     }
   }
 }

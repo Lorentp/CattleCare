@@ -179,32 +179,26 @@ router.post("/resetTreatment", async (req, res) => {
 
 router.post("/finishTreatment", async (req, res) => {
   try {
-    const { calfId, treatmentTitle, endDate } = req.body;
+    const { calfId } = req.body;
 
-    if (!calfId || !treatmentTitle || !endDate) {
-      throw new Error("Faltan datos requeridos");
+    if (!calfId) {
+      throw new Error("Falta el ID del ternero");
     }
 
-    const updatedCalf = await calfManager.updateCalf(
-      calfId,
-      {
-        finished: true,
-        prevTreatment: treatmentTitle,
-        prevEndDate: endDate,
-        resetTreatment: false,
-      },
-      { new: true }
-    );
+    const updatedCalf = await calfManager.finishTreatment(calfId);
 
     if (!updatedCalf) {
       throw new Error("Ternero no encontrado o no actualizado");
     }
 
-    console.log("Ternero actualizado:", updatedCalf);
-    res.redirect("/enfermeria/terneros-por-terminar-tratamiento");
+    console.log("Tratamiento finalizado para ternero:", updatedCalf);
+    res.redirect("/enfermeria/terneros-en-tratamiento");
   } catch (error) {
-    console.error("Error al finalizar tratamiento:", error);
-    res.status(500).send("Error al finalizar el tratamiento");
+    console.log(error);
+    res.status(500).json({
+      success: false,
+      message: "Error al finalizar el tratamiento",
+    });
   }
 });
 
